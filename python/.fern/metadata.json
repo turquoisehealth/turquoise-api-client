@@ -1,0 +1,10 @@
+{
+  "cliVersion": "5.45.3",
+  "generatorName": "fernapi/fern-python-sdk",
+  "generatorVersion": "4.46.3",
+  "generatorConfig": {
+    "package_name": "turquoise-health",
+    "client_class_name": "TurquoiseHealth"
+  },
+  "originGitCommit": "9f53715ea5adf6d8b895880cf296831a4d4dd141"
+}

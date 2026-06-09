@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="src/TurquoiseHealth.Api.Test/TurquoiseHealth.Api.Test.csproj" />
+  <Project Path="src/TurquoiseHealth.Api/TurquoiseHealth.Api.csproj" />
+</Solution>

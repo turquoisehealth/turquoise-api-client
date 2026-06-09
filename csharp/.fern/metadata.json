@@ -1,0 +1,10 @@
+{
+  "cliVersion": "5.45.3",
+  "generatorName": "fernapi/fern-csharp-sdk",
+  "generatorVersion": "2.11.4",
+  "generatorConfig": {
+    "namespace": "TurquoiseHealth.Api",
+    "packageName": "TurquoiseHealth.Api"
+  },
+  "originGitCommit": "9f53715ea5adf6d8b895880cf296831a4d4dd141"
+}
