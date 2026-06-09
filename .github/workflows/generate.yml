@@ -8,6 +8,9 @@ on:
       openapi_url:
         description: "URL to fetch updated openapi.json from (optional)"
         required: false
+      api_version:
+        description: "API version to stamp into packages (e.g. v3.2.0)"
+        required: false
 
 jobs:
   regenerate:
@@ -19,6 +22,16 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        run: |
+          # Prefer dispatch payload → workflow_dispatch input → fall back to 'dev'
+          RAW="${{ github.event.client_payload.api_version || inputs.api_version || 'dev' }}"
+          # Strip leading 'v' for package managers (v3.2.0 → 3.2.0)
+          SEMVER="${RAW#v}"
+          echo "raw=$RAW" >> $GITHUB_OUTPUT
+          echo "semver=$SEMVER" >> $GITHUB_OUTPUT
 
       - name: Update openapi.json from dispatch payload
         if: github.event_name == 'repository_dispatch'
@@ -42,15 +55,40 @@ jobs:
         env:
           FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
 
+      - name: Bump Python version
+        run: |
+          VERSION="${{ steps.version.outputs.semver }}"
+          sed -i "s/^version = .*/version = \"$VERSION\"/" python/pyproject.toml
+          echo "Python version → $VERSION"
+
+      - name: Bump TypeScript version
+        run: |
+          VERSION="${{ steps.version.outputs.semver }}"
+          jq --arg v "$VERSION" '.version = $v' typescript/package.json > /tmp/pkg.json
+          mv /tmp/pkg.json typescript/package.json
+          echo "TypeScript version → $VERSION"
+
+      - name: Bump C# version
+        run: |
+          VERSION="${{ steps.version.outputs.semver }}"
+          find csharp -name "*.csproj" \
+            -exec sed -i "s|<Version>.*</Version>|<Version>$VERSION</Version>|g" {} \;
+          echo "C# version → $VERSION"
+
       - name: Open PR with updated SDKs
         uses: peter-evans/create-pull-request@v6
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          branch: chore/regenerate-sdks
-          commit-message: "chore: regenerate SDKs from updated OpenAPI spec"
-          title: "chore: regenerate SDKs from updated OpenAPI spec"
+          branch: chore/sdk-${{ steps.version.outputs.raw }}
+          commit-message: "chore: regenerate SDKs for ${{ steps.version.outputs.raw }}"
+          title: "chore: regenerate SDKs for ${{ steps.version.outputs.raw }}"
           body: |
-            Automated PR triggered by an OpenAPI spec update in `turquoise-api`.
+            Automated PR triggered by `turquoise-api` release **${{ steps.version.outputs.raw }}**.
 
-            Review the diff to confirm the SDK changes match the intended API changes before merging.
+            Changes:
+            - `openapi.json` updated to match the released API spec
+            - All three SDKs regenerated via Fern
+            - Package versions bumped to `${{ steps.version.outputs.semver }}`
+
+            Review the diff to confirm the SDK changes match the intended API changes, then merge to trigger publishing.
           labels: automated
