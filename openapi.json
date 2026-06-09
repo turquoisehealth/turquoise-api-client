@@ -1,0 +1,4447 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Turquoise Health API",
+    "description": "\nThe Turquoise Consumer Pricing API offers an integration-ready solution to surface consumer-friendly healthcare service cost estimates in your application. By using our API, you will have access to cost estimates, including cash-pay and negotiated rates, for our full library of shoppable services for relevant provider and payer combinations.\n\nProspective integration partners can learn more about our underlying data and methodology below.\n\n# Our Pricing Methodology\n\nWe leverage our  open license bundling methodology, Standard Service Packages (SSPs), and our rich healthcare pricing\ndatabase, Clear Rates, to generate consumer-facing cost estimates for most shoppable services and procedures.\n\n## About our Standard Service Packages (SSPs)\n\nStandard Service Packages (SSPs) are bundles of clinically related codes that represent what a patient actually gets\nbilled for a service. SSPs make healthcare costs comprehensive, accurate and relevant for patients.\n\nWe use historical claims to identify what most commonly gets billed alongside each primary procedure code, so each\nbundle represents an 'expected' claim. All services, materials, and fees associated with a healthcare procedure are\nconsolidated into a single package including revenue codes, professional fees and ancillary services such as labs and drugs.\n\nSSPs can be structured at three different levels of care: individual procedures or discrete clinical services ('items &\nservices'), single visit procedures ('encounters') or multi-visit care journeys for a specific condition ('episodes').\n\nMost importantly, SSPs are consumer-first. They intuitively reflect the way a patient should expect to find, receive\nand ultimately pay for care.\n\nYou can access our full, open-source library and read more about our methodology [here](https://open.forpatients.health/docs/getting-started/introduction/).\n\n## How our Pricing Data is Sourced and Validated\n\nTurquoise obtains pricing data from all relevant pricing signals, including payer and hospital Machine Readable Files\n(MRFs), Medicare reference data, and historical medical claims.\n\nOur pricing engine, Clear Rates, synthesizes all available sources, spanning reimbursement methodologies such as per diem\nand case rates, to deliver a single, authoritative rate for every provider-payer-SSP combination.\n\nEach price is derived by intelligently associating rates from our pricing engine into relevant SSPs. All prices surfaced\nthrough our API have passed our verification process which requires each rate to be published by at least the provider\nor the insurer, demonstrate low variability, and be corroborated by historical claims data.\n\nThe final result is a representative, consumer-friendly price that accounts for care delivery bundles, plausibility,\nand even the nuances of upstream contract methodology.\n\n# Getting Started\n\nOur documentation site provides limited access to our Consumer Pricing API. If you require additional access to support\nyour use case, or if you are ready to integrate our service into your platform, please review the directions below.\n\n##  Authentication\n\nThe Turquoise Health API uses the **OAuth 2.0 Client Credentials** flow for authentication. This flow is\ndesigned for server-to-server requests \u2014 your application authenticates as itself, not on behalf of a user.\n\n### Obtaining Credentials\n\nTo get started, you'll need a `client_id`, `client_secret`, and `organization_id`. To learn more, please contact our team\n[here](https://turquoise.health/request-a-demo).\n\n### Requesting an Access Token\n\nExchange your credentials for a short-lived access token by making the following request:\n```bash\ncurl --header \"Content-Type: application/json\" \\\n  --request POST \\\n  --data '{\"client_id\":\"<clientID>\",\"client_secret\":\"<clientSecret>\",\"grant_type\":\"client_credentials\",\"organization_id\":\"<organizationID>\"}' \\\n  https://api.turquoise.health/oauth/token\n```\n\nA successful response returns a JSON object:\n```json\n{\n  \"access_token\": \"eyJhbGci...\",\n  \"token_type\": \"Bearer\",\n  \"expires_in\": 3600\n}\n```\n| Field | Description |\n|---|---|\n| `access_token` | The token to include in API requests |\n| `token_type` | Always `Bearer` |\n| `expires_in` | Seconds until the token expires (e.g. `3600` = 1 hour) |\n\n### Using your token\n\nInclude the access token in the `Authorization` header of every API request:\n\n```bash\ncurl --request GET \\\n  --url https://api.turquoise.health/v1/ssps \\\n  --header \"Authorization: Bearer <token>\"\n```\n\n### Token Expiration\n\nTokens expire after the number of seconds indicated by `expires_in`. When a token expires, your requests\nwill receive a `401 Unauthorized` response. At that point, repeat the token request above to obtain a\nnew one. We recommend proactively refreshing tokens before expiry rather than waiting for a 401.\n",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/v1/consumer-pricing/ssps": {
+      "get": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get SSPs",
+        "description": "Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.",
+        "operationId": "get_ssps",
+        "parameters": [
+          {
+            "name": "ssp_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter SSPs by partial name match",
+              "examples": [
+                "MRI",
+                "colonoscopy",
+                "delivery"
+              ],
+              "title": "Ssp Name"
+            },
+            "description": "Filter SSPs by partial name match"
+          },
+          {
+            "name": "ssp_description",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter SSPs by partial patient description match",
+              "examples": [
+                "abdomen",
+                "hernia"
+              ],
+              "title": "Ssp Description"
+            },
+            "description": "Filter SSPs by partial patient description match"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search SSPs by name or patient description",
+              "examples": [
+                "mri",
+                "xray",
+                "delivery"
+              ],
+              "title": "Search"
+            },
+            "description": "Search SSPs by name or patient description"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Page size",
+              "default": 50,
+              "title": "Page Size"
+            },
+            "description": "Page size"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ServicePackagePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/consumer-pricing/networks": {
+      "get": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get insurance networks",
+        "description": "Discover insurance networks, optionally filtered by SSP or payer name.",
+        "operationId": "get_insurance_networks",
+        "parameters": [
+          {
+            "name": "ssp_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Limit networks to a specific SSP",
+              "examples": [
+                "DE000",
+                "BE001",
+                "OB001",
+                "GA000",
+                "RA011",
+                "MS009"
+              ],
+              "title": "Ssp Id"
+            },
+            "description": "Limit networks to a specific SSP"
+          },
+          {
+            "name": "payer_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by payer name",
+              "examples": [
+                "Anthem"
+              ],
+              "title": "Payer Name"
+            },
+            "description": "Filter by payer name"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Page size",
+              "default": 50,
+              "title": "Page Size"
+            },
+            "description": "Page size"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InsuranceNetworkPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/consumer-pricing/providers": {
+      "get": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get providers",
+        "description": "Search for providers by name, NPI, or location.",
+        "operationId": "get_providers",
+        "parameters": [
+          {
+            "name": "provider_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Match provider name (case-insensitive)",
+              "examples": [
+                "mountain view"
+              ],
+              "title": "Provider Name"
+            },
+            "description": "Match provider name (case-insensitive)"
+          },
+          {
+            "name": "npi",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Exact provider NPI",
+              "examples": [
+                "1144903113"
+              ],
+              "title": "Npi"
+            },
+            "description": "Exact provider NPI"
+          },
+          {
+            "name": "city",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Exact provider city",
+              "examples": [
+                "Denver"
+              ],
+              "title": "City"
+            },
+            "description": "Exact provider city"
+          },
+          {
+            "name": "state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Two-letter state abbreviation",
+              "examples": [
+                "CO"
+              ],
+              "title": "State"
+            },
+            "description": "Two-letter state abbreviation"
+          },
+          {
+            "name": "zip_code",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Exact ZIP code",
+              "examples": [
+                "80401"
+              ],
+              "title": "Zip Code"
+            },
+            "description": "Exact ZIP code"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Page size",
+              "default": 50,
+              "title": "Page Size"
+            },
+            "description": "Page size"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProviderPage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/consumer-pricing/ssps/{ssp_id}/prices": {
+      "post": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get SSP prices",
+        "description": "List of providers that can satisfy a given SSP, with the total expected price, in a given geographic area. Requests support location filtering via ZIP code, CBSA, state, or coordinates. When no Network ID is provided, cash prices are shown.",
+        "operationId": "get_ssp_prices",
+        "parameters": [
+          {
+            "name": "ssp_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Standard service package identifier",
+              "examples": [
+                "DE000",
+                "BE001",
+                "OB001",
+                "GA000",
+                "RA011",
+                "MS009"
+              ],
+              "title": "Ssp Id"
+            },
+            "description": "Standard service package identifier"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Page size",
+              "default": 50,
+              "title": "Page Size"
+            },
+            "description": "Page size"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PackagePricesRequest"
+              },
+              "examples": {
+                "by_zip_code": {
+                  "summary": "Search by ZIP code",
+                  "value": {
+                    "location": {
+                      "geo_space": {
+                        "zip_codes": [
+                          "80129"
+                        ]
+                      }
+                    },
+                    "network_id": "-7695283351826393948",
+                    "sort_by": "price-asc"
+                  }
+                },
+                "by_coordinates": {
+                  "summary": "Search by coordinates",
+                  "value": {
+                    "location": {
+                      "coordinates": {
+                        "latitude": 39.434789,
+                        "longitude": -104.901073,
+                        "distance_in_meters": 40000
+                      }
+                    }
+                  }
+                },
+                "by_state_with_price_filter": {
+                  "summary": "Search by state with price filter",
+                  "value": {
+                    "location": {
+                      "geo_space": {
+                        "state": "CO"
+                      }
+                    },
+                    "price_filter": {
+                      "min_price": 1000.0,
+                      "max_price": 10000.0
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SSPPricePage"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/consumer-pricing/ssps/{ssp_id}/providers/{provider_id}/prices": {
+      "post": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get SSP prices by provider",
+        "description": "Get SSP breakdown and fee information about a selected SSP from a single provider. When no Network ID is provided, cash prices are shown.",
+        "operationId": "get_provider_ssp_prices",
+        "parameters": [
+          {
+            "name": "ssp_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Standard service package identifier",
+              "examples": [
+                "DE000",
+                "BE001",
+                "OB001",
+                "GA000",
+                "RA011",
+                "MS009"
+              ],
+              "title": "Ssp Id"
+            },
+            "description": "Standard service package identifier"
+          },
+          {
+            "name": "provider_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Provider identifier",
+              "examples": [
+                1001
+              ],
+              "title": "Provider Id"
+            },
+            "description": "Provider identifier"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderPackageBreakdownRequest"
+              },
+              "examples": {
+                "basic": {
+                  "summary": "Basic breakdown",
+                  "value": {}
+                },
+                "with_insurance": {
+                  "summary": "Breakdown with insurance filter",
+                  "value": {
+                    "network_id": "8361580493441765265"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/ProviderBreakdown"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NoDataResponse"
+                    }
+                  ],
+                  "title": "Response Get Provider Ssp Prices"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v1/consumer-pricing/ssps/{ssp_id}/price-comparison": {
+      "post": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Compare SSP prices",
+        "description": "Get summary statistics (min, max, average, quartiles) for prices matching the selected filters. When no Network ID is provided, cash prices are shown.",
+        "operationId": "compare_ssp_prices",
+        "parameters": [
+          {
+            "name": "ssp_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Standard service package identifier",
+              "examples": [
+                "DE000",
+                "BE001",
+                "OB001",
+                "GA000",
+                "RA011",
+                "MS009"
+              ],
+              "title": "Ssp Id"
+            },
+            "description": "Standard service package identifier"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PriceComparisonRequest"
+              },
+              "examples": {
+                "by_state": {
+                  "summary": "Compare prices across a state",
+                  "value": {
+                    "location": {
+                      "geo_space": {
+                        "state": "CO"
+                      }
+                    },
+                    "network_id": "-7695283351826393948"
+                  }
+                },
+                "by_zip_code": {
+                  "summary": "Compare prices near a ZIP code",
+                  "value": {
+                    "location": {
+                      "geo_space": {
+                        "zip_codes": [
+                          "10601",
+                          "10701"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/PricesComparison"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NoDataResponse"
+                    }
+                  ],
+                  "title": "Response Compare Ssp Prices"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CareNavErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/consumer-pricing/ssps": {
+      "get": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "List SSPs",
+        "description": "Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.",
+        "operationId": "v2_list_ssps",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Case-insensitive substring match on SSP name.",
+              "examples": [
+                "colonoscopy",
+                "MRI",
+                "delivery"
+              ],
+              "title": "Name"
+            },
+            "description": "Case-insensitive substring match on SSP name."
+          },
+          {
+            "name": "description",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Case-insensitive substring match on SSP patient description.",
+              "examples": [
+                "screening",
+                "hernia"
+              ],
+              "title": "Description"
+            },
+            "description": "Case-insensitive substring match on SSP patient description."
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Case-insensitive substring match across name OR patient description.",
+              "examples": [
+                "mri",
+                "xray",
+                "delivery"
+              ],
+              "title": "Search"
+            },
+            "description": "Case-insensitive substring match across name OR patient description."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 250,
+              "minimum": 1,
+              "description": "Page size.",
+              "default": 25,
+              "title": "Page Size"
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Opaque cursor from a previous response's page.next_cursor.",
+              "title": "Cursor"
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_SSP_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/consumer-pricing/ssps/{ssp_id}": {
+      "get": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get SSP Details",
+        "description": "Retrieve an SSP name and patient-ready description from the relevant SSP ID.",
+        "operationId": "v2_get_ssp",
+        "parameters": [
+          {
+            "name": "ssp_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "SSP identifier.",
+              "examples": [
+                "GA002",
+                "RA005",
+                "RA011",
+                "OB001",
+                "MS006",
+                "OP000"
+              ],
+              "title": "Ssp Id"
+            },
+            "description": "SSP identifier."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleResourceEnvelope_SSP_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/consumer-pricing/providers": {
+      "get": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "List Providers",
+        "description": "Search for providers by name, NPI, or location.",
+        "operationId": "v2_list_providers",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Case-insensitive substring match on provider name.",
+              "title": "Name"
+            },
+            "description": "Case-insensitive substring match on provider name."
+          },
+          {
+            "name": "npi",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Exact NPI match.",
+              "title": "Npi"
+            },
+            "description": "Exact NPI match."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 250,
+              "minimum": 1,
+              "description": "Page size.",
+              "default": 25,
+              "title": "Page Size"
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Opaque cursor from a previous response's page.next_cursor.",
+              "title": "Cursor"
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          },
+          {
+            "name": "near.lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Latitude anchor for `near` mode. Must be paired with `near.lng`.",
+              "examples": [
+                39.625533
+              ],
+              "title": "Near.Lat"
+            },
+            "description": "Latitude anchor for `near` mode. Must be paired with `near.lng`."
+          },
+          {
+            "name": "near.lng",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Longitude anchor for `near` mode. Must be paired with `near.lat`.",
+              "examples": [
+                -104.898823
+              ],
+              "title": "Near.Lng"
+            },
+            "description": "Longitude anchor for `near` mode. Must be paired with `near.lat`."
+          },
+          {
+            "name": "near.radius_m",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Search radius in meters for `near` mode. Defaults to 25 000 when omitted.",
+              "examples": [
+                25000
+              ],
+              "title": "Near.Radius M"
+            },
+            "description": "Search radius in meters for `near` mode. Defaults to 25 000 when omitted."
+          },
+          {
+            "name": "within.state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 2
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Two-letter USPS state code for `within` mode (exact match).",
+              "examples": [
+                "CO"
+              ],
+              "title": "Within.State"
+            },
+            "description": "Two-letter USPS state code for `within` mode (exact match)."
+          },
+          {
+            "name": "within.cbsa_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "CBSA name for `within` mode (case-insensitive substring match).",
+              "examples": [
+                "Denver-Aurora-Centennial, CO"
+              ],
+              "title": "Within.Cbsa Name"
+            },
+            "description": "CBSA name for `within` mode (case-insensitive substring match)."
+          },
+          {
+            "name": "within.zip_codes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "ZIP codes for `within` mode (exact match, any-of). Repeat the param for multiple values.",
+              "examples": [
+                [
+                  "80129",
+                  "80237"
+                ]
+              ],
+              "title": "Within.Zip Codes"
+            },
+            "description": "ZIP codes for `within` mode (exact match, any-of). Repeat the param for multiple values."
+          },
+          {
+            "name": "zip_anchor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Convenience: resolves a ZIP to its centroid, then runs `near` with the default radius.",
+              "examples": [
+                "80202"
+              ],
+              "title": "Zip Anchor"
+            },
+            "description": "Convenience: resolves a ZIP to its centroid, then runs `near` with the default radius."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Provider_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/consumer-pricing/providers/{provider_id}": {
+      "get": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get Provider Details",
+        "description": "Return relevant information about a specific provider from the provider ID, including name, NPI, and location.",
+        "operationId": "v2_get_provider",
+        "parameters": [
+          {
+            "name": "provider_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Provider identifier.",
+              "examples": [
+                "21929",
+                "60898",
+                "5736"
+              ],
+              "title": "Provider Id"
+            },
+            "description": "Provider identifier."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleResourceEnvelope_Provider_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/consumer-pricing/payers/networks": {
+      "get": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get Insurance Networks",
+        "description": "Discover insurance networks, optionally filtered by network name, payer name, or payer ID.",
+        "operationId": "v2_list_networks",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Case-insensitive substring match on network or payer name.",
+              "examples": [
+                "cigna",
+                "Choice Plus",
+                "National PPO"
+              ],
+              "title": "Name"
+            },
+            "description": "Case-insensitive substring match on network or payer name."
+          },
+          {
+            "name": "payer_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter to networks under this payer.",
+              "examples": [
+                "643",
+                "7",
+                "76"
+              ],
+              "title": "Payer Id"
+            },
+            "description": "Filter to networks under this payer."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 250,
+              "minimum": 1,
+              "description": "Page size.",
+              "default": 25,
+              "title": "Page Size"
+            },
+            "description": "Page size."
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Opaque cursor from a previous response's page.next_cursor.",
+              "title": "Cursor"
+            },
+            "description": "Opaque cursor from a previous response's page.next_cursor."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Network_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/consumer-pricing/payers/networks/{network_id}": {
+      "get": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get Insurance Network Details",
+        "description": "Return relevant information about a specific insurance network from the network ID.",
+        "operationId": "v2_get_network",
+        "parameters": [
+          {
+            "name": "network_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Network identifier (Int64String on the wire).",
+              "examples": [
+                "8361580493441765265"
+              ],
+              "title": "Network Id"
+            },
+            "description": "Network identifier (Int64String on the wire)."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleResourceEnvelope_Network_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/consumer-pricing/prices": {
+      "post": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Search Prices",
+        "description": "List of providers that can satisfy a given SSP, with the total expected price, in a given geographic area. Requests support location filtering via ZIP code, CBSA name, state, or coordinates. When no Network ID is provided, cash prices are shown.",
+        "operationId": "v2_list_prices",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PricesRequest"
+              },
+              "examples": {
+                "by_zip_anchor_negotiated": {
+                  "summary": "Negotiated rates near a ZIP anchor",
+                  "description": "Anchor on a ZIP centroid and filter to one SSP + one network. Uses the default 25 km radius.",
+                  "value": {
+                    "ssp_id": "GA002",
+                    "network_id": "8361580493441765265",
+                    "rate_type": "negotiated",
+                    "location": {
+                      "zip_anchor": "80202"
+                    }
+                  }
+                },
+                "by_state_cash": {
+                  "summary": "Cash prices within a state",
+                  "description": "Filter to one SSP across all providers in Colorado with no network (cash prices).",
+                  "value": {
+                    "ssp_id": "GA002",
+                    "rate_type": "cash",
+                    "location": {
+                      "within_state": "CO"
+                    }
+                  }
+                },
+                "by_near_coordinates": {
+                  "summary": "Search near coordinates",
+                  "description": "Find one SSP's prices within 25 km of a lat/lng anchor.",
+                  "value": {
+                    "ssp_id": "RA005",
+                    "location": {
+                      "near_lat": 39.625533,
+                      "near_lng": -104.898823,
+                      "near_radius_m": 25000
+                    },
+                    "page_size": 50
+                  }
+                },
+                "by_provider_scope": {
+                  "summary": "All rates for one provider",
+                  "description": "Provider-only scope (no location). Useful for a provider profile view.",
+                  "value": {
+                    "provider_id": "21929"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Envelope_Rate_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/consumer-pricing/prices/provider-breakdown": {
+      "post": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get SSP Prices by Provider",
+        "description": "Get SSP breakdown and fee information about a selected SSP from a single provider. When no Network ID is provided, cash prices are shown.",
+        "operationId": "v2_get_price_breakdown",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProviderBreakdownRequest"
+              },
+              "examples": {
+                "cash": {
+                  "summary": "Cash-price line-item breakdown",
+                  "description": "Per-billing-code breakdown for one (provider, SSP) tuple at cash prices.",
+                  "value": {
+                    "provider_id": "21929",
+                    "ssp_id": "RA011"
+                  }
+                },
+                "negotiated": {
+                  "summary": "Negotiated-rate line-item breakdown",
+                  "description": "Per-billing-code breakdown for one (provider, SSP, network) tuple.",
+                  "value": {
+                    "provider_id": "21929",
+                    "ssp_id": "RA011",
+                    "network_id": "8361580493441765265"
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SingleResourceEnvelope_RateBreakdown_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v2/consumer-pricing/prices/price-comparison": {
+      "post": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Compare SSP Prices",
+        "description": "Get summary statistics (min, max, average, quartiles) for prices matching the selected filters. When no Network ID is provided, cash prices are shown.",
+        "operationId": "v2_compare_prices",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RateCompareRequest"
+              },
+              "examples": {
+                "by_state": {
+                  "summary": "Compare prices across a state",
+                  "description": "Bounded statistics for one SSP across all in-state providers, one network.",
+                  "value": {
+                    "ssp_id": "RA011",
+                    "network_id": "8361580493441765265",
+                    "location": {
+                      "within_state": "CO"
+                    }
+                  }
+                },
+                "by_cbsa_cash": {
+                  "summary": "Compare cash prices within a CBSA",
+                  "description": "Bounded statistics for one SSP within Denver-Aurora-Centennial, CO, cash only.",
+                  "value": {
+                    "ssp_id": "GA002",
+                    "rate_type": "cash",
+                    "location": {
+                      "within_cbsa_name": "Denver-Aurora-Centennial, CO"
+                    }
+                  }
+                },
+                "by_zip_codes": {
+                  "summary": "Compare prices in specific ZIP codes",
+                  "description": "Bounded statistics for one SSP restricted to a list of ZIP codes (exact match).",
+                  "value": {
+                    "ssp_id": "RA005",
+                    "location": {
+                      "within_zip_codes": [
+                        "80129",
+                        "80237"
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RateComparison"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CareNavErrorResponse": {
+        "properties": {
+          "code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Code",
+            "description": "Machine-readable error code"
+          },
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message",
+            "description": "Human-readable error summary"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail",
+            "description": "FastAPI validation error detail"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ErrorDetail"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Details",
+            "description": "Field-level error details, if applicable"
+          }
+        },
+        "type": "object",
+        "title": "CareNavErrorResponse",
+        "description": "Care-navigation (v1) error envelope.\n\nNamed `CareNavErrorResponse` (not `ErrorResponse`) so it doesn't collide\nwith `modules.external.consumer_pricing_v2.dtos.common.ErrorResponse` in\nthe shared external OpenAPI export. The two surfaces have different error\nwire formats (v1 is flat; v2 wraps in `{ \"error\": {...} }`)."
+      },
+      "CareNavProvider": {
+        "properties": {
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id",
+            "description": "Provider identifier"
+          },
+          "provider_name": {
+            "type": "string",
+            "title": "Provider Name",
+            "description": "Provider facility or practice name"
+          },
+          "provider_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Type",
+            "description": "Type of provider (e.g. hospital, ASC)"
+          },
+          "npi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Npi",
+            "description": "National Provider Identifier"
+          },
+          "city": {
+            "type": "string",
+            "title": "City",
+            "description": "Provider city"
+          },
+          "state": {
+            "type": "string",
+            "title": "State",
+            "description": "Two-letter state abbreviation"
+          },
+          "zip_code": {
+            "type": "string",
+            "title": "Zip Code",
+            "description": "Provider ZIP code"
+          },
+          "location_details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProviderLocationDetails"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Location and quality details, populated for geo-enriched results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider_id",
+          "provider_name",
+          "city",
+          "state",
+          "zip_code"
+        ],
+        "title": "CareNavProvider",
+        "description": "Care-navigation (v1) provider row.\n\nNamed `CareNavProvider` (not `Provider`) so it doesn't collide with\n`modules.external.consumer_pricing_v2.dtos.providers.Provider` in the\nshared external OpenAPI export. FastAPI keys component schemas by class\nname; without distinct names, both modules would emit `Provider` and the\ngenerated `client_external` would parse v1 responses with the v2 shape."
+      },
+      "CareNavSortType": {
+        "type": "string",
+        "enum": [
+          "price-asc",
+          "rating-desc"
+        ],
+        "title": "CareNavSortType"
+      },
+      "Coordinates": {
+        "properties": {
+          "latitude": {
+            "type": "number",
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Latitude",
+            "description": "Latitude for exact geo targeting"
+          },
+          "longitude": {
+            "type": "number",
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Longitude",
+            "description": "Longitude for exact geo targeting"
+          },
+          "distance_in_meters": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance In Meters",
+            "description": "Search radius in meters.",
+            "default": 32000
+          }
+        },
+        "type": "object",
+        "required": [
+          "latitude",
+          "longitude"
+        ],
+        "title": "Coordinates"
+      },
+      "ErrorDetail": {
+        "properties": {
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field",
+            "description": "Field that caused the error, if applicable"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Description of the error"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "ErrorDetail"
+      },
+      "GeoSpace": {
+        "properties": {
+          "zip_codes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zip Codes",
+            "description": "ZIP codes to anchor location search"
+          },
+          "cbsa_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cbsa Id",
+            "description": "Core-Based Statistical Area identifier"
+          },
+          "state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "State",
+            "description": "Two-letter USPS abbreviation"
+          }
+        },
+        "type": "object",
+        "title": "GeoSpace"
+      },
+      "InsuranceNetwork": {
+        "properties": {
+          "network_id": {
+            "type": "string",
+            "pattern": "^-?\\d+$",
+            "title": "Network Id",
+            "description": "Insurance network identifier"
+          },
+          "network_name": {
+            "type": "string",
+            "title": "Network Name",
+            "description": "Insurance network name"
+          },
+          "payer_name": {
+            "type": "string",
+            "title": "Payer Name",
+            "description": "Insurance payer name"
+          },
+          "payer_id": {
+            "type": "string",
+            "title": "Payer Id",
+            "description": "Insurance payer identifier"
+          }
+        },
+        "type": "object",
+        "required": [
+          "network_id",
+          "network_name",
+          "payer_name",
+          "payer_id"
+        ],
+        "title": "InsuranceNetwork"
+      },
+      "InsuranceNetworkPage": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/InsuranceNetwork"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "page_size": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Size"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when results are empty. `no_data` if no matching records exist; `permission_denied` if matching records exist but are excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "count"
+        ],
+        "title": "InsuranceNetworkPage"
+      },
+      "LocationInput": {
+        "properties": {
+          "coordinates": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Coordinates"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Exact latitude/longitude coordinates"
+          },
+          "geo_space": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeoSpace"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Geographic area filter (ZIP, CBSA, or state)"
+          }
+        },
+        "type": "object",
+        "title": "LocationInput"
+      },
+      "NoDataReason": {
+        "type": "string",
+        "enum": [
+          "no_data",
+          "permission_denied"
+        ],
+        "title": "NoDataReason"
+      },
+      "NoDataResponse": {
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/NoDataReason",
+            "description": "Machine-readable reason no data was returned. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Human-readable description of why no data was returned"
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "NoDataResponse"
+      },
+      "PackageLineItem": {
+        "properties": {
+          "line_code": {
+            "type": "string",
+            "title": "Line Code"
+          },
+          "code_type": {
+            "type": "string",
+            "title": "Code Type"
+          },
+          "fee_type": {
+            "type": "string",
+            "title": "Fee Type"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "line_item_association_rate": {
+            "type": "number",
+            "title": "Line Item Association Rate"
+          },
+          "mrf_rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mrf Rate"
+          },
+          "benefit_category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Benefit Category"
+          }
+        },
+        "type": "object",
+        "required": [
+          "line_code",
+          "code_type",
+          "fee_type",
+          "description",
+          "line_item_association_rate"
+        ],
+        "title": "PackageLineItem"
+      },
+      "PackagePricesRequest": {
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/LocationInput",
+            "description": "Location to search for providers",
+            "examples": [
+              {
+                "geo_space": {
+                  "zip_codes": [
+                    "60644"
+                  ]
+                }
+              }
+            ]
+          },
+          "network_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^-?\\d+$",
+                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network Id",
+            "description": "Insurance network identifier"
+          },
+          "price_filter": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PriceFilter"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "npis": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Npis"
+          },
+          "sort_by": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CareNavSortType"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "location"
+        ],
+        "title": "PackagePricesRequest"
+      },
+      "PriceComparisonRequest": {
+        "properties": {
+          "location": {
+            "$ref": "#/components/schemas/LocationInput",
+            "description": "Location to search for providers",
+            "examples": [
+              {
+                "geo_space": {
+                  "zip_codes": [
+                    "60644"
+                  ]
+                }
+              }
+            ]
+          },
+          "network_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^-?\\d+$",
+                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network Id",
+            "description": "Insurance network identifier"
+          },
+          "npis": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Npis"
+          }
+        },
+        "type": "object",
+        "required": [
+          "location"
+        ],
+        "title": "PriceComparisonRequest"
+      },
+      "PriceDetail": {
+        "properties": {
+          "max_price": {
+            "type": "number",
+            "title": "Max Price"
+          },
+          "max_price_billing_code": {
+            "type": "string",
+            "title": "Max Price Billing Code"
+          },
+          "network_id": {
+            "type": "string",
+            "pattern": "^-?\\d+$",
+            "title": "Network Id",
+            "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
+          },
+          "provider_id": {
+            "type": "integer",
+            "title": "Provider Id"
+          },
+          "ssp_id": {
+            "type": "string",
+            "title": "Ssp Id"
+          },
+          "line_items": {
+            "items": {
+              "$ref": "#/components/schemas/PackageLineItem"
+            },
+            "type": "array",
+            "title": "Line Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "max_price",
+          "max_price_billing_code",
+          "network_id",
+          "provider_id",
+          "ssp_id",
+          "line_items"
+        ],
+        "title": "PriceDetail"
+      },
+      "PriceFilter": {
+        "properties": {
+          "min_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Price"
+          },
+          "max_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Price"
+          }
+        },
+        "type": "object",
+        "required": [
+          "min_price",
+          "max_price"
+        ],
+        "title": "PriceFilter"
+      },
+      "PricesComparison": {
+        "properties": {
+          "min_price": {
+            "type": "number",
+            "title": "Min Price",
+            "description": "Lowest package price in the area"
+          },
+          "max_price": {
+            "type": "number",
+            "title": "Max Price",
+            "description": "Highest package price in the area"
+          },
+          "avg_price": {
+            "type": "number",
+            "title": "Avg Price",
+            "description": "Average package price in the area"
+          },
+          "q1_price": {
+            "type": "number",
+            "title": "Q1 Price",
+            "description": "25th percentile package price"
+          },
+          "median_price": {
+            "type": "number",
+            "title": "Median Price",
+            "description": "Median (50th percentile) package price"
+          },
+          "q3_price": {
+            "type": "number",
+            "title": "Q3 Price",
+            "description": "75th percentile package price"
+          }
+        },
+        "type": "object",
+        "required": [
+          "min_price",
+          "max_price",
+          "avg_price",
+          "q1_price",
+          "median_price",
+          "q3_price"
+        ],
+        "title": "PricesComparison"
+      },
+      "ProviderBreakdown": {
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/CareNavProvider",
+            "description": "Provider details"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PriceDetail"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Itemized price breakdown for the package"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider"
+        ],
+        "title": "ProviderBreakdown"
+      },
+      "ProviderLocationDetails": {
+        "properties": {
+          "street_address": {
+            "type": "string",
+            "title": "Street Address",
+            "description": "Provider street address"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude",
+            "description": "Provider latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude",
+            "description": "Provider longitude"
+          },
+          "distance_in_meters": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance In Meters",
+            "description": "Distance from the search location in meters"
+          },
+          "hospital_overall_rating": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hospital Overall Rating",
+            "description": "CMS overall hospital quality rating (1-5)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "street_address"
+        ],
+        "title": "ProviderLocationDetails"
+      },
+      "ProviderPackageBreakdownRequest": {
+        "properties": {
+          "network_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^-?\\d+$",
+                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network Id",
+            "description": "Insurance network identifier"
+          }
+        },
+        "type": "object",
+        "title": "ProviderPackageBreakdownRequest"
+      },
+      "ProviderPage": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/CareNavProvider"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "page_size": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Size"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when results are empty. `no_data` if no matching records exist; `permission_denied` if matching records exist but are excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "count"
+        ],
+        "title": "ProviderPage"
+      },
+      "SSPPrice": {
+        "properties": {
+          "provider": {
+            "$ref": "#/components/schemas/CareNavProvider",
+            "description": "Provider details"
+          },
+          "package_price": {
+            "type": "number",
+            "title": "Package Price",
+            "description": "Total estimated package price for this provider"
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider",
+          "package_price"
+        ],
+        "title": "SSPPrice"
+      },
+      "SSPPricePage": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/SSPPrice"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "page_size": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Size"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when results are empty. `no_data` if no matching records exist; `permission_denied` if matching records exist but are excluded by your data permissions."
+          },
+          "min_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Price",
+            "description": "Minimum price of total results, not just ones on the current page"
+          },
+          "max_price": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Price",
+            "description": "Maximum price of total results, not just ones on the current page"
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "count"
+        ],
+        "title": "SSPPricePage"
+      },
+      "ServicePackage": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Standard service package identifier"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "Display name of the service package"
+          },
+          "patient_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Patient Description",
+            "description": "Patient-facing description of the service package"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "ServicePackage"
+      },
+      "ServicePackagePage": {
+        "properties": {
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ServicePackage"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "page_size": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page Size"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when results are empty. `no_data` if no matching records exist; `permission_denied` if matching records exist but are excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "required": [
+          "results",
+          "count"
+        ],
+        "title": "ServicePackagePage"
+      },
+      "ConsumerPricingV2ErrorCode": {
+        "enum": [
+          "INVALID_REQUEST",
+          "INVALID_STATE_FORMAT",
+          "INVALID_ID_FORMAT",
+          "INVALID_EXPAND",
+          "INSUFFICIENT_SCOPE",
+          "LOCATION_REQUIRED",
+          "LOCATION_AMBIGUOUS",
+          "UNRESOLVABLE_LOCATION",
+          "NOT_FOUND",
+          "INSUFFICIENT_DATA",
+          "RATE_LIMITED",
+          "PERMISSION_DENIED"
+        ],
+        "type": "string",
+        "title": "ConsumerPricingV2ErrorCode",
+        "description": "Stable error code registry for Consumer Pricing v2. Switch on this in code."
+      },
+      "Envelope_Network_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Network"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageMeta"
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "page"
+        ],
+        "title": "Envelope[Network]"
+      },
+      "Envelope_Provider_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Provider"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageMeta"
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "page"
+        ],
+        "title": "Envelope[Provider]"
+      },
+      "Envelope_Rate_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/Rate"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageMeta"
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "page"
+        ],
+        "title": "Envelope[Rate]"
+      },
+      "Envelope_SSP_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SSP"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageMeta"
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "page"
+        ],
+        "title": "Envelope[SSP]"
+      },
+      "ErrorCode": {
+        "type": "string",
+        "enum": [
+          "INVALID_REQUEST",
+          "INVALID_STATE_FORMAT",
+          "INVALID_ID_FORMAT",
+          "INVALID_EXPAND",
+          "INSUFFICIENT_SCOPE",
+          "LOCATION_REQUIRED",
+          "LOCATION_AMBIGUOUS",
+          "UNRESOLVABLE_LOCATION",
+          "NOT_FOUND",
+          "INSUFFICIENT_DATA",
+          "RATE_LIMITED",
+          "PERMISSION_DENIED"
+        ],
+        "title": "ErrorCode",
+        "description": "Stable error code registry for the Consumer Pricing v2 surface."
+      },
+      "ErrorPayload": {
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ErrorCode",
+            "description": "Stable, documented error code. Switch on this in code."
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Human-readable error summary, suitable for narration to an end user."
+          },
+          "hint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hint",
+            "description": "Actionable suggestion for the caller, when applicable."
+          },
+          "expected": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Expected",
+            "description": "What the API expected (format, value range, etc)."
+          },
+          "received": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Received",
+            "description": "What the API actually received."
+          },
+          "field": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Field",
+            "description": "Dot-path of the offending request field, when applicable."
+          }
+        },
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorPayload"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorPayload"
+          }
+        },
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "description": "Top-level error envelope for v2."
+      },
+      "Network": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^-?\\d+$",
+            "title": "Id",
+            "description": "Network identifier. Int64String \u2014 JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Insurance network name."
+          },
+          "payer_id": {
+            "type": "string",
+            "title": "Payer Id",
+            "description": "Insurance payer identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
+          },
+          "payer_name": {
+            "type": "string",
+            "title": "Payer Name",
+            "description": "Insurance payer name."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "payer_id",
+          "payer_name"
+        ],
+        "title": "Network",
+        "description": "Insurance network row.",
+        "examples": [
+          {
+            "id": "8361580493441765265",
+            "name": "UnitedHealthcare Choice Plus",
+            "payer_id": "643",
+            "payer_name": "UnitedHealthcare"
+          }
+        ]
+      },
+      "PageMeta": {
+        "properties": {
+          "size": {
+            "type": "integer",
+            "title": "Size",
+            "description": "Number of items in this page."
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Count of the full filtered set, not just this page."
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor",
+            "description": "Opaque cursor for the next page. Null when no more pages."
+          }
+        },
+        "type": "object",
+        "required": [
+          "size",
+          "total"
+        ],
+        "title": "PageMeta",
+        "description": "Pagination metadata. Cursor is opaque; clients pass it back unchanged.",
+        "examples": [
+          {
+            "size": 2,
+            "total": 2
+          }
+        ]
+      },
+      "PricesRequest": {
+        "properties": {
+          "ssp_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ssp Id",
+            "description": "Filter to a single SSP. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
+            "examples": [
+              "RA005",
+              "RA011",
+              "OB001",
+              "GA002",
+              "MS006",
+              "OP000"
+            ]
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id",
+            "description": "Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
+            "examples": [
+              "21929",
+              "60898",
+              "5736"
+            ]
+          },
+          "network_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^-?\\d+$",
+                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network Id",
+            "description": "Filter to a single insurance network. Int64String \u2014 JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
+            "examples": [
+              "8361580493441765265",
+              "-2162498661799343237",
+              "2469641715717297819"
+            ]
+          },
+          "rate_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "cash",
+                  "negotiated"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate Type",
+            "description": "`cash` filters to rows with no network. `negotiated` requires a network match.",
+            "examples": [
+              "cash",
+              "negotiated"
+            ]
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RateCompareLocation"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes."
+          },
+          "page_size": {
+            "type": "integer",
+            "maximum": 250.0,
+            "minimum": 1.0,
+            "title": "Page Size",
+            "description": "Page size, 1-250.",
+            "default": 25
+          },
+          "cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cursor",
+            "description": "Opaque cursor from a previous response's `page.next_cursor`."
+          }
+        },
+        "type": "object",
+        "title": "PricesRequest",
+        "description": "POST /v2/consumer-pricing/prices body."
+      },
+      "Provider": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Provider identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Provider facility or organization name."
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type",
+            "description": "Provider type (hospital, ASC, imaging center, etc)."
+          },
+          "npi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Npi",
+            "description": "National Provider Identifier."
+          },
+          "city": {
+            "type": "string",
+            "title": "City",
+            "description": "City the provider is located in."
+          },
+          "state": {
+            "type": "string",
+            "title": "State",
+            "description": "Two-letter USPS state code."
+          },
+          "zip_code": {
+            "type": "string",
+            "title": "Zip Code",
+            "description": "Provider ZIP code."
+          },
+          "distance_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance M",
+            "description": "Distance from the search anchor in meters. Null when no `near`/`zip_anchor` location was supplied."
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Latitude",
+            "description": "Provider HQ latitude."
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Longitude",
+            "description": "Provider HQ longitude."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "city",
+          "state",
+          "zip_code"
+        ],
+        "title": "Provider",
+        "description": "Provider list/detail row.",
+        "examples": [
+          {
+            "city": "Denver",
+            "distance_m": 1,
+            "id": "21929",
+            "latitude": 39.625533,
+            "longitude": -104.898823,
+            "name": "Mountain View Surgical Specialists",
+            "npi": "1144903113",
+            "state": "CO",
+            "type": "ASC",
+            "zip_code": "80237"
+          }
+        ]
+      },
+      "ProviderBreakdownRequest": {
+        "properties": {
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id",
+            "description": "Provider identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
+            "examples": [
+              "21929",
+              "60898",
+              "5736"
+            ]
+          },
+          "ssp_id": {
+            "type": "string",
+            "title": "Ssp Id",
+            "description": "SSP identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
+            "examples": [
+              "RA005",
+              "RA011",
+              "OB001",
+              "GA002",
+              "MS006",
+              "OP000"
+            ]
+          },
+          "network_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^-?\\d+$",
+                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network Id",
+            "description": "Optional network filter. Omit for cash-price breakdown. Int64String \u2014 JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
+            "examples": [
+              "8361580493441765265",
+              "-2162498661799343237",
+              "2469641715717297819"
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "provider_id",
+          "ssp_id"
+        ],
+        "title": "ProviderBreakdownRequest",
+        "description": "POST /v2/consumer-pricing/prices/provider_breakdown body."
+      },
+      "Rate": {
+        "properties": {
+          "rate_type": {
+            "type": "string",
+            "enum": [
+              "cash",
+              "negotiated"
+            ],
+            "title": "Rate Type",
+            "description": "`cash` \u21d4 `network_id is null`. `negotiated` otherwise."
+          },
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id",
+            "description": "Provider identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
+          },
+          "ssp_id": {
+            "type": "string",
+            "title": "Ssp Id",
+            "description": "SSP identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
+          },
+          "network_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^-?\\d+$",
+                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network Id",
+            "description": "Network identifier; null for cash rates. Int64String \u2014 JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
+          },
+          "amount": {
+            "type": "string",
+            "title": "Amount",
+            "description": "String-decimal money value, e.g. \"1250.00\"."
+          },
+          "amount_cents": {
+            "type": "integer",
+            "title": "Amount Cents",
+            "description": "Integer minor units, e.g. 125000."
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "description": "ISO currency code. Always USD today.",
+            "default": "USD"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rate_type",
+          "provider_id",
+          "ssp_id",
+          "amount",
+          "amount_cents"
+        ],
+        "title": "Rate",
+        "description": "SSP-total rate row at the (provider \u00d7 ssp \u00d7 [network]) grain.",
+        "examples": [
+          {
+            "amount": "335.16",
+            "amount_cents": 33516,
+            "currency": "USD",
+            "provider_id": "0001",
+            "rate_type": "cash",
+            "ssp_id": "GA002"
+          }
+        ]
+      },
+      "RateBreakdown": {
+        "properties": {
+          "rate_type": {
+            "type": "string",
+            "enum": [
+              "cash",
+              "negotiated"
+            ],
+            "title": "Rate Type"
+          },
+          "provider_id": {
+            "type": "string",
+            "title": "Provider Id"
+          },
+          "ssp_id": {
+            "type": "string",
+            "title": "Ssp Id"
+          },
+          "network_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^-?\\d+$",
+                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network Id"
+          },
+          "total_amount": {
+            "type": "string",
+            "title": "Total Amount",
+            "description": "SSP-total amount from /prices."
+          },
+          "total_amount_cents": {
+            "type": "integer",
+            "title": "Total Amount Cents"
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "USD"
+          },
+          "line_items": {
+            "items": {
+              "$ref": "#/components/schemas/RateBreakdownLineItem"
+            },
+            "type": "array",
+            "title": "Line Items"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rate_type",
+          "provider_id",
+          "ssp_id",
+          "total_amount",
+          "total_amount_cents",
+          "line_items"
+        ],
+        "title": "RateBreakdown",
+        "examples": [
+          {
+            "currency": "USD",
+            "line_items": [
+              {
+                "code_type": "HCPCS",
+                "description": "Colonoscopy",
+                "fee_type": "Base Code",
+                "line_code": "45385",
+                "line_item_association_rate": 1
+              },
+              {
+                "code_type": "HCPCS",
+                "description": "Colonoscopy",
+                "fee_type": "Professional Fee",
+                "line_code": "45385",
+                "line_item_association_rate": 1
+              },
+              {
+                "code_type": "RC",
+                "description": "Pharmacy - Extension of 025X - Drugs requiring detailed coding",
+                "fee_type": "Facility Fee",
+                "line_code": "0636",
+                "line_item_association_rate": 0.633119
+              }
+            ],
+            "network_id": "999999999999",
+            "provider_id": "0001",
+            "rate_type": "cash",
+            "ssp_id": "GA002",
+            "total_amount": "335.16",
+            "total_amount_cents": 33516
+          }
+        ]
+      },
+      "RateBreakdownLineItem": {
+        "properties": {
+          "line_code": {
+            "type": "string",
+            "title": "Line Code",
+            "description": "CPT or HCPCS code."
+          },
+          "code_type": {
+            "type": "string",
+            "title": "Code Type",
+            "description": "Billing code type."
+          },
+          "fee_type": {
+            "type": "string",
+            "title": "Fee Type",
+            "description": "Fee category (professional, facility, etc)."
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Human-readable line item description."
+          },
+          "line_item_association_rate": {
+            "type": "number",
+            "title": "Line Item Association Rate",
+            "description": "Likelihood this line item is part of the SSP."
+          }
+        },
+        "type": "object",
+        "required": [
+          "line_code",
+          "code_type",
+          "fee_type",
+          "description",
+          "line_item_association_rate"
+        ],
+        "title": "RateBreakdownLineItem",
+        "examples": [
+          {
+            "code_type": "HCPCS",
+            "description": "Colonoscopy",
+            "fee_type": "Base Code",
+            "line_code": "45385",
+            "line_item_association_rate": 1
+          }
+        ]
+      },
+      "RateCompareLocation": {
+        "properties": {
+          "near_lat": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Near Lat",
+            "description": "Latitude for `near` mode. Must be paired with `near_lng`.",
+            "examples": [
+              39.625533
+            ]
+          },
+          "near_lng": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Near Lng",
+            "description": "Longitude for `near` mode. Must be paired with `near_lat`.",
+            "examples": [
+              -104.898823
+            ]
+          },
+          "near_radius_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Near Radius M",
+            "description": "Search radius in meters for `near` mode. Defaults to 25 000 when omitted.",
+            "examples": [
+              25000
+            ]
+          },
+          "within_state": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 2,
+                "minLength": 2
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Within State",
+            "description": "Two-letter USPS state code for `within` mode (exact match).",
+            "examples": [
+              "CO"
+            ]
+          },
+          "within_cbsa_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Within Cbsa Name",
+            "description": "CBSA name for `within` mode (case-insensitive substring match).",
+            "examples": [
+              "Denver-Aurora-Centennial, CO"
+            ]
+          },
+          "within_zip_codes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Within Zip Codes",
+            "description": "ZIP codes for `within` mode (exact match, any-of).",
+            "examples": [
+              [
+                "80129",
+                "80237"
+              ]
+            ]
+          },
+          "zip_anchor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zip Anchor",
+            "description": "Convenience: resolves a ZIP to its centroid, then runs `near` with the default radius.",
+            "examples": [
+              "80202"
+            ]
+          }
+        },
+        "type": "object",
+        "title": "RateCompareLocation",
+        "description": "Structured location for POST bodies. Exactly zero or one mode permitted.\n\nValidated by the service layer (location.py shares LocationQuery for GET\nquery params; this is the body equivalent)."
+      },
+      "RateCompareRequest": {
+        "properties": {
+          "ssp_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ssp Id",
+            "description": "Filter to a single SSP. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
+            "examples": [
+              "RA005",
+              "RA011",
+              "OB001",
+              "GA002",
+              "MS006",
+              "OP000"
+            ]
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id",
+            "description": "Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
+            "examples": [
+              "21929",
+              "60898",
+              "5736"
+            ]
+          },
+          "network_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^-?\\d+$",
+                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Network Id",
+            "description": "Filter to a single insurance network. Int64String \u2014 JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
+            "examples": [
+              "8361580493441765265",
+              "-2162498661799343237",
+              "2469641715717297819"
+            ]
+          },
+          "rate_type": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "cash",
+                  "negotiated"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate Type",
+            "description": "`cash` filters to rows with no network. `negotiated` requires a network match.",
+            "examples": [
+              "cash",
+              "negotiated"
+            ]
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RateCompareLocation"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes."
+          }
+        },
+        "type": "object",
+        "title": "RateCompareRequest",
+        "description": "POST /v2/consumer-pricing/prices/price_comparison body."
+      },
+      "RateComparison": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count",
+            "description": "Number of rate rows the statistics were computed over."
+          },
+          "currency": {
+            "type": "string",
+            "title": "Currency",
+            "default": "USD"
+          },
+          "min_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Amount"
+          },
+          "min_amount_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Amount Cents"
+          },
+          "max_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Amount"
+          },
+          "max_amount_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Amount Cents"
+          },
+          "avg_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Amount"
+          },
+          "avg_amount_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Amount Cents"
+          },
+          "median_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Amount"
+          },
+          "median_amount_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median Amount Cents"
+          },
+          "q1_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Q1 Amount"
+          },
+          "q1_amount_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Q1 Amount Cents"
+          },
+          "q3_amount": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Q3 Amount"
+          },
+          "q3_amount_cents": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Q3 Amount Cents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count"
+        ],
+        "title": "RateComparison",
+        "description": "Bounded statistic bundle. No envelope per the ticket.",
+        "examples": [
+          {
+            "avg_amount": "2060.44",
+            "avg_amount_cents": 206044,
+            "count": 44,
+            "currency": "USD",
+            "max_amount": "5123.59",
+            "max_amount_cents": 512359,
+            "median_amount": "1818.48",
+            "median_amount_cents": 181848,
+            "min_amount": "447.14",
+            "min_amount_cents": 44714,
+            "q1_amount": "1016.93",
+            "q1_amount_cents": 101693,
+            "q3_amount": "3051.33",
+            "q3_amount_cents": 305133
+          }
+        ]
+      },
+      "SSP": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "SSP identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Display name of the service package."
+          },
+          "patient_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Patient Description",
+            "description": "Patient-facing description of the service package."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "SSP",
+        "description": "Standard Service Package row.\n\nSparse by default. Component billing codes and pricing relationships are\nreachable via the dedicated rate endpoints.",
+        "examples": [
+          {
+            "id": "GA002",
+            "name": "Colonoscopy",
+            "patient_description": "A colonoscopy is a standard medical procedure used to diagnose and treat gastrointestinal tract conditions, particularly those affecting the large intestine (rectum, colon, and anus) and a portion of the small intestine (the ileum)."
+          }
+        ]
+      },
+      "SingleResourceEnvelope_Network_": {
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Network"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when `data` is null. `no_data` means the resource was not found; `permission_denied` means it exists but is excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "title": "SingleResourceEnvelope[Network]"
+      },
+      "SingleResourceEnvelope_Provider_": {
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Provider"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when `data` is null. `no_data` means the resource was not found; `permission_denied` means it exists but is excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "title": "SingleResourceEnvelope[Provider]"
+      },
+      "SingleResourceEnvelope_RateBreakdown_": {
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RateBreakdown"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when `data` is null. `no_data` means the resource was not found; `permission_denied` means it exists but is excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "title": "SingleResourceEnvelope[RateBreakdown]"
+      },
+      "SingleResourceEnvelope_SSP_": {
+        "properties": {
+          "data": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SSP"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when `data` is null. `no_data` means the resource was not found; `permission_denied` means it exists but is excluded by your data permissions."
+          }
+        },
+        "type": "object",
+        "title": "SingleResourceEnvelope[SSP]"
+      }
+    },
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}

@@ -1,0 +1,56 @@
+name: Regenerate SDKs
+
+on:
+  repository_dispatch:
+    types: [openapi-spec-updated]
+  workflow_dispatch:
+    inputs:
+      openapi_url:
+        description: "URL to fetch updated openapi.json from (optional)"
+        required: false
+
+jobs:
+  regenerate:
+    name: Regenerate SDKs from OpenAPI spec
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update openapi.json from dispatch payload
+        if: github.event_name == 'repository_dispatch'
+        run: |
+          echo '${{ toJson(github.event.client_payload.openapi_spec) }}' > openapi.json
+
+      - name: Update openapi.json from URL
+        if: github.event_name == 'workflow_dispatch' && inputs.openapi_url != ''
+        run: curl -fsSL "${{ inputs.openapi_url }}" -o openapi.json
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Fern CLI
+        run: npm install -g fern-api
+
+      - name: Generate SDKs
+        run: fern generate
+        env:
+          FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
+
+      - name: Open PR with updated SDKs
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: chore/regenerate-sdks
+          commit-message: "chore: regenerate SDKs from updated OpenAPI spec"
+          title: "chore: regenerate SDKs from updated OpenAPI spec"
+          body: |
+            Automated PR triggered by an OpenAPI spec update in `turquoise-api`.
+
+            Review the diff to confirm the SDK changes match the intended API changes before merging.
+          labels: automated
