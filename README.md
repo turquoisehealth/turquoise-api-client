@@ -10,19 +10,22 @@ Official client libraries for the [Turquoise Health Consumer Pricing API](https:
 
 ## Installation
 
-**Python**
+### Python
+
 ```bash
 pip install turquoise-health
 ```
 
-**TypeScript / JavaScript**
+### TypeScript / JavaScript
+
 ```bash
 npm install @turquoise-health/api
 # or
 yarn add @turquoise-health/api
 ```
 
-**C#**
+### C\#
+
 ```bash
 dotnet add package TurquoiseHealth.Api
 ```
@@ -71,7 +74,7 @@ const prices = await client.consumerPricing.prices.list({
 });
 ```
 
-### C#
+### C\#
 
 ```csharp
 using TurquoiseHealth.Api;

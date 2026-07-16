@@ -8,70 +8,7 @@ namespace TurquoiseHealth.Api.Test.Unit.MockServer;
 public class V2ListProvidersTest : BaseMockServerTest
 {
     [NUnit.Framework.Test]
-    public async Task MockServerTest_1()
-    {
-        const string mockResponse = """
-            {
-              "items": [
-                {
-                  "id": "id",
-                  "name": "name",
-                  "type": "type",
-                  "npi": "npi",
-                  "city": "city",
-                  "state": "state",
-                  "zip_code": "zip_code",
-                  "distance_m": 1.1,
-                  "latitude": 1.1,
-                  "longitude": 1.1
-                },
-                {
-                  "id": "id",
-                  "name": "name",
-                  "type": "type",
-                  "npi": "npi",
-                  "city": "city",
-                  "state": "state",
-                  "zip_code": "zip_code",
-                  "distance_m": 1.1,
-                  "latitude": 1.1,
-                  "longitude": 1.1
-                }
-              ],
-              "page": {
-                "size": 1,
-                "total": 1,
-                "next_cursor": "next_cursor"
-              },
-              "no_data_reason": "no_data"
-            }
-            """;
-
-        Server
-            .Given(
-                WireMock
-                    .RequestBuilders.Request.Create()
-                    .WithPath("/v2/consumer-pricing/providers")
-                    .UsingGet()
-            )
-            .RespondWith(
-                WireMock
-                    .ResponseBuilders.Response.Create()
-                    .WithStatusCode(200)
-                    .WithBody(mockResponse)
-            );
-
-        var response = await Client.ConsumerPricing.V2ListProvidersAsync(
-            new V2ListProvidersRequest()
-        );
-        Assert.That(
-            response,
-            Is.EqualTo(JsonUtils.Deserialize<EnvelopeProvider>(mockResponse)).UsingDefaults()
-        );
-    }
-
-    [NUnit.Framework.Test]
-    public async Task MockServerTest_2()
+    public async Task MockServerTest()
     {
         const string mockResponse = """
             {

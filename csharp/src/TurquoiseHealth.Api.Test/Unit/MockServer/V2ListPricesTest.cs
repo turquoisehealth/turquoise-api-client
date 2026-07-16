@@ -11,78 +11,6 @@ public class V2ListPricesTest : BaseMockServerTest
     public async Task MockServerTest_1()
     {
         const string requestJson = """
-            {}
-            """;
-
-        const string mockResponse = """
-            {
-              "items": [
-                {
-                  "rate_type": "cash",
-                  "provider_id": "provider_id",
-                  "ssp_id": "ssp_id",
-                  "network_id": "network_id",
-                  "amount": "amount",
-                  "amount_cents": 1,
-                  "currency": "USD"
-                },
-                {
-                  "rate_type": "cash",
-                  "provider_id": "provider_id",
-                  "ssp_id": "ssp_id",
-                  "network_id": "network_id",
-                  "amount": "amount",
-                  "amount_cents": 1,
-                  "currency": "USD"
-                }
-              ],
-              "page": {
-                "size": 1,
-                "total": 1,
-                "next_cursor": "next_cursor"
-              },
-              "no_data_reason": "no_data"
-            }
-            """;
-
-        Server
-            .Given(
-                WireMock
-                    .RequestBuilders.Request.Create()
-                    .WithPath("/v2/consumer-pricing/prices")
-                    .WithHeader("Content-Type", "application/json")
-                    .UsingPost()
-                    .WithBodyAsJson(requestJson)
-            )
-            .RespondWith(
-                WireMock
-                    .ResponseBuilders.Response.Create()
-                    .WithStatusCode(200)
-                    .WithBody(mockResponse)
-            );
-
-        var response = await Client.ConsumerPricing.V2ListPricesAsync(
-            new PricesRequest
-            {
-                SspId = null,
-                ProviderId = null,
-                NetworkId = null,
-                RateType = null,
-                Location = null,
-                PageSize = null,
-                Cursor = null,
-            }
-        );
-        Assert.That(
-            response,
-            Is.EqualTo(JsonUtils.Deserialize<EnvelopeRate>(mockResponse)).UsingDefaults()
-        );
-    }
-
-    [NUnit.Framework.Test]
-    public async Task MockServerTest_2()
-    {
-        const string requestJson = """
             {
               "ssp_id": "GA002",
               "network_id": "8361580493441765265",
@@ -147,7 +75,7 @@ public class V2ListPricesTest : BaseMockServerTest
     }
 
     [NUnit.Framework.Test]
-    public async Task MockServerTest_3()
+    public async Task MockServerTest_2()
     {
         const string requestJson = """
             {
@@ -212,7 +140,7 @@ public class V2ListPricesTest : BaseMockServerTest
     }
 
     [NUnit.Framework.Test]
-    public async Task MockServerTest_4()
+    public async Task MockServerTest_3()
     {
         const string requestJson = """
             {
@@ -284,7 +212,7 @@ public class V2ListPricesTest : BaseMockServerTest
     }
 
     [NUnit.Framework.Test]
-    public async Task MockServerTest_5()
+    public async Task MockServerTest_4()
     {
         const string requestJson = """
             {

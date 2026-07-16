@@ -13,62 +13,6 @@ public class CompareSspPricesTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "location": {}
-            }
-            """;
-
-        const string mockResponse = """
-            {
-              "min_price": 1.1,
-              "max_price": 1.1,
-              "avg_price": 1.1,
-              "q1_price": 1.1,
-              "median_price": 1.1,
-              "q3_price": 1.1
-            }
-            """;
-
-        Server
-            .Given(
-                WireMock
-                    .RequestBuilders.Request.Create()
-                    .WithPath("/v1/consumer-pricing/ssps/ssp_id/price-comparison")
-                    .WithHeader("Content-Type", "application/json")
-                    .UsingPost()
-                    .WithBodyAsJson(requestJson)
-            )
-            .RespondWith(
-                WireMock
-                    .ResponseBuilders.Response.Create()
-                    .WithStatusCode(200)
-                    .WithBody(mockResponse)
-            );
-
-        var response = await Client.ConsumerPricing.CompareSspPricesAsync(
-            new PriceComparisonRequest
-            {
-                SspId = "ssp_id",
-                Location = new LocationInput { Coordinates = null, GeoSpace = null },
-                NetworkId = null,
-                Npis = null,
-            }
-        );
-        Assert.That(
-            response.Value,
-            Is.EqualTo(
-                    JsonUtils
-                        .Deserialize<OneOf<PricesComparison, NoDataResponse>>(mockResponse)
-                        .Value
-                )
-                .UsingDefaults()
-        );
-    }
-
-    [NUnit.Framework.Test]
-    public async Task MockServerTest_2()
-    {
-        const string requestJson = """
-            {
               "location": {
                 "geo_space": {
                   "state": "CO"
@@ -125,7 +69,7 @@ public class CompareSspPricesTest : BaseMockServerTest
     }
 
     [NUnit.Framework.Test]
-    public async Task MockServerTest_3()
+    public async Task MockServerTest_2()
     {
         const string requestJson = """
             {

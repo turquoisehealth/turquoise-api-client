@@ -12,98 +12,6 @@ public class GetSspPricesTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "location": {}
-            }
-            """;
-
-        const string mockResponse = """
-            {
-              "results": [
-                {
-                  "provider": {
-                    "provider_id": "provider_id",
-                    "provider_name": "provider_name",
-                    "provider_type": "provider_type",
-                    "npi": "npi",
-                    "city": "city",
-                    "state": "state",
-                    "zip_code": "zip_code",
-                    "location_details": {
-                      "street_address": "street_address",
-                      "latitude": 1.1,
-                      "longitude": 1.1,
-                      "distance_in_meters": 1.1,
-                      "hospital_overall_rating": 1
-                    }
-                  },
-                  "package_price": 1.1
-                },
-                {
-                  "provider": {
-                    "provider_id": "provider_id",
-                    "provider_name": "provider_name",
-                    "provider_type": "provider_type",
-                    "npi": "npi",
-                    "city": "city",
-                    "state": "state",
-                    "zip_code": "zip_code",
-                    "location_details": {
-                      "street_address": "street_address",
-                      "latitude": 1.1,
-                      "longitude": 1.1,
-                      "distance_in_meters": 1.1,
-                      "hospital_overall_rating": 1
-                    }
-                  },
-                  "package_price": 1.1
-                }
-              ],
-              "page_size": 1,
-              "count": 1,
-              "no_data_reason": "no_data",
-              "min_price": 1.1,
-              "max_price": 1.1
-            }
-            """;
-
-        Server
-            .Given(
-                WireMock
-                    .RequestBuilders.Request.Create()
-                    .WithPath("/v1/consumer-pricing/ssps/ssp_id/prices")
-                    .WithHeader("Content-Type", "application/json")
-                    .UsingPost()
-                    .WithBodyAsJson(requestJson)
-            )
-            .RespondWith(
-                WireMock
-                    .ResponseBuilders.Response.Create()
-                    .WithStatusCode(200)
-                    .WithBody(mockResponse)
-            );
-
-        var response = await Client.ConsumerPricing.GetSspPricesAsync(
-            new PackagePricesRequest
-            {
-                SspId = "ssp_id",
-                Location = new LocationInput { Coordinates = null, GeoSpace = null },
-                NetworkId = null,
-                PriceFilter = null,
-                Npis = null,
-                SortBy = null,
-            }
-        );
-        Assert.That(
-            response,
-            Is.EqualTo(JsonUtils.Deserialize<SspPricePage>(mockResponse)).UsingDefaults()
-        );
-    }
-
-    [NUnit.Framework.Test]
-    public async Task MockServerTest_2()
-    {
-        const string requestJson = """
-            {
               "location": {
                 "geo_space": {
                   "zip_codes": [
@@ -173,7 +81,7 @@ public class GetSspPricesTest : BaseMockServerTest
     }
 
     [NUnit.Framework.Test]
-    public async Task MockServerTest_3()
+    public async Task MockServerTest_2()
     {
         const string requestJson = """
             {
@@ -247,7 +155,7 @@ public class GetSspPricesTest : BaseMockServerTest
     }
 
     [NUnit.Framework.Test]
-    public async Task MockServerTest_4()
+    public async Task MockServerTest_3()
     {
         const string requestJson = """
             {

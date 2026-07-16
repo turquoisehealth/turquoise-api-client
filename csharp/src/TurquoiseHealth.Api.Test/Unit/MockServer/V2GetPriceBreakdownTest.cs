@@ -12,78 +12,6 @@ public class V2GetPriceBreakdownTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "provider_id": "provider_id",
-              "ssp_id": "ssp_id"
-            }
-            """;
-
-        const string mockResponse = """
-            {
-              "data": {
-                "rate_type": "cash",
-                "provider_id": "provider_id",
-                "ssp_id": "ssp_id",
-                "network_id": "network_id",
-                "total_amount": "total_amount",
-                "total_amount_cents": 1,
-                "currency": "USD",
-                "line_items": [
-                  {
-                    "line_code": "line_code",
-                    "code_type": "code_type",
-                    "fee_type": "fee_type",
-                    "description": "description",
-                    "line_item_association_rate": 1.1
-                  },
-                  {
-                    "line_code": "line_code",
-                    "code_type": "code_type",
-                    "fee_type": "fee_type",
-                    "description": "description",
-                    "line_item_association_rate": 1.1
-                  }
-                ]
-              },
-              "no_data_reason": "no_data"
-            }
-            """;
-
-        Server
-            .Given(
-                WireMock
-                    .RequestBuilders.Request.Create()
-                    .WithPath("/v2/consumer-pricing/prices/provider-breakdown")
-                    .WithHeader("Content-Type", "application/json")
-                    .UsingPost()
-                    .WithBodyAsJson(requestJson)
-            )
-            .RespondWith(
-                WireMock
-                    .ResponseBuilders.Response.Create()
-                    .WithStatusCode(200)
-                    .WithBody(mockResponse)
-            );
-
-        var response = await Client.ConsumerPricing.V2GetPriceBreakdownAsync(
-            new ProviderBreakdownRequest
-            {
-                ProviderId = "provider_id",
-                SspId = "ssp_id",
-                NetworkId = null,
-            }
-        );
-        Assert.That(
-            response,
-            Is.EqualTo(JsonUtils.Deserialize<SingleResourceEnvelopeRateBreakdown>(mockResponse))
-                .UsingDefaults()
-        );
-    }
-
-    [NUnit.Framework.Test]
-    public async Task MockServerTest_2()
-    {
-        const string requestJson = """
-            {
               "provider_id": "21929",
               "ssp_id": "RA011"
             }
@@ -154,7 +82,7 @@ public class V2GetPriceBreakdownTest : BaseMockServerTest
     }
 
     [NUnit.Framework.Test]
-    public async Task MockServerTest_3()
+    public async Task MockServerTest_2()
     {
         const string requestJson = """
             {
