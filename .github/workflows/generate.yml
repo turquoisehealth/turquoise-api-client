@@ -36,7 +36,9 @@ jobs:
       - name: Update openapi.json from dispatch payload
         if: github.event_name == 'repository_dispatch'
         run: |
-          echo '${{ toJson(github.event.client_payload.openapi_spec) }}' > openapi.json
+          cat << 'EOF' > openapi.json
+          ${{ toJson(github.event.client_payload.openapi_spec) }}
+          EOF
 
       - name: Update openapi.json from URL
         if: github.event_name == 'workflow_dispatch' && inputs.openapi_url != ''
