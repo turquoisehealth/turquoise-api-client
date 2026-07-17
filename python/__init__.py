@@ -64,6 +64,7 @@ if typing.TYPE_CHECKING:
         RateCompareRequestRateType,
     )
 _dynamic_imports: typing.Dict[str, str] = {
+    "APIAuthHandler": ".lib",
     "AsyncTurquoiseHealth": ".client",
     "BadRequestError": ".errors",
     "CareNavErrorResponse": ".types",
@@ -121,6 +122,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "TurquoiseHealth": ".client",
     "UnprocessableEntityError": ".errors",
     "consumer_pricing": ".consumer_pricing",
+    "lib": ".lib",
 }
 
 
@@ -146,6 +148,7 @@ def __dir__():
 
 
 __all__ = [
+    "APIAuthHandler",
     "AsyncTurquoiseHealth",
     "BadRequestError",
     "CareNavErrorResponse",
@@ -202,5 +205,6 @@ __all__ = [
     "TooManyRequestsError",
     "TurquoiseHealth",
     "UnprocessableEntityError",
+    "lib",
     "consumer_pricing",
 ]

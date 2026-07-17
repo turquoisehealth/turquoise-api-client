@@ -1,0 +1,6 @@
+# Fern ignore file - prevents Fern from deleting custom/manual code
+# Add paths relative to the output directory that should not be deleted during generation
+
+# Protect manually-coded library directories
+lib/
+lib/**

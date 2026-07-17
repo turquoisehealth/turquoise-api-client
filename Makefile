@@ -1,4 +1,4 @@
-.PHONY: help test test-python test-typescript test-csharp install-test-deps clean venv
+.PHONY: help test test-python test-typescript test-csharp install-test-deps clean venv update-lib-exports
 
 # Python virtual environment directory
 VENV := venv
@@ -16,6 +16,7 @@ help:
 	@echo "  make test-typescript   - Run TypeScript integration tests"
 	@echo "  make test-csharp       - Run C# integration tests"
 	@echo "  make install-test-deps - Install test dependencies for all languages"
+	@echo "  make update-lib-exports - Update SDK exports after Fern generation"
 	@echo "  make clean            - Clean test artifacts"
 	@echo ""
 	@echo "Prerequisites:"
@@ -79,5 +80,11 @@ clean:
 	@rm -rf typescript/tests/coverage 2>/dev/null || true
 	@find csharp -type d -name "bin" -exec rm -rf {} + 2>/dev/null || true
 	@find csharp -type d -name "obj" -exec rm -rf {} + 2>/dev/null || true
-	@find csharp -type d -name "TestResults" -exec rm -rf {} + 2>/dev/null || true
+	@find csharp -type d -name "Test
+
+# Update library exports after Fern generation
+update-lib-exports:
+	@echo "Updating SDK exports to include manual libraries..."
+	@python3 scripts/update_lib_exports.py
+Results" -exec rm -rf {} + 2>/dev/null || true
 	@echo "✓ Cleaned test artifacts"
