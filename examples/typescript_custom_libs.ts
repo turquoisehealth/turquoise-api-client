@@ -72,6 +72,31 @@ async function exampleAsyncToken() {
 }
 
 /**
+ * Example: OAuth client credentials with automatic token refresh
+ */
+async function exampleOAuthClientCredentials() {
+    // Set OAuth credentials in environment
+    process.env.TURQUOISE_CLIENT_ID = "your-client-id";
+    process.env.TURQUOISE_CLIENT_SECRET = "your-client-secret";
+    process.env.TURQUOISE_ORGANIZATION_ID = "your-org-id";
+
+    try {
+        // Create auth handler with OAuth credentials
+        // Token will be automatically refreshed when it expires
+        const auth = lib.APIAuthHandler.fromClientCredentials();
+        const client = new TurquoiseHealthApiClient({
+            token: auth.asSupplier() // Returns a function that auto-refreshes
+        });
+
+        console.log("✓ Client initialized with OAuth auto-refresh");
+        return client;
+    } catch (error) {
+        console.log(`  (Skipped: ${error})`);
+        return null;
+    }
+}
+
+/**
  * Example: Static token
  */
 function exampleStaticToken() {
@@ -104,7 +129,10 @@ async function main() {
     console.log("\nExample 3: Async Token Provider");
     await exampleAsyncToken();
 
-    console.log("\nExample 4: Static Token");
+    console.log("\nExample 4: OAuth Client Credentials (Auto-Refresh)");
+    await exampleOAuthClientCredentials();
+
+    console.log("\nExample 5: Static Token");
     exampleStaticToken();
 
     console.log("\n✨ All examples completed!");
@@ -119,5 +147,4 @@ export {
     exampleBasicAuthHandler,
     exampleDynamicToken,
     exampleAsyncToken,
-    exampleStaticToken
-};
+    exampleOAuthClientCredentials,
