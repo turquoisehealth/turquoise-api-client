@@ -60,6 +60,33 @@ namespace TurquoiseHealth.Examples
         }
 
         /// <summary>
+        /// Example: OAuth client credentials with automatic token refresh
+        /// </summary>
+        public static TurquoiseHealthApiClient ExampleOAuthClientCredentials()
+        {
+            // Set OAuth credentials in environment
+            Environment.SetEnvironmentVariable("TURQUOISE_CLIENT_ID", "your-client-id");
+            Environment.SetEnvironmentVariable("TURQUOISE_CLIENT_SECRET", "your-client-secret");
+            Environment.SetEnvironmentVariable("TURQUOISE_ORGANIZATION_ID", "your-org-id");
+
+            try
+            {
+                // Create auth handler with OAuth credentials
+                // Token will be automatically refreshed when it expires
+                var auth = APIAuthHandler.FromClientCredentials();
+                var client = new TurquoiseHealthApiClient(token: auth.GetToken());
+
+                Console.WriteLine("✓ Client initialized with OAuth auto-refresh");
+                return client;
+            }
+            catch (InvalidOperationException e)
+            {
+                Console.WriteLine($"  (Skipped: {e.Message})");
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Example: Custom environment variable name
         /// </summary>
         public static TurquoiseHealthApiClient ExampleCustomEnvVar()
@@ -93,7 +120,10 @@ namespace TurquoiseHealth.Examples
             Console.WriteLine("\nExample 3: Static Token");
             ExampleStaticToken();
 
-            Console.WriteLine("\nExample 4: Custom Environment Variable");
+            Console.WriteLine("\nExample 4: OAuth Client Credentials (Auto-Refresh)");
+            ExampleOAuthClientCredentials();
+
+            Console.WriteLine("\nExample 5: Custom Environment Variable");
             ExampleCustomEnvVar();
 
             Console.WriteLine("\n✨ All examples completed!");

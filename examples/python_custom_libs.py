@@ -44,6 +44,29 @@ def example_dynamic_token():
     return client
 
 
+def example_oauth_client_credentials():
+    """Example: Using OAuth client credentials with automatic token refresh."""
+    # Set OAuth credentials in environment
+    os.environ["TURQUOISE_CLIENT_ID"] = "your-client-id"
+    os.environ["TURQUOISE_CLIENT_SECRET"] = "your-client-secret"
+    os.environ["TURQUOISE_ORGANIZATION_ID"] = "your-org-id"
+
+    # Create auth handler with OAuth credentials
+    # Token will be automatically refreshed when it expires
+    try:
+        auth = APIAuthHandler.from_client_credentials()
+        client = TurquoiseHealth(
+            base_url="https://api.turquoise.health",
+            token=auth.as_callable()  # Returns a function that auto-refreshes
+        )
+
+        print("✓ Client initialized with OAuth auto-refresh")
+        return client
+    except ValueError as e:
+        print(f"  (Skipped: {e})")
+        return None
+
+
 def example_import_from_lib():
     """Example: Importing directly from lib module."""
     from turquoise_health.lib import APIAuthHandler
@@ -71,7 +94,10 @@ if __name__ == "__main__":
     print("\nExample 2: Dynamic Token Provider")
     example_dynamic_token()
 
-    print("\nExample 3: Import from lib module")
+    print("\nExample 3: OAuth Client Credentials (Auto-Refresh)")
+    example_oauth_client_credentials()
+
+    print("\nExample 4: Import from lib module")
     example_import_from_lib()
 
     print("\n✨ All examples completed!")
