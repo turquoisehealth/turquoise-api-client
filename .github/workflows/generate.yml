@@ -57,6 +57,9 @@ jobs:
         env:
           FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
 
+      - name: Update library exports
+        run: python3 scripts/update_lib_exports.py
+
       - name: Bump Python version
         run: |
           VERSION="${{ steps.version.outputs.semver }}"

@@ -39,6 +39,9 @@ jobs:
         env:
           FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
 
+      - name: Update library exports
+        run: python3 scripts/update_lib_exports.py
+
       - name: Publish Python SDK to PyPI
         working-directory: python
         run: |
