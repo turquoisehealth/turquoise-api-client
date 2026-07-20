@@ -106,6 +106,7 @@ Pass your token at client construction — it is sent as `Authorization: Bearer 
 Each SDK includes an `APIAuthHandler` utility for managing authentication. Example usage:
 
 **Python:**
+
 ```python
 from turquoise_health import TurquoiseHealth, APIAuthHandler
 
@@ -114,6 +115,7 @@ client = TurquoiseHealth(token=auth.get_token())
 ```
 
 **TypeScript:**
+
 ```typescript
 import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
 
@@ -122,6 +124,7 @@ const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
 ```
 
 **C#:**
+
 ```csharp
 using TurquoiseHealth.Api.Lib;
 

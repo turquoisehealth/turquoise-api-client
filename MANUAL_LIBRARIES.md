@@ -38,7 +38,7 @@ These directories are protected from deletion during Fern regeneration via `.fer
 
 ## Directory Structure
 
-```
+```shell
 python/
 ├── .fernignore          # Protects lib/ from deletion
 ├── __init__.py          # Auto-generated (requires manual additions)
@@ -74,6 +74,7 @@ examples/
 After installing the package, import custom utilities alongside the main client:
 
 **Python:**
+
 ```python
 from turquoise_health import TurquoiseHealth, APIAuthHandler
 
@@ -82,6 +83,7 @@ client = TurquoiseHealth(token=auth.get_token())
 ```
 
 **TypeScript:**
+
 ```typescript
 import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
 
@@ -90,6 +92,7 @@ const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
 ```
 
 **C#:**
+
 ```csharp
 using TurquoiseHealth.Api.Lib;
 
@@ -102,11 +105,13 @@ var client = new TurquoiseHealthApiClient(token: auth.GetToken());
 ### Python
 
 1. **Create your library file** in `python/lib/`:
+
    ```bash
    # Example: python/lib/rate_calculator.py
    ```
 
 2. **Export it** from `python/lib/__init__.py`:
+
    ```python
    from .rate_calculator import RateCalculator
 
@@ -117,11 +122,13 @@ var client = new TurquoiseHealthApiClient(token: auth.GetToken());
    ```
 
 3. **Update SDK exports** (automated):
+
    ```bash
    make update-lib-exports
    ```
 
 4. **Test the import**:
+
    ```python
    from turquoise_health import RateCalculator
    # or
@@ -131,35 +138,41 @@ var client = new TurquoiseHealthApiClient(token: auth.GetToken());
 ### TypeScript
 
 1. **Create your library file** in `typescript/lib/`:
+
    ```bash
    # Example: typescript/lib/RateCalculator.ts
    ```
 
 2. **Export it** from `typescript/lib/index.ts`:
+
    ```typescript
    export { APIAuthHandler } from "./APIAuthHandler.js";
    export { RateCalculator } from "./RateCalculator.js";  # Add your new library
    ```
 
 3. **SDK exports are automatic** via `typescript/index.ts`:
+
    ```typescript
    export * as lib from "./lib/index.js";
    ```
 
 4. **Test the import**:
+
    ```typescript
    import { lib } from "@turquoise-health/api";
    const calculator = new lib.RateCalculator();
    ```
 
-### C#
+### C\#
 
 1. **Create your library file** in `csharp/src/TurquoiseHealth.Api/Lib/`:
+
    ```bash
    # Example: csharp/src/TurquoiseHealth.Api/Lib/RateCalculator.cs
    ```
 
 2. **Use the correct namespace**:
+
    ```csharp
    namespace TurquoiseHealth.Api.Lib;
 
@@ -172,6 +185,7 @@ var client = new TurquoiseHealthApiClient(token: auth.GetToken());
 3. **Exports are automatic** via the namespace.
 
 4. **Test the import**:
+
    ```csharp
    using TurquoiseHealth.Api.Lib;
 
@@ -183,6 +197,7 @@ var client = new TurquoiseHealthApiClient(token: auth.GetToken());
 When you run `fern generate`, the export files may be overwritten. Use the automated script:
 
 ### Automated (Recommended)
+
 ```bash
 make update-lib-exports
 ```
@@ -190,19 +205,26 @@ make update-lib-exports
 ### Manual Updates
 
 **Python** - Update `python/__init__.py`:
+
 - Add each new library to `_dynamic_imports` dictionary:
+
   ```python
   "YourLibrary": ".lib",
   ```
+
 - Add each new library to `__all__` list:
+
   ```python
   "YourLibrary",
   ```
+
 - Ensure `"lib": ".lib"` is in `_dynamic_imports`
 - Ensure `"lib"` is in `__all__`
 
 **TypeScript** - Update `typescript/index.ts`:
+
 - Add at the end of the file:
+
   ```typescript
   export * as lib from "./lib/index.js";
   ```
@@ -214,27 +236,34 @@ make update-lib-exports
 ### Adding a New Custom Library
 
 #### Python
+
 - [ ] Create file in `python/lib/your_library.py`
 - [ ] Add to exports in `python/lib/__init__.py`:
+
   ```python
   from .your_library import YourLibrary
   __all__ = [..., "YourLibrary"]
   ```
+
 - [ ] Run `make update-lib-exports`
 - [ ] Test import: `python3 -c "from turquoise_health import YourLibrary"`
 - [ ] Add examples to `examples/python_custom_libs.py`
 
 #### TypeScript
+
 - [ ] Create file in `typescript/lib/YourLibrary.ts`
 - [ ] Add to exports in `typescript/lib/index.ts`:
+
   ```typescript
   export { YourLibrary } from "./YourLibrary.js";
   ```
+
 - [ ] Verify `typescript/index.ts` has `export * as lib from "./lib/index.js";`
 - [ ] Test import: `node -e "const { lib } = require('./typescript'); console.log(lib.YourLibrary)"`
 - [ ] Add examples to `examples/typescript_custom_libs.ts`
 
-#### C#
+#### C\#
+
 - [ ] Create file in `csharp/src/TurquoiseHealth.Api/Lib/YourLibrary.cs`
 - [ ] Use namespace `TurquoiseHealth.Api.Lib`
 - [ ] Add XML documentation comments
@@ -242,6 +271,7 @@ make update-lib-exports
 - [ ] Add examples to `examples/csharp_custom_libs.cs`
 
 ### After Running `fern generate`
+
 - [ ] Run `make update-lib-exports`
 - [ ] Verify Python exports: `cd python && python3 -c "import __init__; print('lib' in __init__.__all__)"`
 - [ ] Verify TypeScript exports: `grep -q "lib" typescript/index.ts && echo "OK"`
@@ -249,6 +279,7 @@ make update-lib-exports
 - [ ] Commit updated files
 
 ### Before Publishing
+
 - [ ] Run `make update-lib-exports`
 - [ ] Test all imports work across all languages
 - [ ] Run example files
@@ -266,6 +297,7 @@ make update-lib-exports
 ### Library Templates
 
 **Python:**
+
 ```python
 """
 MyLibrary - Brief description
@@ -283,6 +315,7 @@ class MyLibrary:
 ```
 
 **TypeScript:**
+
 ```typescript
 /**
  * MyLibrary - Brief description
@@ -299,6 +332,7 @@ export class MyLibrary {
 ```
 
 **C#:**
+
 ```csharp
 using System;
 
@@ -322,20 +356,24 @@ public class MyLibrary
 ## Troubleshooting
 
 **Import not working after adding a new library?**
+
 - Run `make update-lib-exports`
 - Check that the file is in the correct `lib/` directory
 - Verify the export in `lib/__init__.py` or `lib/index.ts`
 
 **Fern deleted my lib directory?**
+
 - Check that `.fernignore` exists and contains `lib/` pattern
 - Restore from git: `git checkout -- python/lib typescript/lib csharp/src/TurquoiseHealth.Api/Lib`
 
 **Can't import from package root?**
+
 - Python: Check `_dynamic_imports` and `__all__` in `python/__init__.py`
 - TypeScript: Check `export * as lib` in `typescript/index.ts`
 - C#: Check the namespace is `TurquoiseHealth.Api.Lib`
 
 **Update script not working?**
+
 - Verify `scripts/update_lib_exports.py` exists
 - Check Python version: `python3 --version` (requires 3.6+)
 - Run directly: `python3 scripts/update_lib_exports.py`
@@ -343,12 +381,14 @@ public class MyLibrary
 ## CI/CD Integration
 
 The GitHub workflows automatically run the update script:
+
 - `.github/workflows/generate.yml` - Updates exports during SDK regeneration
 - `.github/workflows/publish.yml` - Updates exports before publishing
 
 ### Local Development Workflow
 
 After running `fern generate`:
+
 ```bash
 make update-lib-exports
 ```
@@ -369,6 +409,7 @@ cd csharp && dotnet build
 ## File Protection
 
 The `.fernignore` files protect your `lib/` directories from being deleted:
+
 - `python/.fernignore`
 - `typescript/.fernignore`
 - `csharp/.fernignore`
