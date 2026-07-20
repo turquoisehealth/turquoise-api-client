@@ -58,26 +58,6 @@ jobs:
       - name: Update library exports
         run: python3 scripts/update_lib_exports.py
 
-      - name: Bump Python version
-        run: |
-          VERSION="${{ steps.version.outputs.semver }}"
-          sed -i "s/^version = .*/version = \"$VERSION\"/" python/pyproject.toml
-          echo "Python version → $VERSION"
-
-      - name: Bump TypeScript version
-        run: |
-          VERSION="${{ steps.version.outputs.semver }}"
-          jq --arg v "$VERSION" '.version = $v' typescript/package.json > /tmp/pkg.json
-          mv /tmp/pkg.json typescript/package.json
-          echo "TypeScript version → $VERSION"
-
-      - name: Bump C# version
-        run: |
-          VERSION="${{ steps.version.outputs.semver }}"
-          find csharp -name "*.csproj" \
-            -exec sed -i "s|<Version>.*</Version>|<Version>$VERSION</Version>|g" {} \;
-          echo "C# version → $VERSION"
-
       - name: Open PR with updated SDKs
         uses: peter-evans/create-pull-request@v6
         with:
@@ -91,7 +71,6 @@ jobs:
             Changes:
             - `openapi.json` updated to match the released API spec
             - All three SDKs regenerated via Fern
-            - Package versions bumped to `${{ steps.version.outputs.semver }}`
 
             Review the diff to confirm the SDK changes match the intended API changes, then merge to trigger publishing.
           labels: automated
