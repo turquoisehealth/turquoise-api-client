@@ -103,54 +103,36 @@ Pass your token at client construction — it is sent as `Authorization: Bearer 
 
 ### Custom Authentication Utilities
 
-Each SDK includes manually-coded utilities in the `lib` module to help manage authentication:
+Each SDK includes an `APIAuthHandler` utility for managing authentication. Example usage:
 
-#### Python
+**Python:**
 
 ```python
 from turquoise_health import TurquoiseHealth, APIAuthHandler
 
-# Load token from environment variable
 auth = APIAuthHandler.from_env("TURQUOISE_API_TOKEN")
 client = TurquoiseHealth(token=auth.get_token())
-
-# Or use a dynamic token provider
-auth = APIAuthHandler(token_provider=lambda: get_token_from_vault())
-client = TurquoiseHealth(token=auth.as_callable())
 ```
 
-#### TypeScript
+**TypeScript:**
 
 ```typescript
 import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
 
-// Load token from environment variable
 const auth = lib.APIAuthHandler.fromEnv("TURQUOISE_API_TOKEN");
 const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
-
-// Or use a custom token provider
-const auth = new lib.APIAuthHandler({
-  tokenProvider: () => getTokenFromVault()
-});
-const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
 ```
 
-#### C#
+**C#:**
 
 ```csharp
-using TurquoiseHealth.Api;
 using TurquoiseHealth.Api.Lib;
 
-// Load token from environment variable
 var auth = APIAuthHandler.FromEnv("TURQUOISE_API_TOKEN");
-var client = new TurquoiseHealthApiClient(token: auth.GetToken());
-
-// Or use a dynamic token provider
-var auth = new APIAuthHandler(tokenProvider: () => GetTokenFromVault());
 var client = new TurquoiseHealthApiClient(token: auth.GetToken());
 ```
 
-See [examples/](examples/) for more usage patterns.
+For complete details on custom libraries and adding your own, see [MANUAL_LIBRARIES.md](MANUAL_LIBRARIES.md).
 
 ---
 

@@ -80,11 +80,10 @@ clean:
 	@rm -rf typescript/tests/coverage 2>/dev/null || true
 	@find csharp -type d -name "bin" -exec rm -rf {} + 2>/dev/null || true
 	@find csharp -type d -name "obj" -exec rm -rf {} + 2>/dev/null || true
-	@find csharp -type d -name "Test
+	@find csharp -type d -name "TestResults" -exec rm -rf {} + 2>/dev/null || true
+	@echo "✓ Cleaned test artifacts"
 
 # Update library exports after Fern generation
 update-lib-exports:
 	@echo "Updating SDK exports to include manual libraries..."
 	@python3 scripts/update_lib_exports.py
-Results" -exec rm -rf {} + 2>/dev/null || true
-	@echo "✓ Cleaned test artifacts"

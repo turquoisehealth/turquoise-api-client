@@ -148,7 +148,6 @@ def __dir__():
 
 
 __all__ = [
-    "APIAuthHandler",
     "AsyncTurquoiseHealth",
     "BadRequestError",
     "CareNavErrorResponse",
@@ -205,6 +204,6 @@ __all__ = [
     "TooManyRequestsError",
     "TurquoiseHealth",
     "UnprocessableEntityError",
-    "lib",
     "consumer_pricing",
+    "lib",
 ]
