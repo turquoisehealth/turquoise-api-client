@@ -4,3 +4,7 @@
 # Protect manually-coded library directories
 lib/
 lib/**
+
+# Protect integration tests
+tests/
+tests/**

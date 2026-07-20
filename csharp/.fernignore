@@ -4,3 +4,7 @@
 # Protect manually-coded library directories
 src/TurquoiseHealth.Api/Lib/
 src/TurquoiseHealth.Api/Lib/**
+
+# Protect integration tests
+tests/
+tests/**
