@@ -7,16 +7,28 @@ namespace TurquoiseHealth.Api;
 public record V2ListProvidersRequest
 {
     /// <summary>
-    /// Case-insensitive substring match on provider name.
+    /// Case-insensitive substring match on provider name. Ignored when 'search' parameter is provided.
     /// </summary>
     [JsonIgnore]
     public string? Name { get; set; }
 
     /// <summary>
-    /// Exact NPI match.
+    /// Exact NPI match. Ignored when 'search' parameter is provided.
     /// </summary>
     [JsonIgnore]
     public string? Npi { get; set; }
+
+    /// <summary>
+    /// Semantic search across provider names using AI embeddings. Returns results with similarity scores. Can be combined with location filters (within.*, near.*, zip_anchor) to restrict results before ranking. When provided, the name and npi filters are ignored and pagination is limited to the first page of top results.
+    /// </summary>
+    [JsonIgnore]
+    public string? Search { get; set; }
+
+    /// <summary>
+    /// Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
+    /// </summary>
+    [JsonIgnore]
+    public double? MinScore { get; set; }
 
     /// <summary>
     /// Page size.

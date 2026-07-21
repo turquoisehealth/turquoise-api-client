@@ -14,7 +14,6 @@ public class V2ListPricesTest : BaseMockServerTest
             {
               "ssp_id": "GA002",
               "network_id": "8361580493441765265",
-              "rate_type": "negotiated",
               "location": {
                 "zip_anchor": "80202"
               }
@@ -25,7 +24,7 @@ public class V2ListPricesTest : BaseMockServerTest
             {
               "items": [
                 {
-                  "rate_type": "cash",
+                  "price_type": "cash",
                   "provider_id": "0001",
                   "ssp_id": "GA002",
                   "network_id": "network_id",
@@ -64,7 +63,6 @@ public class V2ListPricesTest : BaseMockServerTest
             {
                 SspId = "GA002",
                 NetworkId = "8361580493441765265",
-                RateType = PricesRequestRateType.Negotiated,
                 Location = new RateCompareLocation { ZipAnchor = "80202" },
             }
         );
@@ -80,7 +78,6 @@ public class V2ListPricesTest : BaseMockServerTest
         const string requestJson = """
             {
               "ssp_id": "GA002",
-              "rate_type": "cash",
               "location": {
                 "within_state": "CO"
               }
@@ -91,7 +88,7 @@ public class V2ListPricesTest : BaseMockServerTest
             {
               "items": [
                 {
-                  "rate_type": "cash",
+                  "price_type": "cash",
                   "provider_id": "0001",
                   "ssp_id": "GA002",
                   "network_id": "network_id",
@@ -129,7 +126,6 @@ public class V2ListPricesTest : BaseMockServerTest
             new PricesRequest
             {
                 SspId = "GA002",
-                RateType = PricesRequestRateType.Cash,
                 Location = new RateCompareLocation { WithinState = "CO" },
             }
         );
@@ -158,7 +154,7 @@ public class V2ListPricesTest : BaseMockServerTest
             {
               "items": [
                 {
-                  "rate_type": "cash",
+                  "price_type": "cash",
                   "provider_id": "0001",
                   "ssp_id": "GA002",
                   "network_id": "network_id",
@@ -224,7 +220,7 @@ public class V2ListPricesTest : BaseMockServerTest
             {
               "items": [
                 {
-                  "rate_type": "cash",
+                  "price_type": "cash",
                   "provider_id": "0001",
                   "ssp_id": "GA002",
                   "network_id": "network_id",

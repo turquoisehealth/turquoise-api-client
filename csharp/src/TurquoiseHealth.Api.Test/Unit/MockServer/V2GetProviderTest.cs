@@ -22,7 +22,8 @@ public class V2GetProviderTest : BaseMockServerTest
                 "zip_code": "80237",
                 "distance_m": 1,
                 "latitude": 39.625533,
-                "longitude": -104.898823
+                "longitude": -104.898823,
+                "score": 1.1
               },
               "no_data_reason": "no_data"
             }

@@ -7,16 +7,22 @@ from importlib import import_module
 
 if typing.TYPE_CHECKING:
     from .types import (
-        CompareSspPricesResponse,
-        GetProviderSspPricesResponse,
-        PricesRequestRateType,
-        RateCompareRequestRateType,
+        V3PricesCompareRequestPricing,
+        V3PricesCompareRequestPricing_Cash,
+        V3PricesCompareRequestPricing_Negotiated,
+        V3PricesQueryRequestPricing,
+        V3PricesQueryRequestPricing_Cash,
+        V3PricesQueryRequestPricing_Negotiated,
+        V3PricesQueryRequestSortDirection,
     )
 _dynamic_imports: typing.Dict[str, str] = {
-    "CompareSspPricesResponse": ".types",
-    "GetProviderSspPricesResponse": ".types",
-    "PricesRequestRateType": ".types",
-    "RateCompareRequestRateType": ".types",
+    "V3PricesCompareRequestPricing": ".types",
+    "V3PricesCompareRequestPricing_Cash": ".types",
+    "V3PricesCompareRequestPricing_Negotiated": ".types",
+    "V3PricesQueryRequestPricing": ".types",
+    "V3PricesQueryRequestPricing_Cash": ".types",
+    "V3PricesQueryRequestPricing_Negotiated": ".types",
+    "V3PricesQueryRequestSortDirection": ".types",
 }
 
 
@@ -42,8 +48,11 @@ def __dir__():
 
 
 __all__ = [
-    "CompareSspPricesResponse",
-    "GetProviderSspPricesResponse",
-    "PricesRequestRateType",
-    "RateCompareRequestRateType",
+    "V3PricesCompareRequestPricing",
+    "V3PricesCompareRequestPricing_Cash",
+    "V3PricesCompareRequestPricing_Negotiated",
+    "V3PricesQueryRequestPricing",
+    "V3PricesQueryRequestPricing_Cash",
+    "V3PricesQueryRequestPricing_Negotiated",
+    "V3PricesQueryRequestSortDirection",
 ]

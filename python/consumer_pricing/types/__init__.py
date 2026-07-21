@@ -6,15 +6,25 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .compare_ssp_prices_response import CompareSspPricesResponse
-    from .get_provider_ssp_prices_response import GetProviderSspPricesResponse
-    from .prices_request_rate_type import PricesRequestRateType
-    from .rate_compare_request_rate_type import RateCompareRequestRateType
+    from .v3prices_compare_request_pricing import (
+        V3PricesCompareRequestPricing,
+        V3PricesCompareRequestPricing_Cash,
+        V3PricesCompareRequestPricing_Negotiated,
+    )
+    from .v3prices_query_request_pricing import (
+        V3PricesQueryRequestPricing,
+        V3PricesQueryRequestPricing_Cash,
+        V3PricesQueryRequestPricing_Negotiated,
+    )
+    from .v3prices_query_request_sort_direction import V3PricesQueryRequestSortDirection
 _dynamic_imports: typing.Dict[str, str] = {
-    "CompareSspPricesResponse": ".compare_ssp_prices_response",
-    "GetProviderSspPricesResponse": ".get_provider_ssp_prices_response",
-    "PricesRequestRateType": ".prices_request_rate_type",
-    "RateCompareRequestRateType": ".rate_compare_request_rate_type",
+    "V3PricesCompareRequestPricing": ".v3prices_compare_request_pricing",
+    "V3PricesCompareRequestPricing_Cash": ".v3prices_compare_request_pricing",
+    "V3PricesCompareRequestPricing_Negotiated": ".v3prices_compare_request_pricing",
+    "V3PricesQueryRequestPricing": ".v3prices_query_request_pricing",
+    "V3PricesQueryRequestPricing_Cash": ".v3prices_query_request_pricing",
+    "V3PricesQueryRequestPricing_Negotiated": ".v3prices_query_request_pricing",
+    "V3PricesQueryRequestSortDirection": ".v3prices_query_request_sort_direction",
 }
 
 
@@ -40,8 +50,11 @@ def __dir__():
 
 
 __all__ = [
-    "CompareSspPricesResponse",
-    "GetProviderSspPricesResponse",
-    "PricesRequestRateType",
-    "RateCompareRequestRateType",
+    "V3PricesCompareRequestPricing",
+    "V3PricesCompareRequestPricing_Cash",
+    "V3PricesCompareRequestPricing_Negotiated",
+    "V3PricesQueryRequestPricing",
+    "V3PricesQueryRequestPricing_Cash",
+    "V3PricesQueryRequestPricing_Negotiated",
+    "V3PricesQueryRequestSortDirection",
 ]

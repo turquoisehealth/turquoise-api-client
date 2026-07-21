@@ -5,11 +5,11 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .rate_breakdown_line_item import RateBreakdownLineItem
-from .rate_breakdown_rate_type import RateBreakdownRateType
+from .rate_breakdown_price_type import RateBreakdownPriceType
 
 
 class RateBreakdown(UniversalBaseModel):
-    rate_type: RateBreakdownRateType
+    price_type: RateBreakdownPriceType
     provider_id: str
     ssp_id: str
     network_id: typing.Optional[str] = pydantic.Field(default=None)
