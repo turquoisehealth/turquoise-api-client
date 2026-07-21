@@ -61,6 +61,11 @@ class Provider(UniversalBaseModel):
     Provider HQ longitude.
     """
 
+    score: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    Semantic similarity score (0-1). Only present when using the 'search' parameter.
+    """
+
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:

@@ -7,7 +7,6 @@ import type * as TurquoiseHealthApi from "../../../../index.js";
  *     {
  *         ssp_id: "GA002",
  *         network_id: "8361580493441765265",
- *         rate_type: "negotiated",
  *         location: {
  *             zip_anchor: "80202"
  *         }
@@ -16,7 +15,6 @@ import type * as TurquoiseHealthApi from "../../../../index.js";
  * @example
  *     {
  *         ssp_id: "GA002",
- *         rate_type: "cash",
  *         location: {
  *             within_state: "CO"
  *         }
@@ -43,22 +41,12 @@ export interface PricesRequest {
     ssp_id?: string | null;
     /** Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage. */
     provider_id?: string | null;
-    /** Filter to a single insurance network. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage. */
+    /** Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage. */
     network_id?: string | null;
-    /** `cash` filters to rows with no network. `negotiated` requires a network match. */
-    rate_type?: PricesRequest.RateType | null;
     /** Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes. */
     location?: TurquoiseHealthApi.RateCompareLocation | null;
     /** Page size, 1-250. */
     page_size?: number;
     /** Opaque cursor from a previous response's `page.next_cursor`. */
     cursor?: string | null;
-}
-
-export namespace PricesRequest {
-    export const RateType = {
-        Cash: "cash",
-        Negotiated: "negotiated",
-    } as const;
-    export type RateType = (typeof RateType)[keyof typeof RateType];
 }

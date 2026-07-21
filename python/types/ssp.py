@@ -29,6 +29,11 @@ class Ssp(UniversalBaseModel):
     Patient-facing description of the service package.
     """
 
+    score: typing.Optional[float] = pydantic.Field(default=None)
+    """
+    Semantic similarity score (0-1) when results are from a search query. Higher is more relevant.
+    """
+
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2
     else:

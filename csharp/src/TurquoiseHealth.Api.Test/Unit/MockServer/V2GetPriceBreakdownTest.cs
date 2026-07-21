@@ -20,7 +20,7 @@ public class V2GetPriceBreakdownTest : BaseMockServerTest
         const string mockResponse = """
             {
               "data": {
-                "rate_type": "cash",
+                "price_type": "cash",
                 "provider_id": "0001",
                 "ssp_id": "GA002",
                 "network_id": "999999999999",
@@ -95,7 +95,7 @@ public class V2GetPriceBreakdownTest : BaseMockServerTest
         const string mockResponse = """
             {
               "data": {
-                "rate_type": "cash",
+                "price_type": "cash",
                 "provider_id": "0001",
                 "ssp_id": "GA002",
                 "network_id": "999999999999",

@@ -1,2 +1,2 @@
-export * from "./CompareSspPricesResponse.js";
-export * from "./GetProviderSspPricesResponse.js";
+export * from "./V3PricesCompareRequestPricing.js";
+export * from "./V3PricesQueryRequestPricing.js";

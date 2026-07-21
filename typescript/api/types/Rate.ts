@@ -5,7 +5,7 @@
  */
 export interface Rate {
     /** `cash` ⇔ `network_id is null`. `negotiated` otherwise. */
-    rate_type: Rate.RateType;
+    price_type: Rate.PriceType;
     /** Provider identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage. */
     provider_id: string;
     /** SSP identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage. */
@@ -22,9 +22,9 @@ export interface Rate {
 
 export namespace Rate {
     /** `cash` ⇔ `network_id is null`. `negotiated` otherwise. */
-    export const RateType = {
+    export const PriceType = {
         Cash: "cash",
         Negotiated: "negotiated",
     } as const;
-    export type RateType = (typeof RateType)[keyof typeof RateType];
+    export type PriceType = (typeof PriceType)[keyof typeof PriceType];
 }

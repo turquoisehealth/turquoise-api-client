@@ -4,28 +4,35 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
-from ..types.care_nav_sort_type import CareNavSortType
 from ..types.envelope_network import EnvelopeNetwork
 from ..types.envelope_provider import EnvelopeProvider
 from ..types.envelope_rate import EnvelopeRate
 from ..types.envelope_ssp import EnvelopeSsp
-from ..types.insurance_network_page import InsuranceNetworkPage
-from ..types.location_input import LocationInput
-from ..types.price_filter import PriceFilter
-from ..types.provider_page import ProviderPage
 from ..types.rate_compare_location import RateCompareLocation
 from ..types.rate_comparison import RateComparison
-from ..types.service_package_page import ServicePackagePage
 from ..types.single_resource_envelope_network import SingleResourceEnvelopeNetwork
 from ..types.single_resource_envelope_provider import SingleResourceEnvelopeProvider
 from ..types.single_resource_envelope_rate_breakdown import SingleResourceEnvelopeRateBreakdown
 from ..types.single_resource_envelope_ssp import SingleResourceEnvelopeSsp
-from ..types.ssp_price_page import SspPricePage
+from ..types.v3list_envelope_line_item import V3ListEnvelopeLineItem
+from ..types.v3list_envelope_network import V3ListEnvelopeNetwork
+from ..types.v3list_envelope_package import V3ListEnvelopePackage
+from ..types.v3list_envelope_payer import V3ListEnvelopePayer
+from ..types.v3list_envelope_provider import V3ListEnvelopeProvider
+from ..types.v3list_envelope_provider_package_price import V3ListEnvelopeProviderPackagePrice
+from ..types.v3location import V3Location
+from ..types.v3network import V3Network
+from ..types.v3package import V3Package
+from ..types.v3payer import V3Payer
+from ..types.v3price_comparison import V3PriceComparison
+from ..types.v3price_expand import V3PriceExpand
+from ..types.v3price_sort import V3PriceSort
+from ..types.v3provider import V3Provider
+from ..types.v3provider_package_price import V3ProviderPackagePrice
 from .raw_client import AsyncRawConsumerPricingClient, RawConsumerPricingClient
-from .types.compare_ssp_prices_response import CompareSspPricesResponse
-from .types.get_provider_ssp_prices_response import GetProviderSspPricesResponse
-from .types.prices_request_rate_type import PricesRequestRateType
-from .types.rate_compare_request_rate_type import RateCompareRequestRateType
+from .types.v3prices_compare_request_pricing import V3PricesCompareRequestPricing
+from .types.v3prices_query_request_pricing import V3PricesQueryRequestPricing
+from .types.v3prices_query_request_sort_direction import V3PricesQueryRequestSortDirection
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -46,349 +53,33 @@ class ConsumerPricingClient:
         """
         return self._raw_client
 
-    def get_ssps(
-        self,
-        *,
-        ssp_name: typing.Optional[str] = None,
-        ssp_description: typing.Optional[str] = None,
-        search: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> ServicePackagePage:
-        """
-        Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.
-
-        Parameters
-        ----------
-        ssp_name : typing.Optional[str]
-            Filter SSPs by partial name match
-
-        ssp_description : typing.Optional[str]
-            Filter SSPs by partial patient description match
-
-        search : typing.Optional[str]
-            Search SSPs by name or patient description
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        ServicePackagePage
-            Successful Response
-
-        Examples
-        --------
-        from turquoise-health import TurquoiseHealth
-
-        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        client.consumer_pricing.get_ssps()
-        """
-        _response = self._raw_client.get_ssps(
-            ssp_name=ssp_name,
-            ssp_description=ssp_description,
-            search=search,
-            page=page,
-            page_size=page_size,
-            request_options=request_options,
-        )
-        return _response.data
-
-    def get_insurance_networks(
-        self,
-        *,
-        ssp_id: typing.Optional[str] = None,
-        payer_name: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> InsuranceNetworkPage:
-        """
-        Discover insurance networks, optionally filtered by SSP or payer name.
-
-        Parameters
-        ----------
-        ssp_id : typing.Optional[str]
-            Limit networks to a specific SSP
-
-        payer_name : typing.Optional[str]
-            Filter by payer name
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        InsuranceNetworkPage
-            Successful Response
-
-        Examples
-        --------
-        from turquoise-health import TurquoiseHealth
-
-        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        client.consumer_pricing.get_insurance_networks()
-        """
-        _response = self._raw_client.get_insurance_networks(
-            ssp_id=ssp_id, payer_name=payer_name, page=page, page_size=page_size, request_options=request_options
-        )
-        return _response.data
-
-    def get_providers(
-        self,
-        *,
-        provider_name: typing.Optional[str] = None,
-        npi: typing.Optional[str] = None,
-        city: typing.Optional[str] = None,
-        state: typing.Optional[str] = None,
-        zip_code: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> ProviderPage:
-        """
-        Search for providers by name, NPI, or location.
-
-        Parameters
-        ----------
-        provider_name : typing.Optional[str]
-            Match provider name (case-insensitive)
-
-        npi : typing.Optional[str]
-            Exact provider NPI
-
-        city : typing.Optional[str]
-            Exact provider city
-
-        state : typing.Optional[str]
-            Two-letter state abbreviation
-
-        zip_code : typing.Optional[str]
-            Exact ZIP code
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        ProviderPage
-            Successful Response
-
-        Examples
-        --------
-        from turquoise-health import TurquoiseHealth
-
-        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        client.consumer_pricing.get_providers()
-        """
-        _response = self._raw_client.get_providers(
-            provider_name=provider_name,
-            npi=npi,
-            city=city,
-            state=state,
-            zip_code=zip_code,
-            page=page,
-            page_size=page_size,
-            request_options=request_options,
-        )
-        return _response.data
-
-    def get_ssp_prices(
-        self,
-        ssp_id: str,
-        *,
-        location: LocationInput,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        network_id: typing.Optional[str] = OMIT,
-        price_filter: typing.Optional[PriceFilter] = OMIT,
-        npis: typing.Optional[typing.Sequence[str]] = OMIT,
-        sort_by: typing.Optional[CareNavSortType] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SspPricePage:
-        """
-        List of providers that can satisfy a given SSP, with the total expected price, in a given geographic area. Requests support location filtering via ZIP code, CBSA, state, or coordinates. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        location : LocationInput
-            Location to search for providers
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        price_filter : typing.Optional[PriceFilter]
-
-        npis : typing.Optional[typing.Sequence[str]]
-
-        sort_by : typing.Optional[CareNavSortType]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SspPricePage
-            Successful Response
-
-        Examples
-        --------
-        from turquoise-health import GeoSpace, LocationInput, TurquoiseHealth
-
-        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        client.consumer_pricing.get_ssp_prices(ssp_id='DE000', location=LocationInput(geo_space=GeoSpace(zip_codes=['80129'], ), ), network_id='-7695283351826393948', sort_by="price-asc", )
-        """
-        _response = self._raw_client.get_ssp_prices(
-            ssp_id,
-            location=location,
-            page=page,
-            page_size=page_size,
-            network_id=network_id,
-            price_filter=price_filter,
-            npis=npis,
-            sort_by=sort_by,
-            request_options=request_options,
-        )
-        return _response.data
-
-    def get_provider_ssp_prices(
-        self,
-        ssp_id: str,
-        provider_id: str,
-        *,
-        network_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> GetProviderSspPricesResponse:
-        """
-        Get SSP breakdown and fee information about a selected SSP from a single provider. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        provider_id : str
-            Provider identifier
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        GetProviderSspPricesResponse
-            Successful Response
-
-        Examples
-        --------
-        from turquoise-health import TurquoiseHealth
-
-        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        client.consumer_pricing.get_provider_ssp_prices(ssp_id='DE000', provider_id='provider_id', )
-        """
-        _response = self._raw_client.get_provider_ssp_prices(
-            ssp_id, provider_id, network_id=network_id, request_options=request_options
-        )
-        return _response.data
-
-    def compare_ssp_prices(
-        self,
-        ssp_id: str,
-        *,
-        location: LocationInput,
-        network_id: typing.Optional[str] = OMIT,
-        npis: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> CompareSspPricesResponse:
-        """
-        Get summary statistics (min, max, average, quartiles) for prices matching the selected filters. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        location : LocationInput
-            Location to search for providers
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        npis : typing.Optional[typing.Sequence[str]]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        CompareSspPricesResponse
-            Successful Response
-
-        Examples
-        --------
-        from turquoise-health import GeoSpace, LocationInput, TurquoiseHealth
-
-        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        client.consumer_pricing.compare_ssp_prices(ssp_id='DE000', location=LocationInput(geo_space=GeoSpace(state='CO', ), ), network_id='-7695283351826393948', )
-        """
-        _response = self._raw_client.compare_ssp_prices(
-            ssp_id, location=location, network_id=network_id, npis=npis, request_options=request_options
-        )
-        return _response.data
-
     def v2list_ssps(
         self,
         *,
         name: typing.Optional[str] = None,
         description: typing.Optional[str] = None,
         search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EnvelopeSsp:
         """
-        Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.
+        Discover available service/surgery packages (SSPs).Supports substring matching on name and description fields as well as a 'search' parameter for semantic search across both fields. When 'search' is provided, other filter parameters are ignored, and pagination is limited to first page of top results.You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on SSP name.
+            Case-insensitive substring match on SSP name. Ignored when 'search' parameter is provided.
 
         description : typing.Optional[str]
-            Case-insensitive substring match on SSP patient description.
+            Case-insensitive substring match on SSP patient description. Ignored when 'search' parameter is provided.
 
         search : typing.Optional[str]
-            Case-insensitive substring match across name OR patient description.
+            Semantic search across SSP name and description using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -415,6 +106,7 @@ class ConsumerPricingClient:
             name=name,
             description=description,
             search=search,
+            min_score=min_score,
             page_size=page_size,
             cursor=cursor,
             request_options=request_options,
@@ -455,6 +147,8 @@ class ConsumerPricingClient:
         *,
         name: typing.Optional[str] = None,
         npi: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         near_lat: typing.Optional[float] = None,
@@ -467,15 +161,21 @@ class ConsumerPricingClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EnvelopeProvider:
         """
-        Search for providers by name, NPI, or location.
+        Search for providers by name, NPI, or location. Supports a 'search' parameter for semantic search across provider names, which can be combined with location filters. When 'search' is provided, the name and npi filters are ignored, and pagination is limited to first page of top results. You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on provider name.
+            Case-insensitive substring match on provider name. Ignored when 'search' parameter is provided.
 
         npi : typing.Optional[str]
-            Exact NPI match.
+            Exact NPI match. Ignored when 'search' parameter is provided.
+
+        search : typing.Optional[str]
+            Semantic search across provider names using AI embeddings. Returns results with similarity scores. Can be combined with location filters (within.*, near.*, zip_anchor) to restrict results before ranking. When provided, the name and npi filters are ignored and pagination is limited to the first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -522,6 +222,8 @@ class ConsumerPricingClient:
         _response = self._raw_client.v2list_providers(
             name=name,
             npi=npi,
+            search=search,
+            min_score=min_score,
             page_size=page_size,
             cursor=cursor,
             near_lat=near_lat,
@@ -569,20 +271,28 @@ class ConsumerPricingClient:
         *,
         name: typing.Optional[str] = None,
         payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EnvelopeNetwork:
         """
-        Discover insurance networks, optionally filtered by network name, payer name, or payer ID.
+        Discover insurance networks, optionally filtered by network name, payer name, or payer ID, or by semantic search across network and payer names. When using the 'search' parameter for semantic search, other filter parameters (name, payer_id) are ignored, and pagination is limited to the first page of top results.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on network or payer name.
+            Case-insensitive substring match on network or payer name. Ignored when 'search' parameter is provided.
 
         payer_id : typing.Optional[str]
-            Filter to networks under this payer.
+            Filter to networks under this payer. Ignored when 'search' parameter is provided.
+
+        search : typing.Optional[str]
+            Semantic search across network and payer names using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to the first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -606,7 +316,13 @@ class ConsumerPricingClient:
         client.consumer_pricing.v2list_networks()
         """
         _response = self._raw_client.v2list_networks(
-            name=name, payer_id=payer_id, page_size=page_size, cursor=cursor, request_options=request_options
+            name=name,
+            payer_id=payer_id,
+            search=search,
+            min_score=min_score,
+            page_size=page_size,
+            cursor=cursor,
+            request_options=request_options,
         )
         return _response.data
 
@@ -645,7 +361,6 @@ class ConsumerPricingClient:
         ssp_id: typing.Optional[str] = OMIT,
         provider_id: typing.Optional[str] = OMIT,
         network_id: typing.Optional[str] = OMIT,
-        rate_type: typing.Optional[PricesRequestRateType] = OMIT,
         location: typing.Optional[RateCompareLocation] = OMIT,
         page_size: typing.Optional[int] = OMIT,
         cursor: typing.Optional[str] = OMIT,
@@ -663,10 +378,7 @@ class ConsumerPricingClient:
             Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         network_id : typing.Optional[str]
-            Filter to a single insurance network. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
-
-        rate_type : typing.Optional[PricesRequestRateType]
-            `cash` filters to rows with no network. `negotiated` requires a network match.
+            Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         location : typing.Optional[RateCompareLocation]
             Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes.
@@ -690,13 +402,12 @@ class ConsumerPricingClient:
         from turquoise-health import RateCompareLocation, TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        client.consumer_pricing.v2list_prices(ssp_id='GA002', network_id='8361580493441765265', rate_type="negotiated", location=RateCompareLocation(zip_anchor='80202', ), )
+        client.consumer_pricing.v2list_prices(ssp_id='GA002', network_id='8361580493441765265', location=RateCompareLocation(zip_anchor='80202', ), )
         """
         _response = self._raw_client.v2list_prices(
             ssp_id=ssp_id,
             provider_id=provider_id,
             network_id=network_id,
-            rate_type=rate_type,
             location=location,
             page_size=page_size,
             cursor=cursor,
@@ -752,7 +463,6 @@ class ConsumerPricingClient:
         ssp_id: typing.Optional[str] = OMIT,
         provider_id: typing.Optional[str] = OMIT,
         network_id: typing.Optional[str] = OMIT,
-        rate_type: typing.Optional[RateCompareRequestRateType] = OMIT,
         location: typing.Optional[RateCompareLocation] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> RateComparison:
@@ -768,10 +478,7 @@ class ConsumerPricingClient:
             Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         network_id : typing.Optional[str]
-            Filter to a single insurance network. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
-
-        rate_type : typing.Optional[RateCompareRequestRateType]
-            `cash` filters to rows with no network. `negotiated` requires a network match.
+            Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         location : typing.Optional[RateCompareLocation]
             Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes.
@@ -795,10 +502,664 @@ class ConsumerPricingClient:
             ssp_id=ssp_id,
             provider_id=provider_id,
             network_id=network_id,
-            rate_type=rate_type,
             location=location,
             request_options=request_options,
         )
+        return _response.data
+
+    def v3list_networks(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ListEnvelopeNetwork:
+        """
+        List negotiated-rate networks, filterable by name (case-insensitive substring, matches network or payer name), payer_id (exact), relationships (provider_id/package_id — networks with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to networks with at least one price at an in-area provider, so `package_id` + location answers 'which networks price this package here' in one call. Results reflect networks Turquoise has priced. The network's payer is an {id, name} stub; the full entity lives at /v3/payers/{id}.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on network or payer name.
+
+        payer_id : typing.Optional[str]
+            Exact payer id match.
+
+        provider_id : typing.Optional[str]
+            Networks with at least one price at this provider.
+
+        package_id : typing.Optional[str]
+            Networks with at least one price for this package.
+
+        search : typing.Optional[str]
+            Semantic search over network and payer names. Composes with the other filters; returns a single relevance-ordered page (no cursor).
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ListEnvelopeNetwork
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3list_networks()
+        """
+        _response = self._raw_client.v3list_networks(
+            name=name,
+            payer_id=payer_id,
+            provider_id=provider_id,
+            package_id=package_id,
+            search=search,
+            min_score=min_score,
+            page_size=page_size,
+            cursor=cursor,
+            location_near_lat=location_near_lat,
+            location_near_lng=location_near_lng,
+            location_near_radius_m=location_near_radius_m,
+            location_within_state=location_within_state,
+            location_within_cbsa=location_within_cbsa,
+            location_within_zip_codes=location_within_zip_codes,
+            location_zip=location_zip,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def v3get_network(self, network_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> V3Network:
+        """
+        Fetch a single network by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        network_id : str
+            Network identifier (string-wrapped 64-bit integer).
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3Network
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3get_network(network_id='2010265101', )
+        """
+        _response = self._raw_client.v3get_network(network_id, request_options=request_options)
+        return _response.data
+
+    def v3list_packages(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        anchor_code: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        network_id: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ListEnvelopePackage:
+        """
+        List service packages, filterable by name (case-insensitive substring), anchor billing code (exact, matches package base codes only), and relationships (provider_id, network_id, payer_id — packages with at least one matching price). When multiple relationship filters are combined, they must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices. Results reflect packages Turquoise has priced.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on package name.
+
+        anchor_code : typing.Optional[str]
+            Billing code lookup; matches against anchor_codes[].code (package base codes only). Returns every package anchored by the code — exactly one in the current catalog, but uniqueness is not contractual (an anchor's full upstream identity includes revenue code and billing class, which this API collapses).
+
+        provider_id : typing.Optional[str]
+            Packages priced at this provider.
+
+        network_id : typing.Optional[str]
+            Packages with at least one price under this network (combined with provider_id/payer_id, the same price row must match).
+
+        payer_id : typing.Optional[str]
+            Packages priced under any of this payer's networks (combined with other relationship filters, the same price row must match).
+
+        search : typing.Optional[str]
+            Semantic search over package name and description. Composes with the other filters; returns a single relevance-ordered page (no cursor). 503 search_unavailable when the embedding index is not populated.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ListEnvelopePackage
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3list_packages()
+        """
+        _response = self._raw_client.v3list_packages(
+            name=name,
+            anchor_code=anchor_code,
+            provider_id=provider_id,
+            network_id=network_id,
+            payer_id=payer_id,
+            search=search,
+            min_score=min_score,
+            page_size=page_size,
+            cursor=cursor,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def v3get_package(self, package_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> V3Package:
+        """
+        Fetch a single package by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        package_id : str
+            Package identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3Package
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3get_package(package_id='GA002', )
+        """
+        _response = self._raw_client.v3get_package(package_id, request_options=request_options)
+        return _response.data
+
+    def v3list_package_line_items(
+        self, package_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> V3ListEnvelopeLineItem:
+        """
+        The package's composition: codes, fee types, and association rates at the current package version.
+
+        Parameters
+        ----------
+        package_id : str
+            Package identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ListEnvelopeLineItem
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3list_package_line_items(package_id='GA002', )
+        """
+        _response = self._raw_client.v3list_package_line_items(package_id, request_options=request_options)
+        return _response.data
+
+    def v3list_payers(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ListEnvelopePayer:
+        """
+        List payers, filterable by name (case-insensitive substring), relationships (provider_id/package_id — payers with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to payers with at least one price at an in-area provider. Results reflect payers Turquoise has priced.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on payer name.
+
+        provider_id : typing.Optional[str]
+            Payers with at least one price at this provider.
+
+        package_id : typing.Optional[str]
+            Payers with at least one price for this package.
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ListEnvelopePayer
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3list_payers()
+        """
+        _response = self._raw_client.v3list_payers(
+            name=name,
+            provider_id=provider_id,
+            package_id=package_id,
+            page_size=page_size,
+            cursor=cursor,
+            location_near_lat=location_near_lat,
+            location_near_lng=location_near_lng,
+            location_near_radius_m=location_near_radius_m,
+            location_within_state=location_within_state,
+            location_within_cbsa=location_within_cbsa,
+            location_within_zip_codes=location_within_zip_codes,
+            location_zip=location_zip,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def v3get_payer(self, payer_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> V3Payer:
+        """
+        Fetch a single payer by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        payer_id : str
+            Payer identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3Payer
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3get_payer(payer_id='7001', )
+        """
+        _response = self._raw_client.v3get_payer(payer_id, request_options=request_options)
+        return _response.data
+
+    def v3query_prices(
+        self,
+        *,
+        package_id: str,
+        pricing: V3PricesQueryRequestPricing,
+        provider_id: typing.Optional[str] = OMIT,
+        location: typing.Optional[V3Location] = OMIT,
+        sort: typing.Optional[V3PriceSort] = OMIT,
+        sort_direction: typing.Optional[V3PricesQueryRequestSortDirection] = OMIT,
+        page_size: typing.Optional[int] = OMIT,
+        cursor: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ListEnvelopeProviderPackagePrice:
+        """
+        Search prices at the provider × package × pricing grain.
+        
+        Parameters
+        ----------
+        package_id : str
+        
+        pricing : V3PricesQueryRequestPricing
+        
+        provider_id : typing.Optional[str]
+        
+        location : typing.Optional[V3Location]
+        
+        sort : typing.Optional[V3PriceSort]
+            `total` (default) or `distance` (requires a near/zip location).
+        
+        sort_direction : typing.Optional[V3PricesQueryRequestSortDirection]
+            Sort order. Defaults to ascending (lowest total / nearest first).
+        
+        page_size : typing.Optional[int]
+        
+        cursor : typing.Optional[str]
+        
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+        
+        Returns
+        -------
+        V3ListEnvelopeProviderPackagePrice
+            Successful Response
+        
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+        from turquoise-health.consumer_pricing import \
+            V3PricesQueryRequestPricing_Negotiated
+        
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3query_prices(package_id='RA007', provider_id='2751', pricing=V3PricesQueryRequestPricing_Negotiated(network_id='network_id', ), )
+        """
+        _response = self._raw_client.v3query_prices(
+            package_id=package_id,
+            pricing=pricing,
+            provider_id=provider_id,
+            location=location,
+            sort=sort,
+            sort_direction=sort_direction,
+            page_size=page_size,
+            cursor=cursor,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def v3compare_prices(
+        self,
+        *,
+        package_id: str,
+        pricing: V3PricesCompareRequestPricing,
+        provider_id: typing.Optional[str] = OMIT,
+        location: typing.Optional[V3Location] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3PriceComparison:
+        """
+        Summary statistics (count, min/max/avg/median/q1/q3 as Money) over the prices matching the same request shape as /query, minus sort and pagination.
+        
+        Parameters
+        ----------
+        package_id : str
+        
+        pricing : V3PricesCompareRequestPricing
+        
+        provider_id : typing.Optional[str]
+        
+        location : typing.Optional[V3Location]
+        
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+        
+        Returns
+        -------
+        V3PriceComparison
+            Successful Response
+        
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+        from turquoise-health.consumer_pricing import \
+            V3PricesCompareRequestPricing_Negotiated
+        
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3compare_prices(package_id='RA007', provider_id='2751', pricing=V3PricesCompareRequestPricing_Negotiated(network_id='network_id', ), )
+        """
+        _response = self._raw_client.v3compare_prices(
+            package_id=package_id,
+            pricing=pricing,
+            provider_id=provider_id,
+            location=location,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def v3get_price(
+        self,
+        price_id: str,
+        *,
+        expand: typing.Optional[typing.Sequence[V3PriceExpand]] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ProviderPackagePrice:
+        """
+        Fetch a single price by its ID (the id returned by /query). `expand=line_items` attaches the package composition — this replaces v2's provider-breakdown endpoint.
+
+        Parameters
+        ----------
+        price_id : str
+            Price identifier.
+
+        expand : typing.Optional[typing.Sequence[V3PriceExpand]]
+            Relations to inline. Repeat the param to request several.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ProviderPackagePrice
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3get_price(price_id='prc_2751.RA007.8361580493441765265', )
+        """
+        _response = self._raw_client.v3get_price(price_id, expand=expand, request_options=request_options)
+        return _response.data
+
+    def v3list_providers(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        npi: typing.Optional[str] = None,
+        type: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        network_id: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ListEnvelopeProvider:
+        """
+        List providers, filterable by name (case-insensitive substring), npi/type (exact), relationships (package_id/network_id/payer_id — providers with at least one matching price; combined relationship filters must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices), and one location mode: `location.near.*` (ranked by distance), `location.within.*` (state/cbsa/zip_codes), or `location.zip` (ZIP centroid + default 25km radius). Results reflect providers Turquoise has priced services for.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on provider name.
+
+        npi : typing.Optional[str]
+            Exact NPI match.
+
+        type : typing.Optional[str]
+            Provider type as reported in the dataset (exact match).
+
+        package_id : typing.Optional[str]
+            Providers with at least one price for this package.
+
+        network_id : typing.Optional[str]
+            Providers with at least one price under this network (combined with package_id/payer_id, the same price row must match).
+
+        payer_id : typing.Optional[str]
+            Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match).
+
+        search : typing.Optional[str]
+            Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ListEnvelopeProvider
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3list_providers()
+        """
+        _response = self._raw_client.v3list_providers(
+            name=name,
+            npi=npi,
+            type=type,
+            package_id=package_id,
+            network_id=network_id,
+            payer_id=payer_id,
+            search=search,
+            min_score=min_score,
+            page_size=page_size,
+            cursor=cursor,
+            location_near_lat=location_near_lat,
+            location_near_lng=location_near_lng,
+            location_near_radius_m=location_near_radius_m,
+            location_within_state=location_within_state,
+            location_within_cbsa=location_within_cbsa,
+            location_within_zip_codes=location_within_zip_codes,
+            location_zip=location_zip,
+            request_options=request_options,
+        )
+        return _response.data
+
+    def v3get_provider(
+        self, provider_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> V3Provider:
+        """
+        Fetch a single provider by ID. Missing IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        provider_id : str
+            Provider identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3Provider
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3get_provider(provider_id='2743', )
+        """
+        _response = self._raw_client.v3get_provider(provider_id, request_options=request_options)
         return _response.data
 
 
@@ -817,373 +1178,33 @@ class AsyncConsumerPricingClient:
         """
         return self._raw_client
 
-    async def get_ssps(
-        self,
-        *,
-        ssp_name: typing.Optional[str] = None,
-        ssp_description: typing.Optional[str] = None,
-        search: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> ServicePackagePage:
-        """
-        Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.
-
-        Parameters
-        ----------
-        ssp_name : typing.Optional[str]
-            Filter SSPs by partial name match
-
-        ssp_description : typing.Optional[str]
-            Filter SSPs by partial patient description match
-
-        search : typing.Optional[str]
-            Search SSPs by name or patient description
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        ServicePackagePage
-            Successful Response
-
-        Examples
-        --------
-        import asyncio
-
-        from turquoise-health import AsyncTurquoiseHealth
-
-        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        async def main() -> None:
-            await client.consumer_pricing.get_ssps()
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.get_ssps(
-            ssp_name=ssp_name,
-            ssp_description=ssp_description,
-            search=search,
-            page=page,
-            page_size=page_size,
-            request_options=request_options,
-        )
-        return _response.data
-
-    async def get_insurance_networks(
-        self,
-        *,
-        ssp_id: typing.Optional[str] = None,
-        payer_name: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> InsuranceNetworkPage:
-        """
-        Discover insurance networks, optionally filtered by SSP or payer name.
-
-        Parameters
-        ----------
-        ssp_id : typing.Optional[str]
-            Limit networks to a specific SSP
-
-        payer_name : typing.Optional[str]
-            Filter by payer name
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        InsuranceNetworkPage
-            Successful Response
-
-        Examples
-        --------
-        import asyncio
-
-        from turquoise-health import AsyncTurquoiseHealth
-
-        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        async def main() -> None:
-            await client.consumer_pricing.get_insurance_networks()
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.get_insurance_networks(
-            ssp_id=ssp_id, payer_name=payer_name, page=page, page_size=page_size, request_options=request_options
-        )
-        return _response.data
-
-    async def get_providers(
-        self,
-        *,
-        provider_name: typing.Optional[str] = None,
-        npi: typing.Optional[str] = None,
-        city: typing.Optional[str] = None,
-        state: typing.Optional[str] = None,
-        zip_code: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> ProviderPage:
-        """
-        Search for providers by name, NPI, or location.
-
-        Parameters
-        ----------
-        provider_name : typing.Optional[str]
-            Match provider name (case-insensitive)
-
-        npi : typing.Optional[str]
-            Exact provider NPI
-
-        city : typing.Optional[str]
-            Exact provider city
-
-        state : typing.Optional[str]
-            Two-letter state abbreviation
-
-        zip_code : typing.Optional[str]
-            Exact ZIP code
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        ProviderPage
-            Successful Response
-
-        Examples
-        --------
-        import asyncio
-
-        from turquoise-health import AsyncTurquoiseHealth
-
-        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        async def main() -> None:
-            await client.consumer_pricing.get_providers()
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.get_providers(
-            provider_name=provider_name,
-            npi=npi,
-            city=city,
-            state=state,
-            zip_code=zip_code,
-            page=page,
-            page_size=page_size,
-            request_options=request_options,
-        )
-        return _response.data
-
-    async def get_ssp_prices(
-        self,
-        ssp_id: str,
-        *,
-        location: LocationInput,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        network_id: typing.Optional[str] = OMIT,
-        price_filter: typing.Optional[PriceFilter] = OMIT,
-        npis: typing.Optional[typing.Sequence[str]] = OMIT,
-        sort_by: typing.Optional[CareNavSortType] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> SspPricePage:
-        """
-        List of providers that can satisfy a given SSP, with the total expected price, in a given geographic area. Requests support location filtering via ZIP code, CBSA, state, or coordinates. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        location : LocationInput
-            Location to search for providers
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        price_filter : typing.Optional[PriceFilter]
-
-        npis : typing.Optional[typing.Sequence[str]]
-
-        sort_by : typing.Optional[CareNavSortType]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        SspPricePage
-            Successful Response
-
-        Examples
-        --------
-        import asyncio
-
-        from turquoise-health import AsyncTurquoiseHealth, GeoSpace, LocationInput
-
-        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        async def main() -> None:
-            await client.consumer_pricing.get_ssp_prices(ssp_id='DE000', location=LocationInput(geo_space=GeoSpace(zip_codes=['80129'], ), ), network_id='-7695283351826393948', sort_by="price-asc", )
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.get_ssp_prices(
-            ssp_id,
-            location=location,
-            page=page,
-            page_size=page_size,
-            network_id=network_id,
-            price_filter=price_filter,
-            npis=npis,
-            sort_by=sort_by,
-            request_options=request_options,
-        )
-        return _response.data
-
-    async def get_provider_ssp_prices(
-        self,
-        ssp_id: str,
-        provider_id: str,
-        *,
-        network_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> GetProviderSspPricesResponse:
-        """
-        Get SSP breakdown and fee information about a selected SSP from a single provider. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        provider_id : str
-            Provider identifier
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        GetProviderSspPricesResponse
-            Successful Response
-
-        Examples
-        --------
-        import asyncio
-
-        from turquoise-health import AsyncTurquoiseHealth
-
-        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        async def main() -> None:
-            await client.consumer_pricing.get_provider_ssp_prices(ssp_id='DE000', provider_id='provider_id', )
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.get_provider_ssp_prices(
-            ssp_id, provider_id, network_id=network_id, request_options=request_options
-        )
-        return _response.data
-
-    async def compare_ssp_prices(
-        self,
-        ssp_id: str,
-        *,
-        location: LocationInput,
-        network_id: typing.Optional[str] = OMIT,
-        npis: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> CompareSspPricesResponse:
-        """
-        Get summary statistics (min, max, average, quartiles) for prices matching the selected filters. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        location : LocationInput
-            Location to search for providers
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        npis : typing.Optional[typing.Sequence[str]]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        CompareSspPricesResponse
-            Successful Response
-
-        Examples
-        --------
-        import asyncio
-
-        from turquoise-health import AsyncTurquoiseHealth, GeoSpace, LocationInput
-
-        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
-        async def main() -> None:
-            await client.consumer_pricing.compare_ssp_prices(ssp_id='DE000', location=LocationInput(geo_space=GeoSpace(state='CO', ), ), network_id='-7695283351826393948', )
-        asyncio.run(main())
-        """
-        _response = await self._raw_client.compare_ssp_prices(
-            ssp_id, location=location, network_id=network_id, npis=npis, request_options=request_options
-        )
-        return _response.data
-
     async def v2list_ssps(
         self,
         *,
         name: typing.Optional[str] = None,
         description: typing.Optional[str] = None,
         search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EnvelopeSsp:
         """
-        Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.
+        Discover available service/surgery packages (SSPs).Supports substring matching on name and description fields as well as a 'search' parameter for semantic search across both fields. When 'search' is provided, other filter parameters are ignored, and pagination is limited to first page of top results.You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on SSP name.
+            Case-insensitive substring match on SSP name. Ignored when 'search' parameter is provided.
 
         description : typing.Optional[str]
-            Case-insensitive substring match on SSP patient description.
+            Case-insensitive substring match on SSP patient description. Ignored when 'search' parameter is provided.
 
         search : typing.Optional[str]
-            Case-insensitive substring match across name OR patient description.
+            Semantic search across SSP name and description using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -1214,6 +1235,7 @@ class AsyncConsumerPricingClient:
             name=name,
             description=description,
             search=search,
+            min_score=min_score,
             page_size=page_size,
             cursor=cursor,
             request_options=request_options,
@@ -1258,6 +1280,8 @@ class AsyncConsumerPricingClient:
         *,
         name: typing.Optional[str] = None,
         npi: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         near_lat: typing.Optional[float] = None,
@@ -1270,15 +1294,21 @@ class AsyncConsumerPricingClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EnvelopeProvider:
         """
-        Search for providers by name, NPI, or location.
+        Search for providers by name, NPI, or location. Supports a 'search' parameter for semantic search across provider names, which can be combined with location filters. When 'search' is provided, the name and npi filters are ignored, and pagination is limited to first page of top results. You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on provider name.
+            Case-insensitive substring match on provider name. Ignored when 'search' parameter is provided.
 
         npi : typing.Optional[str]
-            Exact NPI match.
+            Exact NPI match. Ignored when 'search' parameter is provided.
+
+        search : typing.Optional[str]
+            Semantic search across provider names using AI embeddings. Returns results with similarity scores. Can be combined with location filters (within.*, near.*, zip_anchor) to restrict results before ranking. When provided, the name and npi filters are ignored and pagination is limited to the first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -1329,6 +1359,8 @@ class AsyncConsumerPricingClient:
         _response = await self._raw_client.v2list_providers(
             name=name,
             npi=npi,
+            search=search,
+            min_score=min_score,
             page_size=page_size,
             cursor=cursor,
             near_lat=near_lat,
@@ -1380,20 +1412,28 @@ class AsyncConsumerPricingClient:
         *,
         name: typing.Optional[str] = None,
         payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> EnvelopeNetwork:
         """
-        Discover insurance networks, optionally filtered by network name, payer name, or payer ID.
+        Discover insurance networks, optionally filtered by network name, payer name, or payer ID, or by semantic search across network and payer names. When using the 'search' parameter for semantic search, other filter parameters (name, payer_id) are ignored, and pagination is limited to the first page of top results.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on network or payer name.
+            Case-insensitive substring match on network or payer name. Ignored when 'search' parameter is provided.
 
         payer_id : typing.Optional[str]
-            Filter to networks under this payer.
+            Filter to networks under this payer. Ignored when 'search' parameter is provided.
+
+        search : typing.Optional[str]
+            Semantic search across network and payer names using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to the first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -1421,7 +1461,13 @@ class AsyncConsumerPricingClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.v2list_networks(
-            name=name, payer_id=payer_id, page_size=page_size, cursor=cursor, request_options=request_options
+            name=name,
+            payer_id=payer_id,
+            search=search,
+            min_score=min_score,
+            page_size=page_size,
+            cursor=cursor,
+            request_options=request_options,
         )
         return _response.data
 
@@ -1464,7 +1510,6 @@ class AsyncConsumerPricingClient:
         ssp_id: typing.Optional[str] = OMIT,
         provider_id: typing.Optional[str] = OMIT,
         network_id: typing.Optional[str] = OMIT,
-        rate_type: typing.Optional[PricesRequestRateType] = OMIT,
         location: typing.Optional[RateCompareLocation] = OMIT,
         page_size: typing.Optional[int] = OMIT,
         cursor: typing.Optional[str] = OMIT,
@@ -1482,10 +1527,7 @@ class AsyncConsumerPricingClient:
             Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         network_id : typing.Optional[str]
-            Filter to a single insurance network. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
-
-        rate_type : typing.Optional[PricesRequestRateType]
-            `cash` filters to rows with no network. `negotiated` requires a network match.
+            Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         location : typing.Optional[RateCompareLocation]
             Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes.
@@ -1512,14 +1554,13 @@ class AsyncConsumerPricingClient:
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
-            await client.consumer_pricing.v2list_prices(ssp_id='GA002', network_id='8361580493441765265', rate_type="negotiated", location=RateCompareLocation(zip_anchor='80202', ), )
+            await client.consumer_pricing.v2list_prices(ssp_id='GA002', network_id='8361580493441765265', location=RateCompareLocation(zip_anchor='80202', ), )
         asyncio.run(main())
         """
         _response = await self._raw_client.v2list_prices(
             ssp_id=ssp_id,
             provider_id=provider_id,
             network_id=network_id,
-            rate_type=rate_type,
             location=location,
             page_size=page_size,
             cursor=cursor,
@@ -1579,7 +1620,6 @@ class AsyncConsumerPricingClient:
         ssp_id: typing.Optional[str] = OMIT,
         provider_id: typing.Optional[str] = OMIT,
         network_id: typing.Optional[str] = OMIT,
-        rate_type: typing.Optional[RateCompareRequestRateType] = OMIT,
         location: typing.Optional[RateCompareLocation] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> RateComparison:
@@ -1595,10 +1635,7 @@ class AsyncConsumerPricingClient:
             Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         network_id : typing.Optional[str]
-            Filter to a single insurance network. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
-
-        rate_type : typing.Optional[RateCompareRequestRateType]
-            `cash` filters to rows with no network. `negotiated` requires a network match.
+            Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         location : typing.Optional[RateCompareLocation]
             Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes.
@@ -1626,8 +1663,714 @@ class AsyncConsumerPricingClient:
             ssp_id=ssp_id,
             provider_id=provider_id,
             network_id=network_id,
-            rate_type=rate_type,
             location=location,
             request_options=request_options,
         )
+        return _response.data
+
+    async def v3list_networks(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ListEnvelopeNetwork:
+        """
+        List negotiated-rate networks, filterable by name (case-insensitive substring, matches network or payer name), payer_id (exact), relationships (provider_id/package_id — networks with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to networks with at least one price at an in-area provider, so `package_id` + location answers 'which networks price this package here' in one call. Results reflect networks Turquoise has priced. The network's payer is an {id, name} stub; the full entity lives at /v3/payers/{id}.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on network or payer name.
+
+        payer_id : typing.Optional[str]
+            Exact payer id match.
+
+        provider_id : typing.Optional[str]
+            Networks with at least one price at this provider.
+
+        package_id : typing.Optional[str]
+            Networks with at least one price for this package.
+
+        search : typing.Optional[str]
+            Semantic search over network and payer names. Composes with the other filters; returns a single relevance-ordered page (no cursor).
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ListEnvelopeNetwork
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3list_networks()
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3list_networks(
+            name=name,
+            payer_id=payer_id,
+            provider_id=provider_id,
+            package_id=package_id,
+            search=search,
+            min_score=min_score,
+            page_size=page_size,
+            cursor=cursor,
+            location_near_lat=location_near_lat,
+            location_near_lng=location_near_lng,
+            location_near_radius_m=location_near_radius_m,
+            location_within_state=location_within_state,
+            location_within_cbsa=location_within_cbsa,
+            location_within_zip_codes=location_within_zip_codes,
+            location_zip=location_zip,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def v3get_network(
+        self, network_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> V3Network:
+        """
+        Fetch a single network by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        network_id : str
+            Network identifier (string-wrapped 64-bit integer).
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3Network
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3get_network(network_id='2010265101', )
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3get_network(network_id, request_options=request_options)
+        return _response.data
+
+    async def v3list_packages(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        anchor_code: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        network_id: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ListEnvelopePackage:
+        """
+        List service packages, filterable by name (case-insensitive substring), anchor billing code (exact, matches package base codes only), and relationships (provider_id, network_id, payer_id — packages with at least one matching price). When multiple relationship filters are combined, they must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices. Results reflect packages Turquoise has priced.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on package name.
+
+        anchor_code : typing.Optional[str]
+            Billing code lookup; matches against anchor_codes[].code (package base codes only). Returns every package anchored by the code — exactly one in the current catalog, but uniqueness is not contractual (an anchor's full upstream identity includes revenue code and billing class, which this API collapses).
+
+        provider_id : typing.Optional[str]
+            Packages priced at this provider.
+
+        network_id : typing.Optional[str]
+            Packages with at least one price under this network (combined with provider_id/payer_id, the same price row must match).
+
+        payer_id : typing.Optional[str]
+            Packages priced under any of this payer's networks (combined with other relationship filters, the same price row must match).
+
+        search : typing.Optional[str]
+            Semantic search over package name and description. Composes with the other filters; returns a single relevance-ordered page (no cursor). 503 search_unavailable when the embedding index is not populated.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ListEnvelopePackage
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3list_packages()
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3list_packages(
+            name=name,
+            anchor_code=anchor_code,
+            provider_id=provider_id,
+            network_id=network_id,
+            payer_id=payer_id,
+            search=search,
+            min_score=min_score,
+            page_size=page_size,
+            cursor=cursor,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def v3get_package(
+        self, package_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> V3Package:
+        """
+        Fetch a single package by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        package_id : str
+            Package identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3Package
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3get_package(package_id='GA002', )
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3get_package(package_id, request_options=request_options)
+        return _response.data
+
+    async def v3list_package_line_items(
+        self, package_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> V3ListEnvelopeLineItem:
+        """
+        The package's composition: codes, fee types, and association rates at the current package version.
+
+        Parameters
+        ----------
+        package_id : str
+            Package identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ListEnvelopeLineItem
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3list_package_line_items(package_id='GA002', )
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3list_package_line_items(package_id, request_options=request_options)
+        return _response.data
+
+    async def v3list_payers(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ListEnvelopePayer:
+        """
+        List payers, filterable by name (case-insensitive substring), relationships (provider_id/package_id — payers with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to payers with at least one price at an in-area provider. Results reflect payers Turquoise has priced.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on payer name.
+
+        provider_id : typing.Optional[str]
+            Payers with at least one price at this provider.
+
+        package_id : typing.Optional[str]
+            Payers with at least one price for this package.
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ListEnvelopePayer
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3list_payers()
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3list_payers(
+            name=name,
+            provider_id=provider_id,
+            package_id=package_id,
+            page_size=page_size,
+            cursor=cursor,
+            location_near_lat=location_near_lat,
+            location_near_lng=location_near_lng,
+            location_near_radius_m=location_near_radius_m,
+            location_within_state=location_within_state,
+            location_within_cbsa=location_within_cbsa,
+            location_within_zip_codes=location_within_zip_codes,
+            location_zip=location_zip,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def v3get_payer(self, payer_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> V3Payer:
+        """
+        Fetch a single payer by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        payer_id : str
+            Payer identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3Payer
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3get_payer(payer_id='7001', )
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3get_payer(payer_id, request_options=request_options)
+        return _response.data
+
+    async def v3query_prices(
+        self,
+        *,
+        package_id: str,
+        pricing: V3PricesQueryRequestPricing,
+        provider_id: typing.Optional[str] = OMIT,
+        location: typing.Optional[V3Location] = OMIT,
+        sort: typing.Optional[V3PriceSort] = OMIT,
+        sort_direction: typing.Optional[V3PricesQueryRequestSortDirection] = OMIT,
+        page_size: typing.Optional[int] = OMIT,
+        cursor: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ListEnvelopeProviderPackagePrice:
+        """
+        Search prices at the provider × package × pricing grain.
+        
+        Parameters
+        ----------
+        package_id : str
+        
+        pricing : V3PricesQueryRequestPricing
+        
+        provider_id : typing.Optional[str]
+        
+        location : typing.Optional[V3Location]
+        
+        sort : typing.Optional[V3PriceSort]
+            `total` (default) or `distance` (requires a near/zip location).
+        
+        sort_direction : typing.Optional[V3PricesQueryRequestSortDirection]
+            Sort order. Defaults to ascending (lowest total / nearest first).
+        
+        page_size : typing.Optional[int]
+        
+        cursor : typing.Optional[str]
+        
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+        
+        Returns
+        -------
+        V3ListEnvelopeProviderPackagePrice
+            Successful Response
+        
+        Examples
+        --------
+        import asyncio
+        
+        from turquoise-health import AsyncTurquoiseHealth
+        from turquoise-health.consumer_pricing import \
+            V3PricesQueryRequestPricing_Negotiated
+        
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3query_prices(package_id='RA007', provider_id='2751', pricing=V3PricesQueryRequestPricing_Negotiated(network_id='network_id', ), )
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3query_prices(
+            package_id=package_id,
+            pricing=pricing,
+            provider_id=provider_id,
+            location=location,
+            sort=sort,
+            sort_direction=sort_direction,
+            page_size=page_size,
+            cursor=cursor,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def v3compare_prices(
+        self,
+        *,
+        package_id: str,
+        pricing: V3PricesCompareRequestPricing,
+        provider_id: typing.Optional[str] = OMIT,
+        location: typing.Optional[V3Location] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3PriceComparison:
+        """
+        Summary statistics (count, min/max/avg/median/q1/q3 as Money) over the prices matching the same request shape as /query, minus sort and pagination.
+        
+        Parameters
+        ----------
+        package_id : str
+        
+        pricing : V3PricesCompareRequestPricing
+        
+        provider_id : typing.Optional[str]
+        
+        location : typing.Optional[V3Location]
+        
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+        
+        Returns
+        -------
+        V3PriceComparison
+            Successful Response
+        
+        Examples
+        --------
+        import asyncio
+        
+        from turquoise-health import AsyncTurquoiseHealth
+        from turquoise-health.consumer_pricing import \
+            V3PricesCompareRequestPricing_Negotiated
+        
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3compare_prices(package_id='RA007', provider_id='2751', pricing=V3PricesCompareRequestPricing_Negotiated(network_id='network_id', ), )
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3compare_prices(
+            package_id=package_id,
+            pricing=pricing,
+            provider_id=provider_id,
+            location=location,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def v3get_price(
+        self,
+        price_id: str,
+        *,
+        expand: typing.Optional[typing.Sequence[V3PriceExpand]] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ProviderPackagePrice:
+        """
+        Fetch a single price by its ID (the id returned by /query). `expand=line_items` attaches the package composition — this replaces v2's provider-breakdown endpoint.
+
+        Parameters
+        ----------
+        price_id : str
+            Price identifier.
+
+        expand : typing.Optional[typing.Sequence[V3PriceExpand]]
+            Relations to inline. Repeat the param to request several.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ProviderPackagePrice
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3get_price(price_id='prc_2751.RA007.8361580493441765265', )
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3get_price(price_id, expand=expand, request_options=request_options)
+        return _response.data
+
+    async def v3list_providers(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        npi: typing.Optional[str] = None,
+        type: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        network_id: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> V3ListEnvelopeProvider:
+        """
+        List providers, filterable by name (case-insensitive substring), npi/type (exact), relationships (package_id/network_id/payer_id — providers with at least one matching price; combined relationship filters must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices), and one location mode: `location.near.*` (ranked by distance), `location.within.*` (state/cbsa/zip_codes), or `location.zip` (ZIP centroid + default 25km radius). Results reflect providers Turquoise has priced services for.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on provider name.
+
+        npi : typing.Optional[str]
+            Exact NPI match.
+
+        type : typing.Optional[str]
+            Provider type as reported in the dataset (exact match).
+
+        package_id : typing.Optional[str]
+            Providers with at least one price for this package.
+
+        network_id : typing.Optional[str]
+            Providers with at least one price under this network (combined with package_id/payer_id, the same price row must match).
+
+        payer_id : typing.Optional[str]
+            Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match).
+
+        search : typing.Optional[str]
+            Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3ListEnvelopeProvider
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3list_providers()
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3list_providers(
+            name=name,
+            npi=npi,
+            type=type,
+            package_id=package_id,
+            network_id=network_id,
+            payer_id=payer_id,
+            search=search,
+            min_score=min_score,
+            page_size=page_size,
+            cursor=cursor,
+            location_near_lat=location_near_lat,
+            location_near_lng=location_near_lng,
+            location_near_radius_m=location_near_radius_m,
+            location_within_state=location_within_state,
+            location_within_cbsa=location_within_cbsa,
+            location_within_zip_codes=location_within_zip_codes,
+            location_zip=location_zip,
+            request_options=request_options,
+        )
+        return _response.data
+
+    async def v3get_provider(
+        self, provider_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> V3Provider:
+        """
+        Fetch a single provider by ID. Missing IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        provider_id : str
+            Provider identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        V3Provider
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3get_provider(provider_id='2743', )
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3get_provider(provider_id, request_options=request_options)
         return _response.data

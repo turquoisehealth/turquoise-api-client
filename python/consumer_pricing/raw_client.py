@@ -12,30 +12,38 @@ from ..core.request_options import RequestOptions
 from ..core.serialization import convert_and_respect_annotation_metadata
 from ..errors.bad_request_error import BadRequestError
 from ..errors.internal_server_error import InternalServerError
+from ..errors.not_found_error import NotFoundError
 from ..errors.too_many_requests_error import TooManyRequestsError
 from ..errors.unprocessable_entity_error import UnprocessableEntityError
-from ..types.care_nav_sort_type import CareNavSortType
 from ..types.envelope_network import EnvelopeNetwork
 from ..types.envelope_provider import EnvelopeProvider
 from ..types.envelope_rate import EnvelopeRate
 from ..types.envelope_ssp import EnvelopeSsp
-from ..types.error_response import ErrorResponse
-from ..types.insurance_network_page import InsuranceNetworkPage
-from ..types.location_input import LocationInput
-from ..types.price_filter import PriceFilter
-from ..types.provider_page import ProviderPage
 from ..types.rate_compare_location import RateCompareLocation
 from ..types.rate_comparison import RateComparison
-from ..types.service_package_page import ServicePackagePage
 from ..types.single_resource_envelope_network import SingleResourceEnvelopeNetwork
 from ..types.single_resource_envelope_provider import SingleResourceEnvelopeProvider
 from ..types.single_resource_envelope_rate_breakdown import SingleResourceEnvelopeRateBreakdown
 from ..types.single_resource_envelope_ssp import SingleResourceEnvelopeSsp
-from ..types.ssp_price_page import SspPricePage
-from .types.compare_ssp_prices_response import CompareSspPricesResponse
-from .types.get_provider_ssp_prices_response import GetProviderSspPricesResponse
-from .types.prices_request_rate_type import PricesRequestRateType
-from .types.rate_compare_request_rate_type import RateCompareRequestRateType
+from ..types.v3error_response import V3ErrorResponse
+from ..types.v3list_envelope_line_item import V3ListEnvelopeLineItem
+from ..types.v3list_envelope_network import V3ListEnvelopeNetwork
+from ..types.v3list_envelope_package import V3ListEnvelopePackage
+from ..types.v3list_envelope_payer import V3ListEnvelopePayer
+from ..types.v3list_envelope_provider import V3ListEnvelopeProvider
+from ..types.v3list_envelope_provider_package_price import V3ListEnvelopeProviderPackagePrice
+from ..types.v3location import V3Location
+from ..types.v3network import V3Network
+from ..types.v3package import V3Package
+from ..types.v3payer import V3Payer
+from ..types.v3price_comparison import V3PriceComparison
+from ..types.v3price_expand import V3PriceExpand
+from ..types.v3price_sort import V3PriceSort
+from ..types.v3provider import V3Provider
+from ..types.v3provider_package_price import V3ProviderPackagePrice
+from .types.v3prices_compare_request_pricing import V3PricesCompareRequestPricing
+from .types.v3prices_query_request_pricing import V3PricesQueryRequestPricing
+from .types.v3prices_query_request_sort_direction import V3PricesQueryRequestSortDirection
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -45,634 +53,33 @@ class RawConsumerPricingClient:
     def __init__(self, *, client_wrapper: SyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    def get_ssps(
-        self,
-        *,
-        ssp_name: typing.Optional[str] = None,
-        ssp_description: typing.Optional[str] = None,
-        search: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ServicePackagePage]:
-        """
-        Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.
-
-        Parameters
-        ----------
-        ssp_name : typing.Optional[str]
-            Filter SSPs by partial name match
-
-        ssp_description : typing.Optional[str]
-            Filter SSPs by partial patient description match
-
-        search : typing.Optional[str]
-            Search SSPs by name or patient description
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[ServicePackagePage]
-            Successful Response
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "v1/consumer-pricing/ssps",
-            method="GET",
-            params={
-                "ssp_name": ssp_name,
-                "ssp_description": ssp_description,
-                "search": search,
-                "page": page,
-                "page_size": page_size,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ServicePackagePage,
-                    parse_obj_as(
-                        type_=ServicePackagePage,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    def get_insurance_networks(
-        self,
-        *,
-        ssp_id: typing.Optional[str] = None,
-        payer_name: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[InsuranceNetworkPage]:
-        """
-        Discover insurance networks, optionally filtered by SSP or payer name.
-
-        Parameters
-        ----------
-        ssp_id : typing.Optional[str]
-            Limit networks to a specific SSP
-
-        payer_name : typing.Optional[str]
-            Filter by payer name
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[InsuranceNetworkPage]
-            Successful Response
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "v1/consumer-pricing/networks",
-            method="GET",
-            params={
-                "ssp_id": ssp_id,
-                "payer_name": payer_name,
-                "page": page,
-                "page_size": page_size,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    InsuranceNetworkPage,
-                    parse_obj_as(
-                        type_=InsuranceNetworkPage,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    def get_providers(
-        self,
-        *,
-        provider_name: typing.Optional[str] = None,
-        npi: typing.Optional[str] = None,
-        city: typing.Optional[str] = None,
-        state: typing.Optional[str] = None,
-        zip_code: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ProviderPage]:
-        """
-        Search for providers by name, NPI, or location.
-
-        Parameters
-        ----------
-        provider_name : typing.Optional[str]
-            Match provider name (case-insensitive)
-
-        npi : typing.Optional[str]
-            Exact provider NPI
-
-        city : typing.Optional[str]
-            Exact provider city
-
-        state : typing.Optional[str]
-            Two-letter state abbreviation
-
-        zip_code : typing.Optional[str]
-            Exact ZIP code
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[ProviderPage]
-            Successful Response
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            "v1/consumer-pricing/providers",
-            method="GET",
-            params={
-                "provider_name": provider_name,
-                "npi": npi,
-                "city": city,
-                "state": state,
-                "zip_code": zip_code,
-                "page": page,
-                "page_size": page_size,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ProviderPage,
-                    parse_obj_as(
-                        type_=ProviderPage,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    def get_ssp_prices(
-        self,
-        ssp_id: str,
-        *,
-        location: LocationInput,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        network_id: typing.Optional[str] = OMIT,
-        price_filter: typing.Optional[PriceFilter] = OMIT,
-        npis: typing.Optional[typing.Sequence[str]] = OMIT,
-        sort_by: typing.Optional[CareNavSortType] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[SspPricePage]:
-        """
-        List of providers that can satisfy a given SSP, with the total expected price, in a given geographic area. Requests support location filtering via ZIP code, CBSA, state, or coordinates. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        location : LocationInput
-            Location to search for providers
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        price_filter : typing.Optional[PriceFilter]
-
-        npis : typing.Optional[typing.Sequence[str]]
-
-        sort_by : typing.Optional[CareNavSortType]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[SspPricePage]
-            Successful Response
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"v1/consumer-pricing/ssps/{jsonable_encoder(ssp_id)}/prices",
-            method="POST",
-            params={
-                "page": page,
-                "page_size": page_size,
-            },
-            json={
-                "location": convert_and_respect_annotation_metadata(
-                    object_=location, annotation=LocationInput, direction="write"
-                ),
-                "network_id": network_id,
-                "price_filter": convert_and_respect_annotation_metadata(
-                    object_=price_filter, annotation=typing.Optional[PriceFilter], direction="write"
-                ),
-                "npis": npis,
-                "sort_by": sort_by,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SspPricePage,
-                    parse_obj_as(
-                        type_=SspPricePage,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    def get_provider_ssp_prices(
-        self,
-        ssp_id: str,
-        provider_id: str,
-        *,
-        network_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[GetProviderSspPricesResponse]:
-        """
-        Get SSP breakdown and fee information about a selected SSP from a single provider. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        provider_id : str
-            Provider identifier
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[GetProviderSspPricesResponse]
-            Successful Response
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"v1/consumer-pricing/ssps/{jsonable_encoder(ssp_id)}/providers/{jsonable_encoder(provider_id)}/prices",
-            method="POST",
-            json={
-                "network_id": network_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetProviderSspPricesResponse,
-                    parse_obj_as(
-                        type_=GetProviderSspPricesResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    def compare_ssp_prices(
-        self,
-        ssp_id: str,
-        *,
-        location: LocationInput,
-        network_id: typing.Optional[str] = OMIT,
-        npis: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[CompareSspPricesResponse]:
-        """
-        Get summary statistics (min, max, average, quartiles) for prices matching the selected filters. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        location : LocationInput
-            Location to search for providers
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        npis : typing.Optional[typing.Sequence[str]]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        HttpResponse[CompareSspPricesResponse]
-            Successful Response
-        """
-        _response = self._client_wrapper.httpx_client.request(
-            f"v1/consumer-pricing/ssps/{jsonable_encoder(ssp_id)}/price-comparison",
-            method="POST",
-            json={
-                "location": convert_and_respect_annotation_metadata(
-                    object_=location, annotation=LocationInput, direction="write"
-                ),
-                "network_id": network_id,
-                "npis": npis,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    CompareSspPricesResponse,
-                    parse_obj_as(
-                        type_=CompareSspPricesResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return HttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
     def v2list_ssps(
         self,
         *,
         name: typing.Optional[str] = None,
         description: typing.Optional[str] = None,
         search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EnvelopeSsp]:
         """
-        Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.
+        Discover available service/surgery packages (SSPs).Supports substring matching on name and description fields as well as a 'search' parameter for semantic search across both fields. When 'search' is provided, other filter parameters are ignored, and pagination is limited to first page of top results.You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on SSP name.
+            Case-insensitive substring match on SSP name. Ignored when 'search' parameter is provided.
 
         description : typing.Optional[str]
-            Case-insensitive substring match on SSP patient description.
+            Case-insensitive substring match on SSP patient description. Ignored when 'search' parameter is provided.
 
         search : typing.Optional[str]
-            Case-insensitive substring match across name OR patient description.
+            Semantic search across SSP name and description using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -695,6 +102,7 @@ class RawConsumerPricingClient:
                 "name": name,
                 "description": description,
                 "search": search,
+                "min_score": min_score,
                 "page_size": page_size,
                 "cursor": cursor,
             },
@@ -714,9 +122,9 @@ class RawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -797,9 +205,9 @@ class RawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -847,6 +255,8 @@ class RawConsumerPricingClient:
         *,
         name: typing.Optional[str] = None,
         npi: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         near_lat: typing.Optional[float] = None,
@@ -859,15 +269,21 @@ class RawConsumerPricingClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EnvelopeProvider]:
         """
-        Search for providers by name, NPI, or location.
+        Search for providers by name, NPI, or location. Supports a 'search' parameter for semantic search across provider names, which can be combined with location filters. When 'search' is provided, the name and npi filters are ignored, and pagination is limited to first page of top results. You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on provider name.
+            Case-insensitive substring match on provider name. Ignored when 'search' parameter is provided.
 
         npi : typing.Optional[str]
-            Exact NPI match.
+            Exact NPI match. Ignored when 'search' parameter is provided.
+
+        search : typing.Optional[str]
+            Semantic search across provider names using AI embeddings. Returns results with similarity scores. Can be combined with location filters (within.*, near.*, zip_anchor) to restrict results before ranking. When provided, the name and npi filters are ignored and pagination is limited to the first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -910,6 +326,8 @@ class RawConsumerPricingClient:
             params={
                 "name": name,
                 "npi": npi,
+                "search": search,
+                "min_score": min_score,
                 "page_size": page_size,
                 "cursor": cursor,
                 "near.lat": near_lat,
@@ -936,9 +354,9 @@ class RawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1019,9 +437,9 @@ class RawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1069,20 +487,28 @@ class RawConsumerPricingClient:
         *,
         name: typing.Optional[str] = None,
         payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[EnvelopeNetwork]:
         """
-        Discover insurance networks, optionally filtered by network name, payer name, or payer ID.
+        Discover insurance networks, optionally filtered by network name, payer name, or payer ID, or by semantic search across network and payer names. When using the 'search' parameter for semantic search, other filter parameters (name, payer_id) are ignored, and pagination is limited to the first page of top results.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on network or payer name.
+            Case-insensitive substring match on network or payer name. Ignored when 'search' parameter is provided.
 
         payer_id : typing.Optional[str]
-            Filter to networks under this payer.
+            Filter to networks under this payer. Ignored when 'search' parameter is provided.
+
+        search : typing.Optional[str]
+            Semantic search across network and payer names using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to the first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -1104,6 +530,8 @@ class RawConsumerPricingClient:
             params={
                 "name": name,
                 "payer_id": payer_id,
+                "search": search,
+                "min_score": min_score,
                 "page_size": page_size,
                 "cursor": cursor,
             },
@@ -1123,9 +551,9 @@ class RawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1206,9 +634,9 @@ class RawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1257,7 +685,6 @@ class RawConsumerPricingClient:
         ssp_id: typing.Optional[str] = OMIT,
         provider_id: typing.Optional[str] = OMIT,
         network_id: typing.Optional[str] = OMIT,
-        rate_type: typing.Optional[PricesRequestRateType] = OMIT,
         location: typing.Optional[RateCompareLocation] = OMIT,
         page_size: typing.Optional[int] = OMIT,
         cursor: typing.Optional[str] = OMIT,
@@ -1275,10 +702,7 @@ class RawConsumerPricingClient:
             Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         network_id : typing.Optional[str]
-            Filter to a single insurance network. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
-
-        rate_type : typing.Optional[PricesRequestRateType]
-            `cash` filters to rows with no network. `negotiated` requires a network match.
+            Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         location : typing.Optional[RateCompareLocation]
             Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes.
@@ -1304,7 +728,6 @@ class RawConsumerPricingClient:
                 "ssp_id": ssp_id,
                 "provider_id": provider_id,
                 "network_id": network_id,
-                "rate_type": rate_type,
                 "location": convert_and_respect_annotation_metadata(
                     object_=location, annotation=typing.Optional[RateCompareLocation], direction="write"
                 ),
@@ -1331,9 +754,9 @@ class RawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1434,9 +857,9 @@ class RawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1485,7 +908,6 @@ class RawConsumerPricingClient:
         ssp_id: typing.Optional[str] = OMIT,
         provider_id: typing.Optional[str] = OMIT,
         network_id: typing.Optional[str] = OMIT,
-        rate_type: typing.Optional[RateCompareRequestRateType] = OMIT,
         location: typing.Optional[RateCompareLocation] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> HttpResponse[RateComparison]:
@@ -1501,10 +923,7 @@ class RawConsumerPricingClient:
             Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         network_id : typing.Optional[str]
-            Filter to a single insurance network. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
-
-        rate_type : typing.Optional[RateCompareRequestRateType]
-            `cash` filters to rows with no network. `negotiated` requires a network match.
+            Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         location : typing.Optional[RateCompareLocation]
             Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes.
@@ -1524,7 +943,6 @@ class RawConsumerPricingClient:
                 "ssp_id": ssp_id,
                 "provider_id": provider_id,
                 "network_id": network_id,
-                "rate_type": rate_type,
                 "location": convert_and_respect_annotation_metadata(
                     object_=location, annotation=typing.Optional[RateCompareLocation], direction="write"
                 ),
@@ -1549,9 +967,1465 @@ class RawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3list_networks(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[V3ListEnvelopeNetwork]:
+        """
+        List negotiated-rate networks, filterable by name (case-insensitive substring, matches network or payer name), payer_id (exact), relationships (provider_id/package_id — networks with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to networks with at least one price at an in-area provider, so `package_id` + location answers 'which networks price this package here' in one call. Results reflect networks Turquoise has priced. The network's payer is an {id, name} stub; the full entity lives at /v3/payers/{id}.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on network or payer name.
+
+        payer_id : typing.Optional[str]
+            Exact payer id match.
+
+        provider_id : typing.Optional[str]
+            Networks with at least one price at this provider.
+
+        package_id : typing.Optional[str]
+            Networks with at least one price for this package.
+
+        search : typing.Optional[str]
+            Semantic search over network and payer names. Composes with the other filters; returns a single relevance-ordered page (no cursor).
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3ListEnvelopeNetwork]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v3/networks",
+            method="GET",
+            params={
+                "name": name,
+                "payer_id": payer_id,
+                "provider_id": provider_id,
+                "package_id": package_id,
+                "search": search,
+                "min_score": min_score,
+                "page_size": page_size,
+                "cursor": cursor,
+                "location.near.lat": location_near_lat,
+                "location.near.lng": location_near_lng,
+                "location.near.radius_m": location_near_radius_m,
+                "location.within.state": location_within_state,
+                "location.within.cbsa": location_within_cbsa,
+                "location.within.zip_codes": location_within_zip_codes,
+                "location.zip": location_zip,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopeNetwork,
+                    parse_obj_as(
+                        type_=V3ListEnvelopeNetwork,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3get_network(
+        self, network_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[V3Network]:
+        """
+        Fetch a single network by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        network_id : str
+            Network identifier (string-wrapped 64-bit integer).
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3Network]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v3/networks/{jsonable_encoder(network_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3Network,
+                    parse_obj_as(
+                        type_=V3Network,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3list_packages(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        anchor_code: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        network_id: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[V3ListEnvelopePackage]:
+        """
+        List service packages, filterable by name (case-insensitive substring), anchor billing code (exact, matches package base codes only), and relationships (provider_id, network_id, payer_id — packages with at least one matching price). When multiple relationship filters are combined, they must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices. Results reflect packages Turquoise has priced.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on package name.
+
+        anchor_code : typing.Optional[str]
+            Billing code lookup; matches against anchor_codes[].code (package base codes only). Returns every package anchored by the code — exactly one in the current catalog, but uniqueness is not contractual (an anchor's full upstream identity includes revenue code and billing class, which this API collapses).
+
+        provider_id : typing.Optional[str]
+            Packages priced at this provider.
+
+        network_id : typing.Optional[str]
+            Packages with at least one price under this network (combined with provider_id/payer_id, the same price row must match).
+
+        payer_id : typing.Optional[str]
+            Packages priced under any of this payer's networks (combined with other relationship filters, the same price row must match).
+
+        search : typing.Optional[str]
+            Semantic search over package name and description. Composes with the other filters; returns a single relevance-ordered page (no cursor). 503 search_unavailable when the embedding index is not populated.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3ListEnvelopePackage]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v3/packages",
+            method="GET",
+            params={
+                "name": name,
+                "anchor_code": anchor_code,
+                "provider_id": provider_id,
+                "network_id": network_id,
+                "payer_id": payer_id,
+                "search": search,
+                "min_score": min_score,
+                "page_size": page_size,
+                "cursor": cursor,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopePackage,
+                    parse_obj_as(
+                        type_=V3ListEnvelopePackage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3get_package(
+        self, package_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[V3Package]:
+        """
+        Fetch a single package by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        package_id : str
+            Package identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3Package]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v3/packages/{jsonable_encoder(package_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3Package,
+                    parse_obj_as(
+                        type_=V3Package,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3list_package_line_items(
+        self, package_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[V3ListEnvelopeLineItem]:
+        """
+        The package's composition: codes, fee types, and association rates at the current package version.
+
+        Parameters
+        ----------
+        package_id : str
+            Package identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3ListEnvelopeLineItem]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v3/packages/{jsonable_encoder(package_id)}/line_items",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopeLineItem,
+                    parse_obj_as(
+                        type_=V3ListEnvelopeLineItem,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3list_payers(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[V3ListEnvelopePayer]:
+        """
+        List payers, filterable by name (case-insensitive substring), relationships (provider_id/package_id — payers with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to payers with at least one price at an in-area provider. Results reflect payers Turquoise has priced.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on payer name.
+
+        provider_id : typing.Optional[str]
+            Payers with at least one price at this provider.
+
+        package_id : typing.Optional[str]
+            Payers with at least one price for this package.
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3ListEnvelopePayer]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v3/payers",
+            method="GET",
+            params={
+                "name": name,
+                "provider_id": provider_id,
+                "package_id": package_id,
+                "page_size": page_size,
+                "cursor": cursor,
+                "location.near.lat": location_near_lat,
+                "location.near.lng": location_near_lng,
+                "location.near.radius_m": location_near_radius_m,
+                "location.within.state": location_within_state,
+                "location.within.cbsa": location_within_cbsa,
+                "location.within.zip_codes": location_within_zip_codes,
+                "location.zip": location_zip,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopePayer,
+                    parse_obj_as(
+                        type_=V3ListEnvelopePayer,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3get_payer(
+        self, payer_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[V3Payer]:
+        """
+        Fetch a single payer by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        payer_id : str
+            Payer identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3Payer]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v3/payers/{jsonable_encoder(payer_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3Payer,
+                    parse_obj_as(
+                        type_=V3Payer,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3query_prices(
+        self,
+        *,
+        package_id: str,
+        pricing: V3PricesQueryRequestPricing,
+        provider_id: typing.Optional[str] = OMIT,
+        location: typing.Optional[V3Location] = OMIT,
+        sort: typing.Optional[V3PriceSort] = OMIT,
+        sort_direction: typing.Optional[V3PricesQueryRequestSortDirection] = OMIT,
+        page_size: typing.Optional[int] = OMIT,
+        cursor: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[V3ListEnvelopeProviderPackagePrice]:
+        """
+        Search prices at the provider × package × pricing grain.
+
+        Parameters
+        ----------
+        package_id : str
+
+        pricing : V3PricesQueryRequestPricing
+
+        provider_id : typing.Optional[str]
+
+        location : typing.Optional[V3Location]
+
+        sort : typing.Optional[V3PriceSort]
+            `total` (default) or `distance` (requires a near/zip location).
+
+        sort_direction : typing.Optional[V3PricesQueryRequestSortDirection]
+            Sort order. Defaults to ascending (lowest total / nearest first).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3ListEnvelopeProviderPackagePrice]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v3/prices/query",
+            method="POST",
+            json={
+                "package_id": package_id,
+                "provider_id": provider_id,
+                "pricing": convert_and_respect_annotation_metadata(
+                    object_=pricing, annotation=V3PricesQueryRequestPricing, direction="write"
+                ),
+                "location": convert_and_respect_annotation_metadata(
+                    object_=location, annotation=typing.Optional[V3Location], direction="write"
+                ),
+                "sort": sort,
+                "sort_direction": sort_direction,
+                "page_size": page_size,
+                "cursor": cursor,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopeProviderPackagePrice,
+                    parse_obj_as(
+                        type_=V3ListEnvelopeProviderPackagePrice,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3compare_prices(
+        self,
+        *,
+        package_id: str,
+        pricing: V3PricesCompareRequestPricing,
+        provider_id: typing.Optional[str] = OMIT,
+        location: typing.Optional[V3Location] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[V3PriceComparison]:
+        """
+        Summary statistics (count, min/max/avg/median/q1/q3 as Money) over the prices matching the same request shape as /query, minus sort and pagination.
+
+        Parameters
+        ----------
+        package_id : str
+
+        pricing : V3PricesCompareRequestPricing
+
+        provider_id : typing.Optional[str]
+
+        location : typing.Optional[V3Location]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3PriceComparison]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v3/prices/compare",
+            method="POST",
+            json={
+                "package_id": package_id,
+                "provider_id": provider_id,
+                "pricing": convert_and_respect_annotation_metadata(
+                    object_=pricing, annotation=V3PricesCompareRequestPricing, direction="write"
+                ),
+                "location": convert_and_respect_annotation_metadata(
+                    object_=location, annotation=typing.Optional[V3Location], direction="write"
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3PriceComparison,
+                    parse_obj_as(
+                        type_=V3PriceComparison,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3get_price(
+        self,
+        price_id: str,
+        *,
+        expand: typing.Optional[typing.Sequence[V3PriceExpand]] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[V3ProviderPackagePrice]:
+        """
+        Fetch a single price by its ID (the id returned by /query). `expand=line_items` attaches the package composition — this replaces v2's provider-breakdown endpoint.
+
+        Parameters
+        ----------
+        price_id : str
+            Price identifier.
+
+        expand : typing.Optional[typing.Sequence[V3PriceExpand]]
+            Relations to inline. Repeat the param to request several.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3ProviderPackagePrice]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v3/prices/{jsonable_encoder(price_id)}",
+            method="GET",
+            params={
+                "expand": expand,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ProviderPackagePrice,
+                    parse_obj_as(
+                        type_=V3ProviderPackagePrice,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3list_providers(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        npi: typing.Optional[str] = None,
+        type: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        network_id: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> HttpResponse[V3ListEnvelopeProvider]:
+        """
+        List providers, filterable by name (case-insensitive substring), npi/type (exact), relationships (package_id/network_id/payer_id — providers with at least one matching price; combined relationship filters must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices), and one location mode: `location.near.*` (ranked by distance), `location.within.*` (state/cbsa/zip_codes), or `location.zip` (ZIP centroid + default 25km radius). Results reflect providers Turquoise has priced services for.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on provider name.
+
+        npi : typing.Optional[str]
+            Exact NPI match.
+
+        type : typing.Optional[str]
+            Provider type as reported in the dataset (exact match).
+
+        package_id : typing.Optional[str]
+            Providers with at least one price for this package.
+
+        network_id : typing.Optional[str]
+            Providers with at least one price under this network (combined with package_id/payer_id, the same price row must match).
+
+        payer_id : typing.Optional[str]
+            Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match).
+
+        search : typing.Optional[str]
+            Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3ListEnvelopeProvider]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            "v3/providers",
+            method="GET",
+            params={
+                "name": name,
+                "npi": npi,
+                "type": type,
+                "package_id": package_id,
+                "network_id": network_id,
+                "payer_id": payer_id,
+                "search": search,
+                "min_score": min_score,
+                "page_size": page_size,
+                "cursor": cursor,
+                "location.near.lat": location_near_lat,
+                "location.near.lng": location_near_lng,
+                "location.near.radius_m": location_near_radius_m,
+                "location.within.state": location_within_state,
+                "location.within.cbsa": location_within_cbsa,
+                "location.within.zip_codes": location_within_zip_codes,
+                "location.zip": location_zip,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopeProvider,
+                    parse_obj_as(
+                        type_=V3ListEnvelopeProvider,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    def v3get_provider(
+        self, provider_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> HttpResponse[V3Provider]:
+        """
+        Fetch a single provider by ID. Missing IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        provider_id : str
+            Provider identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        HttpResponse[V3Provider]
+            Successful Response
+        """
+        _response = self._client_wrapper.httpx_client.request(
+            f"v3/providers/{jsonable_encoder(provider_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3Provider,
+                    parse_obj_as(
+                        type_=V3Provider,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return HttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -1599,634 +2473,33 @@ class AsyncRawConsumerPricingClient:
     def __init__(self, *, client_wrapper: AsyncClientWrapper):
         self._client_wrapper = client_wrapper
 
-    async def get_ssps(
-        self,
-        *,
-        ssp_name: typing.Optional[str] = None,
-        ssp_description: typing.Optional[str] = None,
-        search: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ServicePackagePage]:
-        """
-        Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.
-
-        Parameters
-        ----------
-        ssp_name : typing.Optional[str]
-            Filter SSPs by partial name match
-
-        ssp_description : typing.Optional[str]
-            Filter SSPs by partial patient description match
-
-        search : typing.Optional[str]
-            Search SSPs by name or patient description
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[ServicePackagePage]
-            Successful Response
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "v1/consumer-pricing/ssps",
-            method="GET",
-            params={
-                "ssp_name": ssp_name,
-                "ssp_description": ssp_description,
-                "search": search,
-                "page": page,
-                "page_size": page_size,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ServicePackagePage,
-                    parse_obj_as(
-                        type_=ServicePackagePage,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    async def get_insurance_networks(
-        self,
-        *,
-        ssp_id: typing.Optional[str] = None,
-        payer_name: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[InsuranceNetworkPage]:
-        """
-        Discover insurance networks, optionally filtered by SSP or payer name.
-
-        Parameters
-        ----------
-        ssp_id : typing.Optional[str]
-            Limit networks to a specific SSP
-
-        payer_name : typing.Optional[str]
-            Filter by payer name
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[InsuranceNetworkPage]
-            Successful Response
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "v1/consumer-pricing/networks",
-            method="GET",
-            params={
-                "ssp_id": ssp_id,
-                "payer_name": payer_name,
-                "page": page,
-                "page_size": page_size,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    InsuranceNetworkPage,
-                    parse_obj_as(
-                        type_=InsuranceNetworkPage,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    async def get_providers(
-        self,
-        *,
-        provider_name: typing.Optional[str] = None,
-        npi: typing.Optional[str] = None,
-        city: typing.Optional[str] = None,
-        state: typing.Optional[str] = None,
-        zip_code: typing.Optional[str] = None,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ProviderPage]:
-        """
-        Search for providers by name, NPI, or location.
-
-        Parameters
-        ----------
-        provider_name : typing.Optional[str]
-            Match provider name (case-insensitive)
-
-        npi : typing.Optional[str]
-            Exact provider NPI
-
-        city : typing.Optional[str]
-            Exact provider city
-
-        state : typing.Optional[str]
-            Two-letter state abbreviation
-
-        zip_code : typing.Optional[str]
-            Exact ZIP code
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[ProviderPage]
-            Successful Response
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            "v1/consumer-pricing/providers",
-            method="GET",
-            params={
-                "provider_name": provider_name,
-                "npi": npi,
-                "city": city,
-                "state": state,
-                "zip_code": zip_code,
-                "page": page,
-                "page_size": page_size,
-            },
-            request_options=request_options,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    ProviderPage,
-                    parse_obj_as(
-                        type_=ProviderPage,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    async def get_ssp_prices(
-        self,
-        ssp_id: str,
-        *,
-        location: LocationInput,
-        page: typing.Optional[int] = None,
-        page_size: typing.Optional[int] = None,
-        network_id: typing.Optional[str] = OMIT,
-        price_filter: typing.Optional[PriceFilter] = OMIT,
-        npis: typing.Optional[typing.Sequence[str]] = OMIT,
-        sort_by: typing.Optional[CareNavSortType] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[SspPricePage]:
-        """
-        List of providers that can satisfy a given SSP, with the total expected price, in a given geographic area. Requests support location filtering via ZIP code, CBSA, state, or coordinates. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        location : LocationInput
-            Location to search for providers
-
-        page : typing.Optional[int]
-            Page number
-
-        page_size : typing.Optional[int]
-            Page size
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        price_filter : typing.Optional[PriceFilter]
-
-        npis : typing.Optional[typing.Sequence[str]]
-
-        sort_by : typing.Optional[CareNavSortType]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[SspPricePage]
-            Successful Response
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"v1/consumer-pricing/ssps/{jsonable_encoder(ssp_id)}/prices",
-            method="POST",
-            params={
-                "page": page,
-                "page_size": page_size,
-            },
-            json={
-                "location": convert_and_respect_annotation_metadata(
-                    object_=location, annotation=LocationInput, direction="write"
-                ),
-                "network_id": network_id,
-                "price_filter": convert_and_respect_annotation_metadata(
-                    object_=price_filter, annotation=typing.Optional[PriceFilter], direction="write"
-                ),
-                "npis": npis,
-                "sort_by": sort_by,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    SspPricePage,
-                    parse_obj_as(
-                        type_=SspPricePage,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    async def get_provider_ssp_prices(
-        self,
-        ssp_id: str,
-        provider_id: str,
-        *,
-        network_id: typing.Optional[str] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[GetProviderSspPricesResponse]:
-        """
-        Get SSP breakdown and fee information about a selected SSP from a single provider. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        provider_id : str
-            Provider identifier
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[GetProviderSspPricesResponse]
-            Successful Response
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"v1/consumer-pricing/ssps/{jsonable_encoder(ssp_id)}/providers/{jsonable_encoder(provider_id)}/prices",
-            method="POST",
-            json={
-                "network_id": network_id,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    GetProviderSspPricesResponse,
-                    parse_obj_as(
-                        type_=GetProviderSspPricesResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
-    async def compare_ssp_prices(
-        self,
-        ssp_id: str,
-        *,
-        location: LocationInput,
-        network_id: typing.Optional[str] = OMIT,
-        npis: typing.Optional[typing.Sequence[str]] = OMIT,
-        request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[CompareSspPricesResponse]:
-        """
-        Get summary statistics (min, max, average, quartiles) for prices matching the selected filters. When no Network ID is provided, cash prices are shown.
-
-        Parameters
-        ----------
-        ssp_id : str
-            Standard service package identifier
-
-        location : LocationInput
-            Location to search for providers
-
-        network_id : typing.Optional[str]
-            Insurance network identifier
-
-        npis : typing.Optional[typing.Sequence[str]]
-
-        request_options : typing.Optional[RequestOptions]
-            Request-specific configuration.
-
-        Returns
-        -------
-        AsyncHttpResponse[CompareSspPricesResponse]
-            Successful Response
-        """
-        _response = await self._client_wrapper.httpx_client.request(
-            f"v1/consumer-pricing/ssps/{jsonable_encoder(ssp_id)}/price-comparison",
-            method="POST",
-            json={
-                "location": convert_and_respect_annotation_metadata(
-                    object_=location, annotation=LocationInput, direction="write"
-                ),
-                "network_id": network_id,
-                "npis": npis,
-            },
-            headers={
-                "content-type": "application/json",
-            },
-            request_options=request_options,
-            omit=OMIT,
-        )
-        try:
-            if 200 <= _response.status_code < 300:
-                _data = typing.cast(
-                    CompareSspPricesResponse,
-                    parse_obj_as(
-                        type_=CompareSspPricesResponse,  # type: ignore
-                        object_=_response.json(),
-                    ),
-                )
-                return AsyncHttpResponse(response=_response, data=_data)
-            if _response.status_code == 422:
-                raise UnprocessableEntityError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 429:
-                raise TooManyRequestsError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            if _response.status_code == 500:
-                raise InternalServerError(
-                    headers=dict(_response.headers),
-                    body=typing.cast(
-                        typing.Any,
-                        parse_obj_as(
-                            type_=typing.Any,  # type: ignore
-                            object_=_response.json(),
-                        ),
-                    ),
-                )
-            _response_json = _response.json()
-        except JSONDecodeError:
-            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
-        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
-
     async def v2list_ssps(
         self,
         *,
         name: typing.Optional[str] = None,
         description: typing.Optional[str] = None,
         search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EnvelopeSsp]:
         """
-        Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.
+        Discover available service/surgery packages (SSPs).Supports substring matching on name and description fields as well as a 'search' parameter for semantic search across both fields. When 'search' is provided, other filter parameters are ignored, and pagination is limited to first page of top results.You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on SSP name.
+            Case-insensitive substring match on SSP name. Ignored when 'search' parameter is provided.
 
         description : typing.Optional[str]
-            Case-insensitive substring match on SSP patient description.
+            Case-insensitive substring match on SSP patient description. Ignored when 'search' parameter is provided.
 
         search : typing.Optional[str]
-            Case-insensitive substring match across name OR patient description.
+            Semantic search across SSP name and description using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -2249,6 +2522,7 @@ class AsyncRawConsumerPricingClient:
                 "name": name,
                 "description": description,
                 "search": search,
+                "min_score": min_score,
                 "page_size": page_size,
                 "cursor": cursor,
             },
@@ -2268,9 +2542,9 @@ class AsyncRawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2351,9 +2625,9 @@ class AsyncRawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2401,6 +2675,8 @@ class AsyncRawConsumerPricingClient:
         *,
         name: typing.Optional[str] = None,
         npi: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         near_lat: typing.Optional[float] = None,
@@ -2413,15 +2689,21 @@ class AsyncRawConsumerPricingClient:
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EnvelopeProvider]:
         """
-        Search for providers by name, NPI, or location.
+        Search for providers by name, NPI, or location. Supports a 'search' parameter for semantic search across provider names, which can be combined with location filters. When 'search' is provided, the name and npi filters are ignored, and pagination is limited to first page of top results. You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on provider name.
+            Case-insensitive substring match on provider name. Ignored when 'search' parameter is provided.
 
         npi : typing.Optional[str]
-            Exact NPI match.
+            Exact NPI match. Ignored when 'search' parameter is provided.
+
+        search : typing.Optional[str]
+            Semantic search across provider names using AI embeddings. Returns results with similarity scores. Can be combined with location filters (within.*, near.*, zip_anchor) to restrict results before ranking. When provided, the name and npi filters are ignored and pagination is limited to the first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -2464,6 +2746,8 @@ class AsyncRawConsumerPricingClient:
             params={
                 "name": name,
                 "npi": npi,
+                "search": search,
+                "min_score": min_score,
                 "page_size": page_size,
                 "cursor": cursor,
                 "near.lat": near_lat,
@@ -2490,9 +2774,9 @@ class AsyncRawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2573,9 +2857,9 @@ class AsyncRawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2623,20 +2907,28 @@ class AsyncRawConsumerPricingClient:
         *,
         name: typing.Optional[str] = None,
         payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
         page_size: typing.Optional[int] = None,
         cursor: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[EnvelopeNetwork]:
         """
-        Discover insurance networks, optionally filtered by network name, payer name, or payer ID.
+        Discover insurance networks, optionally filtered by network name, payer name, or payer ID, or by semantic search across network and payer names. When using the 'search' parameter for semantic search, other filter parameters (name, payer_id) are ignored, and pagination is limited to the first page of top results.
 
         Parameters
         ----------
         name : typing.Optional[str]
-            Case-insensitive substring match on network or payer name.
+            Case-insensitive substring match on network or payer name. Ignored when 'search' parameter is provided.
 
         payer_id : typing.Optional[str]
-            Filter to networks under this payer.
+            Filter to networks under this payer. Ignored when 'search' parameter is provided.
+
+        search : typing.Optional[str]
+            Semantic search across network and payer names using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to the first page of top results.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.
 
         page_size : typing.Optional[int]
             Page size.
@@ -2658,6 +2950,8 @@ class AsyncRawConsumerPricingClient:
             params={
                 "name": name,
                 "payer_id": payer_id,
+                "search": search,
+                "min_score": min_score,
                 "page_size": page_size,
                 "cursor": cursor,
             },
@@ -2677,9 +2971,9 @@ class AsyncRawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2760,9 +3054,9 @@ class AsyncRawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2811,7 +3105,6 @@ class AsyncRawConsumerPricingClient:
         ssp_id: typing.Optional[str] = OMIT,
         provider_id: typing.Optional[str] = OMIT,
         network_id: typing.Optional[str] = OMIT,
-        rate_type: typing.Optional[PricesRequestRateType] = OMIT,
         location: typing.Optional[RateCompareLocation] = OMIT,
         page_size: typing.Optional[int] = OMIT,
         cursor: typing.Optional[str] = OMIT,
@@ -2829,10 +3122,7 @@ class AsyncRawConsumerPricingClient:
             Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         network_id : typing.Optional[str]
-            Filter to a single insurance network. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
-
-        rate_type : typing.Optional[PricesRequestRateType]
-            `cash` filters to rows with no network. `negotiated` requires a network match.
+            Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         location : typing.Optional[RateCompareLocation]
             Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes.
@@ -2858,7 +3148,6 @@ class AsyncRawConsumerPricingClient:
                 "ssp_id": ssp_id,
                 "provider_id": provider_id,
                 "network_id": network_id,
-                "rate_type": rate_type,
                 "location": convert_and_respect_annotation_metadata(
                     object_=location, annotation=typing.Optional[RateCompareLocation], direction="write"
                 ),
@@ -2885,9 +3174,9 @@ class AsyncRawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -2988,9 +3277,9 @@ class AsyncRawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),
@@ -3039,7 +3328,6 @@ class AsyncRawConsumerPricingClient:
         ssp_id: typing.Optional[str] = OMIT,
         provider_id: typing.Optional[str] = OMIT,
         network_id: typing.Optional[str] = OMIT,
-        rate_type: typing.Optional[RateCompareRequestRateType] = OMIT,
         location: typing.Optional[RateCompareLocation] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
     ) -> AsyncHttpResponse[RateComparison]:
@@ -3055,10 +3343,7 @@ class AsyncRawConsumerPricingClient:
             Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         network_id : typing.Optional[str]
-            Filter to a single insurance network. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
-
-        rate_type : typing.Optional[RateCompareRequestRateType]
-            `cash` filters to rows with no network. `negotiated` requires a network match.
+            Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
 
         location : typing.Optional[RateCompareLocation]
             Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes.
@@ -3078,7 +3363,6 @@ class AsyncRawConsumerPricingClient:
                 "ssp_id": ssp_id,
                 "provider_id": provider_id,
                 "network_id": network_id,
-                "rate_type": rate_type,
                 "location": convert_and_respect_annotation_metadata(
                     object_=location, annotation=typing.Optional[RateCompareLocation], direction="write"
                 ),
@@ -3103,9 +3387,1465 @@ class AsyncRawConsumerPricingClient:
                 raise BadRequestError(
                     headers=dict(_response.headers),
                     body=typing.cast(
-                        ErrorResponse,
+                        typing.Any,
                         parse_obj_as(
-                            type_=ErrorResponse,  # type: ignore
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3list_networks(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[V3ListEnvelopeNetwork]:
+        """
+        List negotiated-rate networks, filterable by name (case-insensitive substring, matches network or payer name), payer_id (exact), relationships (provider_id/package_id — networks with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to networks with at least one price at an in-area provider, so `package_id` + location answers 'which networks price this package here' in one call. Results reflect networks Turquoise has priced. The network's payer is an {id, name} stub; the full entity lives at /v3/payers/{id}.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on network or payer name.
+
+        payer_id : typing.Optional[str]
+            Exact payer id match.
+
+        provider_id : typing.Optional[str]
+            Networks with at least one price at this provider.
+
+        package_id : typing.Optional[str]
+            Networks with at least one price for this package.
+
+        search : typing.Optional[str]
+            Semantic search over network and payer names. Composes with the other filters; returns a single relevance-ordered page (no cursor).
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3ListEnvelopeNetwork]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v3/networks",
+            method="GET",
+            params={
+                "name": name,
+                "payer_id": payer_id,
+                "provider_id": provider_id,
+                "package_id": package_id,
+                "search": search,
+                "min_score": min_score,
+                "page_size": page_size,
+                "cursor": cursor,
+                "location.near.lat": location_near_lat,
+                "location.near.lng": location_near_lng,
+                "location.near.radius_m": location_near_radius_m,
+                "location.within.state": location_within_state,
+                "location.within.cbsa": location_within_cbsa,
+                "location.within.zip_codes": location_within_zip_codes,
+                "location.zip": location_zip,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopeNetwork,
+                    parse_obj_as(
+                        type_=V3ListEnvelopeNetwork,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3get_network(
+        self, network_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[V3Network]:
+        """
+        Fetch a single network by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        network_id : str
+            Network identifier (string-wrapped 64-bit integer).
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3Network]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v3/networks/{jsonable_encoder(network_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3Network,
+                    parse_obj_as(
+                        type_=V3Network,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3list_packages(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        anchor_code: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        network_id: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[V3ListEnvelopePackage]:
+        """
+        List service packages, filterable by name (case-insensitive substring), anchor billing code (exact, matches package base codes only), and relationships (provider_id, network_id, payer_id — packages with at least one matching price). When multiple relationship filters are combined, they must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices. Results reflect packages Turquoise has priced.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on package name.
+
+        anchor_code : typing.Optional[str]
+            Billing code lookup; matches against anchor_codes[].code (package base codes only). Returns every package anchored by the code — exactly one in the current catalog, but uniqueness is not contractual (an anchor's full upstream identity includes revenue code and billing class, which this API collapses).
+
+        provider_id : typing.Optional[str]
+            Packages priced at this provider.
+
+        network_id : typing.Optional[str]
+            Packages with at least one price under this network (combined with provider_id/payer_id, the same price row must match).
+
+        payer_id : typing.Optional[str]
+            Packages priced under any of this payer's networks (combined with other relationship filters, the same price row must match).
+
+        search : typing.Optional[str]
+            Semantic search over package name and description. Composes with the other filters; returns a single relevance-ordered page (no cursor). 503 search_unavailable when the embedding index is not populated.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3ListEnvelopePackage]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v3/packages",
+            method="GET",
+            params={
+                "name": name,
+                "anchor_code": anchor_code,
+                "provider_id": provider_id,
+                "network_id": network_id,
+                "payer_id": payer_id,
+                "search": search,
+                "min_score": min_score,
+                "page_size": page_size,
+                "cursor": cursor,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopePackage,
+                    parse_obj_as(
+                        type_=V3ListEnvelopePackage,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3get_package(
+        self, package_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[V3Package]:
+        """
+        Fetch a single package by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        package_id : str
+            Package identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3Package]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v3/packages/{jsonable_encoder(package_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3Package,
+                    parse_obj_as(
+                        type_=V3Package,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3list_package_line_items(
+        self, package_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[V3ListEnvelopeLineItem]:
+        """
+        The package's composition: codes, fee types, and association rates at the current package version.
+
+        Parameters
+        ----------
+        package_id : str
+            Package identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3ListEnvelopeLineItem]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v3/packages/{jsonable_encoder(package_id)}/line_items",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopeLineItem,
+                    parse_obj_as(
+                        type_=V3ListEnvelopeLineItem,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3list_payers(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        provider_id: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[V3ListEnvelopePayer]:
+        """
+        List payers, filterable by name (case-insensitive substring), relationships (provider_id/package_id — payers with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to payers with at least one price at an in-area provider. Results reflect payers Turquoise has priced.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on payer name.
+
+        provider_id : typing.Optional[str]
+            Payers with at least one price at this provider.
+
+        package_id : typing.Optional[str]
+            Payers with at least one price for this package.
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3ListEnvelopePayer]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v3/payers",
+            method="GET",
+            params={
+                "name": name,
+                "provider_id": provider_id,
+                "package_id": package_id,
+                "page_size": page_size,
+                "cursor": cursor,
+                "location.near.lat": location_near_lat,
+                "location.near.lng": location_near_lng,
+                "location.near.radius_m": location_near_radius_m,
+                "location.within.state": location_within_state,
+                "location.within.cbsa": location_within_cbsa,
+                "location.within.zip_codes": location_within_zip_codes,
+                "location.zip": location_zip,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopePayer,
+                    parse_obj_as(
+                        type_=V3ListEnvelopePayer,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3get_payer(
+        self, payer_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[V3Payer]:
+        """
+        Fetch a single payer by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        payer_id : str
+            Payer identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3Payer]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v3/payers/{jsonable_encoder(payer_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3Payer,
+                    parse_obj_as(
+                        type_=V3Payer,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3query_prices(
+        self,
+        *,
+        package_id: str,
+        pricing: V3PricesQueryRequestPricing,
+        provider_id: typing.Optional[str] = OMIT,
+        location: typing.Optional[V3Location] = OMIT,
+        sort: typing.Optional[V3PriceSort] = OMIT,
+        sort_direction: typing.Optional[V3PricesQueryRequestSortDirection] = OMIT,
+        page_size: typing.Optional[int] = OMIT,
+        cursor: typing.Optional[str] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[V3ListEnvelopeProviderPackagePrice]:
+        """
+        Search prices at the provider × package × pricing grain.
+
+        Parameters
+        ----------
+        package_id : str
+
+        pricing : V3PricesQueryRequestPricing
+
+        provider_id : typing.Optional[str]
+
+        location : typing.Optional[V3Location]
+
+        sort : typing.Optional[V3PriceSort]
+            `total` (default) or `distance` (requires a near/zip location).
+
+        sort_direction : typing.Optional[V3PricesQueryRequestSortDirection]
+            Sort order. Defaults to ascending (lowest total / nearest first).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3ListEnvelopeProviderPackagePrice]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v3/prices/query",
+            method="POST",
+            json={
+                "package_id": package_id,
+                "provider_id": provider_id,
+                "pricing": convert_and_respect_annotation_metadata(
+                    object_=pricing, annotation=V3PricesQueryRequestPricing, direction="write"
+                ),
+                "location": convert_and_respect_annotation_metadata(
+                    object_=location, annotation=typing.Optional[V3Location], direction="write"
+                ),
+                "sort": sort,
+                "sort_direction": sort_direction,
+                "page_size": page_size,
+                "cursor": cursor,
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopeProviderPackagePrice,
+                    parse_obj_as(
+                        type_=V3ListEnvelopeProviderPackagePrice,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3compare_prices(
+        self,
+        *,
+        package_id: str,
+        pricing: V3PricesCompareRequestPricing,
+        provider_id: typing.Optional[str] = OMIT,
+        location: typing.Optional[V3Location] = OMIT,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[V3PriceComparison]:
+        """
+        Summary statistics (count, min/max/avg/median/q1/q3 as Money) over the prices matching the same request shape as /query, minus sort and pagination.
+
+        Parameters
+        ----------
+        package_id : str
+
+        pricing : V3PricesCompareRequestPricing
+
+        provider_id : typing.Optional[str]
+
+        location : typing.Optional[V3Location]
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3PriceComparison]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v3/prices/compare",
+            method="POST",
+            json={
+                "package_id": package_id,
+                "provider_id": provider_id,
+                "pricing": convert_and_respect_annotation_metadata(
+                    object_=pricing, annotation=V3PricesCompareRequestPricing, direction="write"
+                ),
+                "location": convert_and_respect_annotation_metadata(
+                    object_=location, annotation=typing.Optional[V3Location], direction="write"
+                ),
+            },
+            headers={
+                "content-type": "application/json",
+            },
+            request_options=request_options,
+            omit=OMIT,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3PriceComparison,
+                    parse_obj_as(
+                        type_=V3PriceComparison,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3get_price(
+        self,
+        price_id: str,
+        *,
+        expand: typing.Optional[typing.Sequence[V3PriceExpand]] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[V3ProviderPackagePrice]:
+        """
+        Fetch a single price by its ID (the id returned by /query). `expand=line_items` attaches the package composition — this replaces v2's provider-breakdown endpoint.
+
+        Parameters
+        ----------
+        price_id : str
+            Price identifier.
+
+        expand : typing.Optional[typing.Sequence[V3PriceExpand]]
+            Relations to inline. Repeat the param to request several.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3ProviderPackagePrice]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v3/prices/{jsonable_encoder(price_id)}",
+            method="GET",
+            params={
+                "expand": expand,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ProviderPackagePrice,
+                    parse_obj_as(
+                        type_=V3ProviderPackagePrice,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3list_providers(
+        self,
+        *,
+        name: typing.Optional[str] = None,
+        npi: typing.Optional[str] = None,
+        type: typing.Optional[str] = None,
+        package_id: typing.Optional[str] = None,
+        network_id: typing.Optional[str] = None,
+        payer_id: typing.Optional[str] = None,
+        search: typing.Optional[str] = None,
+        min_score: typing.Optional[float] = None,
+        page_size: typing.Optional[int] = None,
+        cursor: typing.Optional[str] = None,
+        location_near_lat: typing.Optional[float] = None,
+        location_near_lng: typing.Optional[float] = None,
+        location_near_radius_m: typing.Optional[int] = None,
+        location_within_state: typing.Optional[str] = None,
+        location_within_cbsa: typing.Optional[str] = None,
+        location_within_zip_codes: typing.Optional[str] = None,
+        location_zip: typing.Optional[str] = None,
+        request_options: typing.Optional[RequestOptions] = None,
+    ) -> AsyncHttpResponse[V3ListEnvelopeProvider]:
+        """
+        List providers, filterable by name (case-insensitive substring), npi/type (exact), relationships (package_id/network_id/payer_id — providers with at least one matching price; combined relationship filters must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices), and one location mode: `location.near.*` (ranked by distance), `location.within.*` (state/cbsa/zip_codes), or `location.zip` (ZIP centroid + default 25km radius). Results reflect providers Turquoise has priced services for.
+
+        Parameters
+        ----------
+        name : typing.Optional[str]
+            Case-insensitive substring match on provider name.
+
+        npi : typing.Optional[str]
+            Exact NPI match.
+
+        type : typing.Optional[str]
+            Provider type as reported in the dataset (exact match).
+
+        package_id : typing.Optional[str]
+            Providers with at least one price for this package.
+
+        network_id : typing.Optional[str]
+            Providers with at least one price under this network (combined with package_id/payer_id, the same price row must match).
+
+        payer_id : typing.Optional[str]
+            Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match).
+
+        search : typing.Optional[str]
+            Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.
+
+        min_score : typing.Optional[float]
+            Minimum similarity score (0-1).
+
+        page_size : typing.Optional[int]
+
+        cursor : typing.Optional[str]
+            Opaque cursor from a previous page.next_cursor.
+
+        location_near_lat : typing.Optional[float]
+
+        location_near_lng : typing.Optional[float]
+
+        location_near_radius_m : typing.Optional[int]
+
+        location_within_state : typing.Optional[str]
+
+        location_within_cbsa : typing.Optional[str]
+
+        location_within_zip_codes : typing.Optional[str]
+            Comma-separated ZIP codes (exact match, any-of).
+
+        location_zip : typing.Optional[str]
+            Resolves the ZIP to its centroid, then runs `near` with the default radius.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3ListEnvelopeProvider]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            "v3/providers",
+            method="GET",
+            params={
+                "name": name,
+                "npi": npi,
+                "type": type,
+                "package_id": package_id,
+                "network_id": network_id,
+                "payer_id": payer_id,
+                "search": search,
+                "min_score": min_score,
+                "page_size": page_size,
+                "cursor": cursor,
+                "location.near.lat": location_near_lat,
+                "location.near.lng": location_near_lng,
+                "location.near.radius_m": location_near_radius_m,
+                "location.within.state": location_within_state,
+                "location.within.cbsa": location_within_cbsa,
+                "location.within.zip_codes": location_within_zip_codes,
+                "location.zip": location_zip,
+            },
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3ListEnvelopeProvider,
+                    parse_obj_as(
+                        type_=V3ListEnvelopeProvider,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 422:
+                raise UnprocessableEntityError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 429:
+                raise TooManyRequestsError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 500:
+                raise InternalServerError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            _response_json = _response.json()
+        except JSONDecodeError:
+            raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
+        raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
+
+    async def v3get_provider(
+        self, provider_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> AsyncHttpResponse[V3Provider]:
+        """
+        Fetch a single provider by ID. Missing IDs return a 404 with the standard error body.
+
+        Parameters
+        ----------
+        provider_id : str
+            Provider identifier.
+
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        AsyncHttpResponse[V3Provider]
+            Successful Response
+        """
+        _response = await self._client_wrapper.httpx_client.request(
+            f"v3/providers/{jsonable_encoder(provider_id)}",
+            method="GET",
+            request_options=request_options,
+        )
+        try:
+            if 200 <= _response.status_code < 300:
+                _data = typing.cast(
+                    V3Provider,
+                    parse_obj_as(
+                        type_=V3Provider,  # type: ignore
+                        object_=_response.json(),
+                    ),
+                )
+                return AsyncHttpResponse(response=_response, data=_data)
+            if _response.status_code == 400:
+                raise BadRequestError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        typing.Any,
+                        parse_obj_as(
+                            type_=typing.Any,  # type: ignore
+                            object_=_response.json(),
+                        ),
+                    ),
+                )
+            if _response.status_code == 404:
+                raise NotFoundError(
+                    headers=dict(_response.headers),
+                    body=typing.cast(
+                        V3ErrorResponse,
+                        parse_obj_as(
+                            type_=V3ErrorResponse,  # type: ignore
                             object_=_response.json(),
                         ),
                     ),

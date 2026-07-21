@@ -4,7 +4,7 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .rate_rate_type import RateRateType
+from .rate_price_type import RatePriceType
 
 
 class Rate(UniversalBaseModel):
@@ -12,7 +12,7 @@ class Rate(UniversalBaseModel):
     SSP-total rate row at the (provider × ssp × [network]) grain.
     """
 
-    rate_type: RateRateType = pydantic.Field()
+    price_type: RatePriceType = pydantic.Field()
     """
     `cash` ⇔ `network_id is null`. `negotiated` otherwise.
     """

@@ -11,8 +11,8 @@ public record RateBreakdown : IJsonOnDeserialized
     private readonly IDictionary<string, JsonElement> _extensionData =
         new Dictionary<string, JsonElement>();
 
-    [JsonPropertyName("rate_type")]
-    public required RateBreakdownRateType RateType { get; set; }
+    [JsonPropertyName("price_type")]
+    public required RateBreakdownPriceType PriceType { get; set; }
 
     [JsonPropertyName("provider_id")]
     public required string ProviderId { get; set; }

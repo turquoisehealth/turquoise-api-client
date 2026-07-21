@@ -3,7 +3,7 @@
 import type * as TurquoiseHealthApi from "../index.js";
 
 export interface RateBreakdown {
-    rate_type: RateBreakdown.RateType;
+    price_type: RateBreakdown.PriceType;
     provider_id: string;
     ssp_id: string;
     /** Signed 64-bit integer serialized as a string to preserve precision in JSON. */
@@ -16,9 +16,9 @@ export interface RateBreakdown {
 }
 
 export namespace RateBreakdown {
-    export const RateType = {
+    export const PriceType = {
         Cash: "cash",
         Negotiated: "negotiated",
     } as const;
-    export type RateType = (typeof RateType)[keyof typeof RateType];
+    export type PriceType = (typeof PriceType)[keyof typeof PriceType];
 }
