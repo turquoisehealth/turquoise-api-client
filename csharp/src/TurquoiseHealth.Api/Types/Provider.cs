@@ -74,6 +74,12 @@ public record Provider : IJsonOnDeserialized
     [JsonPropertyName("longitude")]
     public double? Longitude { get; set; }
 
+    /// <summary>
+    /// Semantic similarity score (0-1). Only present when using the 'search' parameter.
+    /// </summary>
+    [JsonPropertyName("score")]
+    public double? Score { get; set; }
+
     [JsonIgnore]
     public ReadOnlyAdditionalProperties AdditionalProperties { get; private set; } = new();
 

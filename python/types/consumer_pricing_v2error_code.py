@@ -16,6 +16,7 @@ ConsumerPricingV2ErrorCode = typing.Union[
         "INSUFFICIENT_DATA",
         "RATE_LIMITED",
         "PERMISSION_DENIED",
+        "SEARCH_UNAVAILABLE",
     ],
     typing.Any,
 ]

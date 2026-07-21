@@ -5,12 +5,14 @@
  *     {}
  */
 export interface V2ListSspsRequest {
-    /** Case-insensitive substring match on SSP name. */
+    /** Case-insensitive substring match on SSP name. Ignored when 'search' parameter is provided. */
     name?: string | null;
-    /** Case-insensitive substring match on SSP patient description. */
+    /** Case-insensitive substring match on SSP patient description. Ignored when 'search' parameter is provided. */
     description?: string | null;
-    /** Case-insensitive substring match across name OR patient description. */
+    /** Semantic search across SSP name and description using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to first page of top results. */
     search?: string | null;
+    /** Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided. */
+    min_score?: number | null;
     /** Page size. */
     page_size?: number;
     /** Opaque cursor from a previous response's page.next_cursor. */

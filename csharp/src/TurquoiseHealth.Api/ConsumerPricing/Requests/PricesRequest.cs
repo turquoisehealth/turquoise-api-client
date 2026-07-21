@@ -19,16 +19,10 @@ public record PricesRequest
     public string? ProviderId { get; set; }
 
     /// <summary>
-    /// Filter to a single insurance network. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
+    /// Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String — JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.
     /// </summary>
     [JsonPropertyName("network_id")]
     public string? NetworkId { get; set; }
-
-    /// <summary>
-    /// `cash` filters to rows with no network. `negotiated` requires a network match.
-    /// </summary>
-    [JsonPropertyName("rate_type")]
-    public PricesRequestRateType? RateType { get; set; }
 
     /// <summary>
     /// Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes.

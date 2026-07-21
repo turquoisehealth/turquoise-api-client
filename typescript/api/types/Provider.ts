@@ -24,4 +24,6 @@ export interface Provider {
     latitude?: number | null;
     /** Provider HQ longitude. */
     longitude?: number | null;
+    /** Semantic similarity score (0-1). Only present when using the 'search' parameter. */
+    score?: number | null;
 }

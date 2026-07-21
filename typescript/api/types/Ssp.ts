@@ -13,4 +13,6 @@ export interface Ssp {
     name: string;
     /** Patient-facing description of the service package. */
     patient_description?: string | null;
+    /** Semantic similarity score (0-1) when results are from a search query. Higher is more relevant. */
+    score?: number | null;
 }

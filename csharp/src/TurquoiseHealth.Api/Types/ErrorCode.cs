@@ -31,6 +31,8 @@ public readonly record struct ErrorCode : IStringEnum
 
     public static readonly ErrorCode PermissionDenied = new(Values.PermissionDenied);
 
+    public static readonly ErrorCode SearchUnavailable = new(Values.SearchUnavailable);
+
     public ErrorCode(string value)
     {
         Value = value;
@@ -99,5 +101,7 @@ public readonly record struct ErrorCode : IStringEnum
         public const string RateLimited = "RATE_LIMITED";
 
         public const string PermissionDenied = "PERMISSION_DENIED";
+
+        public const string SearchUnavailable = "SEARCH_UNAVAILABLE";
     }
 }

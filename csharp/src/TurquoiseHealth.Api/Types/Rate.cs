@@ -17,8 +17,8 @@ public record Rate : IJsonOnDeserialized
     /// <summary>
     /// `cash` ⇔ `network_id is null`. `negotiated` otherwise.
     /// </summary>
-    [JsonPropertyName("rate_type")]
-    public required RateRateType RateType { get; set; }
+    [JsonPropertyName("price_type")]
+    public required RatePriceType PriceType { get; set; }
 
     /// <summary>
     /// Provider identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.

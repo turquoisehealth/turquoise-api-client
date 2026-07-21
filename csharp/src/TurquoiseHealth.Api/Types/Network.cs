@@ -38,6 +38,12 @@ public record Network : IJsonOnDeserialized
     [JsonPropertyName("payer_name")]
     public required string PayerName { get; set; }
 
+    /// <summary>
+    /// Semantic similarity score (0-1) when results are from a search query. Higher is more relevant.
+    /// </summary>
+    [JsonPropertyName("score")]
+    public double? Score { get; set; }
+
     [JsonIgnore]
     public ReadOnlyAdditionalProperties AdditionalProperties { get; private set; } = new();
 

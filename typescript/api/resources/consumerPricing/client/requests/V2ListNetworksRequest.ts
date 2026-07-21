@@ -5,10 +5,14 @@
  *     {}
  */
 export interface V2ListNetworksRequest {
-    /** Case-insensitive substring match on network or payer name. */
+    /** Case-insensitive substring match on network or payer name. Ignored when 'search' parameter is provided. */
     name?: string | null;
-    /** Filter to networks under this payer. */
+    /** Filter to networks under this payer. Ignored when 'search' parameter is provided. */
     payer_id?: string | null;
+    /** Semantic search across network and payer names using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to the first page of top results. */
+    search?: string | null;
+    /** Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided. */
+    min_score?: number | null;
     /** Page size. */
     page_size?: number;
     /** Opaque cursor from a previous response's page.next_cursor. */

@@ -5,10 +5,14 @@
  *     {}
  */
 export interface V2ListProvidersRequest {
-    /** Case-insensitive substring match on provider name. */
+    /** Case-insensitive substring match on provider name. Ignored when 'search' parameter is provided. */
     name?: string | null;
-    /** Exact NPI match. */
+    /** Exact NPI match. Ignored when 'search' parameter is provided. */
     npi?: string | null;
+    /** Semantic search across provider names using AI embeddings. Returns results with similarity scores. Can be combined with location filters (within.*, near.*, zip_anchor) to restrict results before ranking. When provided, the name and npi filters are ignored and pagination is limited to the first page of top results. */
+    search?: string | null;
+    /** Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided. */
+    min_score?: number | null;
     /** Page size. */
     page_size?: number;
     /** Opaque cursor from a previous response's page.next_cursor. */
