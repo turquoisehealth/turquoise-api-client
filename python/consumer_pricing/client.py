@@ -1024,6 +1024,30 @@ class ConsumerPricingClient:
         _response = self._raw_client.v3get_price(price_id, expand=expand, request_options=request_options)
         return _response.data
 
+    def v3get_provider_types(self, *, request_options: typing.Optional[RequestOptions] = None) -> typing.List[str]:
+        """
+        Fetch provider types
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[str]
+            Successful Response
+
+        Examples
+        --------
+        from turquoise-health import TurquoiseHealth
+
+        client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        client.consumer_pricing.v3get_provider_types()
+        """
+        _response = self._raw_client.v3get_provider_types(request_options=request_options)
+        return _response.data
+
     def v3list_providers(
         self,
         *,
@@ -2227,6 +2251,36 @@ class AsyncConsumerPricingClient:
         asyncio.run(main())
         """
         _response = await self._raw_client.v3get_price(price_id, expand=expand, request_options=request_options)
+        return _response.data
+
+    async def v3get_provider_types(
+        self, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> typing.List[str]:
+        """
+        Fetch provider types
+
+        Parameters
+        ----------
+        request_options : typing.Optional[RequestOptions]
+            Request-specific configuration.
+
+        Returns
+        -------
+        typing.List[str]
+            Successful Response
+
+        Examples
+        --------
+        import asyncio
+
+        from turquoise-health import AsyncTurquoiseHealth
+
+        client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+        async def main() -> None:
+            await client.consumer_pricing.v3get_provider_types()
+        asyncio.run(main())
+        """
+        _response = await self._raw_client.v3get_provider_types(request_options=request_options)
         return _response.data
 
     async def v3list_providers(
