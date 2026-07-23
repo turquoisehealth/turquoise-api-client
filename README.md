@@ -16,7 +16,7 @@ Official client libraries for the [Turquoise Health Consumer Pricing API](https:
 pip install turquoise-health
 ```
 
-### TypeScript / JavaScript
+### TypeScript
 
 ```bash
 npm install @turquoise-health/api
