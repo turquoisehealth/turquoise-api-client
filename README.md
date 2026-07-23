@@ -4,7 +4,7 @@
 [![npm](https://img.shields.io/npm/v/@turquoise-health/api)](https://www.npmjs.com/package/@turquoise-health/api)
 [![NuGet](https://img.shields.io/nuget/v/TurquoiseHealth.Api)](https://www.nuget.org/packages/TurquoiseHealth.Api)
 
-Official client libraries for the [Turquoise Health Consumer Pricing API](https://turquoise.health). Surface consumer-friendly healthcare service cost estimates — including cash-pay and negotiated rates — in your application.
+Official client libraries for the [Turquoise Health Consumer Pricing API](https://turquoise.health/api/docs/). Surface consumer-friendly healthcare service cost estimates — including cash-pay and negotiated rates — in your application.
 
 ---
 
@@ -147,7 +147,7 @@ var client = new TurquoiseHealthApiClient(token: auth.GetToken());
 
 ## API Reference
 
-Full endpoint documentation: **[turquoise.health/docs/api](https://turquoise.health/docs/api)**
+Full endpoint documentation: **[turquoise.health/api/docs/getting-started/](https://turquoise.health/api/docs/getting-started/)**
 
 ---
 
