@@ -16,7 +16,8 @@ public class V2ListSspsTest : BaseMockServerTest
                 {
                   "id": "GA002",
                   "name": "Colonoscopy",
-                  "patient_description": "A colonoscopy is a standard medical procedure used to diagnose and treat gastrointestinal tract conditions, particularly those affecting the large intestine (rectum, colon, and anus) and a portion of the small intestine (the ileum)."
+                  "patient_description": "A colonoscopy is a standard medical procedure used to diagnose and treat gastrointestinal tract conditions, particularly those affecting the large intestine (rectum, colon, and anus) and a portion of the small intestine (the ileum).",
+                  "score": 0.87
                 }
               ],
               "page": {

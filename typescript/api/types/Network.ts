@@ -12,4 +12,6 @@ export interface Network {
     payer_id: string;
     /** Insurance payer name. */
     payer_name: string;
+    /** Semantic similarity score (0-1) when results are from a search query. Higher is more relevant. */
+    score?: number | null;
 }

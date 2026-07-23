@@ -17,7 +17,8 @@ public class V2ListNetworksTest : BaseMockServerTest
                   "id": "8361580493441765265",
                   "name": "UnitedHealthcare Choice Plus",
                   "payer_id": "643",
-                  "payer_name": "UnitedHealthcare"
+                  "payer_name": "UnitedHealthcare",
+                  "score": 0.89
                 }
               ],
               "page": {

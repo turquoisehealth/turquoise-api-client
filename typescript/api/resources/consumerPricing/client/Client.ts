@@ -22,767 +22,7 @@ export class ConsumerPricingClient {
     }
 
     /**
-     * Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.
-     *
-     * @param {TurquoiseHealthApi.GetSspsRequest} request
-     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
-     *
-     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
-     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
-     * @throws {@link TurquoiseHealthApi.InternalServerError}
-     *
-     * @example
-     *     await client.consumerPricing.getSsps()
-     */
-    public getSsps(
-        request: TurquoiseHealthApi.GetSspsRequest = {},
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): core.HttpResponsePromise<TurquoiseHealthApi.ServicePackagePage> {
-        return core.HttpResponsePromise.fromPromise(this.__getSsps(request, requestOptions));
-    }
-
-    private async __getSsps(
-        request: TurquoiseHealthApi.GetSspsRequest = {},
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): Promise<core.WithRawResponse<TurquoiseHealthApi.ServicePackagePage>> {
-        const { ssp_name: sspName, ssp_description: sspDescription, search, page, page_size: pageSize } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (sspName !== undefined) {
-            _queryParams.ssp_name = sspName;
-        }
-
-        if (sspDescription !== undefined) {
-            _queryParams.ssp_description = sspDescription;
-        }
-
-        if (search !== undefined) {
-            _queryParams.search = search;
-        }
-
-        if (page != null) {
-            _queryParams.page = page.toString();
-        }
-
-        if (pageSize != null) {
-            _queryParams.page_size = pageSize.toString();
-        }
-
-        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
-        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
-            _authRequest.headers,
-            this._options?.headers,
-            requestOptions?.headers,
-        );
-        const _response = await core.fetcher({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)),
-                "v1/consumer-pricing/ssps",
-            ),
-            method: "GET",
-            headers: _headers,
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
-            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
-            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
-            abortSignal: requestOptions?.abortSignal,
-            fetchFn: this._options?.fetch,
-            logging: this._options.logging,
-        });
-        if (_response.ok) {
-            return {
-                data: _response.body as TurquoiseHealthApi.ServicePackagePage,
-                rawResponse: _response.rawResponse,
-            };
-        }
-
-        if (_response.error.reason === "status-code") {
-            switch (_response.error.statusCode) {
-                case 422:
-                    throw new TurquoiseHealthApi.UnprocessableEntityError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 429:
-                    throw new TurquoiseHealthApi.TooManyRequestsError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 500:
-                    throw new TurquoiseHealthApi.InternalServerError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                default:
-                    throw new errors.TurquoiseHealthApiError({
-                        statusCode: _response.error.statusCode,
-                        body: _response.error.body,
-                        rawResponse: _response.rawResponse,
-                    });
-            }
-        }
-
-        switch (_response.error.reason) {
-            case "non-json":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    body: _response.error.rawBody,
-                    rawResponse: _response.rawResponse,
-                });
-            case "body-is-null":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    rawResponse: _response.rawResponse,
-                });
-            case "timeout":
-                throw new errors.TurquoiseHealthApiTimeoutError(
-                    "Timeout exceeded when calling GET /v1/consumer-pricing/ssps.",
-                );
-            case "unknown":
-                throw new errors.TurquoiseHealthApiError({
-                    message: _response.error.errorMessage,
-                    rawResponse: _response.rawResponse,
-                });
-        }
-    }
-
-    /**
-     * Discover insurance networks, optionally filtered by SSP or payer name.
-     *
-     * @param {TurquoiseHealthApi.GetInsuranceNetworksRequest} request
-     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
-     *
-     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
-     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
-     * @throws {@link TurquoiseHealthApi.InternalServerError}
-     *
-     * @example
-     *     await client.consumerPricing.getInsuranceNetworks()
-     */
-    public getInsuranceNetworks(
-        request: TurquoiseHealthApi.GetInsuranceNetworksRequest = {},
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): core.HttpResponsePromise<TurquoiseHealthApi.InsuranceNetworkPage> {
-        return core.HttpResponsePromise.fromPromise(this.__getInsuranceNetworks(request, requestOptions));
-    }
-
-    private async __getInsuranceNetworks(
-        request: TurquoiseHealthApi.GetInsuranceNetworksRequest = {},
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): Promise<core.WithRawResponse<TurquoiseHealthApi.InsuranceNetworkPage>> {
-        const { ssp_id: sspId, payer_name: payerName, page, page_size: pageSize } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (sspId !== undefined) {
-            _queryParams.ssp_id = sspId;
-        }
-
-        if (payerName !== undefined) {
-            _queryParams.payer_name = payerName;
-        }
-
-        if (page != null) {
-            _queryParams.page = page.toString();
-        }
-
-        if (pageSize != null) {
-            _queryParams.page_size = pageSize.toString();
-        }
-
-        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
-        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
-            _authRequest.headers,
-            this._options?.headers,
-            requestOptions?.headers,
-        );
-        const _response = await core.fetcher({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)),
-                "v1/consumer-pricing/networks",
-            ),
-            method: "GET",
-            headers: _headers,
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
-            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
-            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
-            abortSignal: requestOptions?.abortSignal,
-            fetchFn: this._options?.fetch,
-            logging: this._options.logging,
-        });
-        if (_response.ok) {
-            return {
-                data: _response.body as TurquoiseHealthApi.InsuranceNetworkPage,
-                rawResponse: _response.rawResponse,
-            };
-        }
-
-        if (_response.error.reason === "status-code") {
-            switch (_response.error.statusCode) {
-                case 422:
-                    throw new TurquoiseHealthApi.UnprocessableEntityError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 429:
-                    throw new TurquoiseHealthApi.TooManyRequestsError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 500:
-                    throw new TurquoiseHealthApi.InternalServerError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                default:
-                    throw new errors.TurquoiseHealthApiError({
-                        statusCode: _response.error.statusCode,
-                        body: _response.error.body,
-                        rawResponse: _response.rawResponse,
-                    });
-            }
-        }
-
-        switch (_response.error.reason) {
-            case "non-json":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    body: _response.error.rawBody,
-                    rawResponse: _response.rawResponse,
-                });
-            case "body-is-null":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    rawResponse: _response.rawResponse,
-                });
-            case "timeout":
-                throw new errors.TurquoiseHealthApiTimeoutError(
-                    "Timeout exceeded when calling GET /v1/consumer-pricing/networks.",
-                );
-            case "unknown":
-                throw new errors.TurquoiseHealthApiError({
-                    message: _response.error.errorMessage,
-                    rawResponse: _response.rawResponse,
-                });
-        }
-    }
-
-    /**
-     * Search for providers by name, NPI, or location.
-     *
-     * @param {TurquoiseHealthApi.GetProvidersRequest} request
-     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
-     *
-     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
-     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
-     * @throws {@link TurquoiseHealthApi.InternalServerError}
-     *
-     * @example
-     *     await client.consumerPricing.getProviders()
-     */
-    public getProviders(
-        request: TurquoiseHealthApi.GetProvidersRequest = {},
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): core.HttpResponsePromise<TurquoiseHealthApi.ProviderPage> {
-        return core.HttpResponsePromise.fromPromise(this.__getProviders(request, requestOptions));
-    }
-
-    private async __getProviders(
-        request: TurquoiseHealthApi.GetProvidersRequest = {},
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): Promise<core.WithRawResponse<TurquoiseHealthApi.ProviderPage>> {
-        const { provider_name: providerName, npi, city, state, zip_code: zipCode, page, page_size: pageSize } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (providerName !== undefined) {
-            _queryParams.provider_name = providerName;
-        }
-
-        if (npi !== undefined) {
-            _queryParams.npi = npi;
-        }
-
-        if (city !== undefined) {
-            _queryParams.city = city;
-        }
-
-        if (state !== undefined) {
-            _queryParams.state = state;
-        }
-
-        if (zipCode !== undefined) {
-            _queryParams.zip_code = zipCode;
-        }
-
-        if (page != null) {
-            _queryParams.page = page.toString();
-        }
-
-        if (pageSize != null) {
-            _queryParams.page_size = pageSize.toString();
-        }
-
-        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
-        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
-            _authRequest.headers,
-            this._options?.headers,
-            requestOptions?.headers,
-        );
-        const _response = await core.fetcher({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)),
-                "v1/consumer-pricing/providers",
-            ),
-            method: "GET",
-            headers: _headers,
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
-            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
-            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
-            abortSignal: requestOptions?.abortSignal,
-            fetchFn: this._options?.fetch,
-            logging: this._options.logging,
-        });
-        if (_response.ok) {
-            return { data: _response.body as TurquoiseHealthApi.ProviderPage, rawResponse: _response.rawResponse };
-        }
-
-        if (_response.error.reason === "status-code") {
-            switch (_response.error.statusCode) {
-                case 422:
-                    throw new TurquoiseHealthApi.UnprocessableEntityError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 429:
-                    throw new TurquoiseHealthApi.TooManyRequestsError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 500:
-                    throw new TurquoiseHealthApi.InternalServerError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                default:
-                    throw new errors.TurquoiseHealthApiError({
-                        statusCode: _response.error.statusCode,
-                        body: _response.error.body,
-                        rawResponse: _response.rawResponse,
-                    });
-            }
-        }
-
-        switch (_response.error.reason) {
-            case "non-json":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    body: _response.error.rawBody,
-                    rawResponse: _response.rawResponse,
-                });
-            case "body-is-null":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    rawResponse: _response.rawResponse,
-                });
-            case "timeout":
-                throw new errors.TurquoiseHealthApiTimeoutError(
-                    "Timeout exceeded when calling GET /v1/consumer-pricing/providers.",
-                );
-            case "unknown":
-                throw new errors.TurquoiseHealthApiError({
-                    message: _response.error.errorMessage,
-                    rawResponse: _response.rawResponse,
-                });
-        }
-    }
-
-    /**
-     * List of providers that can satisfy a given SSP, with the total expected price, in a given geographic area. Requests support location filtering via ZIP code, CBSA, state, or coordinates. When no Network ID is provided, cash prices are shown.
-     *
-     * @param {TurquoiseHealthApi.PackagePricesRequest} request
-     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
-     *
-     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
-     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
-     * @throws {@link TurquoiseHealthApi.InternalServerError}
-     *
-     * @example
-     *     await client.consumerPricing.getSspPrices({
-     *         ssp_id: "DE000",
-     *         location: {
-     *             geo_space: {
-     *                 zip_codes: ["80129"]
-     *             }
-     *         },
-     *         network_id: "-7695283351826393948",
-     *         sort_by: "price-asc"
-     *     })
-     *
-     * @example
-     *     await client.consumerPricing.getSspPrices({
-     *         ssp_id: "DE000",
-     *         location: {
-     *             coordinates: {
-     *                 latitude: 39.434789,
-     *                 longitude: -104.901073,
-     *                 distance_in_meters: 40000
-     *             }
-     *         }
-     *     })
-     *
-     * @example
-     *     await client.consumerPricing.getSspPrices({
-     *         ssp_id: "DE000",
-     *         location: {
-     *             geo_space: {
-     *                 state: "CO"
-     *             }
-     *         },
-     *         price_filter: {
-     *             min_price: 1000,
-     *             max_price: 10000
-     *         }
-     *     })
-     */
-    public getSspPrices(
-        request: TurquoiseHealthApi.PackagePricesRequest,
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): core.HttpResponsePromise<TurquoiseHealthApi.SspPricePage> {
-        return core.HttpResponsePromise.fromPromise(this.__getSspPrices(request, requestOptions));
-    }
-
-    private async __getSspPrices(
-        request: TurquoiseHealthApi.PackagePricesRequest,
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): Promise<core.WithRawResponse<TurquoiseHealthApi.SspPricePage>> {
-        const { ssp_id: sspId, page, page_size: pageSize, ..._body } = request;
-        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
-        if (page != null) {
-            _queryParams.page = page.toString();
-        }
-
-        if (pageSize != null) {
-            _queryParams.page_size = pageSize.toString();
-        }
-
-        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
-        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
-            _authRequest.headers,
-            this._options?.headers,
-            requestOptions?.headers,
-        );
-        const _response = await core.fetcher({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)),
-                `v1/consumer-pricing/ssps/${core.url.encodePathParam(sspId)}/prices`,
-            ),
-            method: "POST",
-            headers: _headers,
-            contentType: "application/json",
-            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
-            requestType: "json",
-            body: _body,
-            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
-            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
-            abortSignal: requestOptions?.abortSignal,
-            fetchFn: this._options?.fetch,
-            logging: this._options.logging,
-        });
-        if (_response.ok) {
-            return { data: _response.body as TurquoiseHealthApi.SspPricePage, rawResponse: _response.rawResponse };
-        }
-
-        if (_response.error.reason === "status-code") {
-            switch (_response.error.statusCode) {
-                case 422:
-                    throw new TurquoiseHealthApi.UnprocessableEntityError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 429:
-                    throw new TurquoiseHealthApi.TooManyRequestsError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 500:
-                    throw new TurquoiseHealthApi.InternalServerError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                default:
-                    throw new errors.TurquoiseHealthApiError({
-                        statusCode: _response.error.statusCode,
-                        body: _response.error.body,
-                        rawResponse: _response.rawResponse,
-                    });
-            }
-        }
-
-        switch (_response.error.reason) {
-            case "non-json":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    body: _response.error.rawBody,
-                    rawResponse: _response.rawResponse,
-                });
-            case "body-is-null":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    rawResponse: _response.rawResponse,
-                });
-            case "timeout":
-                throw new errors.TurquoiseHealthApiTimeoutError(
-                    "Timeout exceeded when calling POST /v1/consumer-pricing/ssps/{ssp_id}/prices.",
-                );
-            case "unknown":
-                throw new errors.TurquoiseHealthApiError({
-                    message: _response.error.errorMessage,
-                    rawResponse: _response.rawResponse,
-                });
-        }
-    }
-
-    /**
-     * Get SSP breakdown and fee information about a selected SSP from a single provider. When no Network ID is provided, cash prices are shown.
-     *
-     * @param {TurquoiseHealthApi.ProviderPackageBreakdownRequest} request
-     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
-     *
-     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
-     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
-     * @throws {@link TurquoiseHealthApi.InternalServerError}
-     *
-     * @example
-     *     await client.consumerPricing.getProviderSspPrices({
-     *         ssp_id: "DE000",
-     *         provider_id: "provider_id"
-     *     })
-     *
-     * @example
-     *     await client.consumerPricing.getProviderSspPrices({
-     *         ssp_id: "DE000",
-     *         provider_id: "provider_id",
-     *         network_id: "8361580493441765265"
-     *     })
-     */
-    public getProviderSspPrices(
-        request: TurquoiseHealthApi.ProviderPackageBreakdownRequest,
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): core.HttpResponsePromise<TurquoiseHealthApi.GetProviderSspPricesResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__getProviderSspPrices(request, requestOptions));
-    }
-
-    private async __getProviderSspPrices(
-        request: TurquoiseHealthApi.ProviderPackageBreakdownRequest,
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): Promise<core.WithRawResponse<TurquoiseHealthApi.GetProviderSspPricesResponse>> {
-        const { ssp_id: sspId, provider_id: providerId, ..._body } = request;
-        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
-        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
-            _authRequest.headers,
-            this._options?.headers,
-            requestOptions?.headers,
-        );
-        const _response = await core.fetcher({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)),
-                `v1/consumer-pricing/ssps/${core.url.encodePathParam(sspId)}/providers/${core.url.encodePathParam(providerId)}/prices`,
-            ),
-            method: "POST",
-            headers: _headers,
-            contentType: "application/json",
-            queryParameters: requestOptions?.queryParams,
-            requestType: "json",
-            body: _body,
-            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
-            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
-            abortSignal: requestOptions?.abortSignal,
-            fetchFn: this._options?.fetch,
-            logging: this._options.logging,
-        });
-        if (_response.ok) {
-            return {
-                data: _response.body as TurquoiseHealthApi.GetProviderSspPricesResponse,
-                rawResponse: _response.rawResponse,
-            };
-        }
-
-        if (_response.error.reason === "status-code") {
-            switch (_response.error.statusCode) {
-                case 422:
-                    throw new TurquoiseHealthApi.UnprocessableEntityError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 429:
-                    throw new TurquoiseHealthApi.TooManyRequestsError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 500:
-                    throw new TurquoiseHealthApi.InternalServerError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                default:
-                    throw new errors.TurquoiseHealthApiError({
-                        statusCode: _response.error.statusCode,
-                        body: _response.error.body,
-                        rawResponse: _response.rawResponse,
-                    });
-            }
-        }
-
-        switch (_response.error.reason) {
-            case "non-json":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    body: _response.error.rawBody,
-                    rawResponse: _response.rawResponse,
-                });
-            case "body-is-null":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    rawResponse: _response.rawResponse,
-                });
-            case "timeout":
-                throw new errors.TurquoiseHealthApiTimeoutError(
-                    "Timeout exceeded when calling POST /v1/consumer-pricing/ssps/{ssp_id}/providers/{provider_id}/prices.",
-                );
-            case "unknown":
-                throw new errors.TurquoiseHealthApiError({
-                    message: _response.error.errorMessage,
-                    rawResponse: _response.rawResponse,
-                });
-        }
-    }
-
-    /**
-     * Get summary statistics (min, max, average, quartiles) for prices matching the selected filters. When no Network ID is provided, cash prices are shown.
-     *
-     * @param {TurquoiseHealthApi.PriceComparisonRequest} request
-     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
-     *
-     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
-     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
-     * @throws {@link TurquoiseHealthApi.InternalServerError}
-     *
-     * @example
-     *     await client.consumerPricing.compareSspPrices({
-     *         ssp_id: "DE000",
-     *         location: {
-     *             geo_space: {
-     *                 state: "CO"
-     *             }
-     *         },
-     *         network_id: "-7695283351826393948"
-     *     })
-     *
-     * @example
-     *     await client.consumerPricing.compareSspPrices({
-     *         ssp_id: "DE000",
-     *         location: {
-     *             geo_space: {
-     *                 zip_codes: ["10601", "10701"]
-     *             }
-     *         }
-     *     })
-     */
-    public compareSspPrices(
-        request: TurquoiseHealthApi.PriceComparisonRequest,
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): core.HttpResponsePromise<TurquoiseHealthApi.CompareSspPricesResponse> {
-        return core.HttpResponsePromise.fromPromise(this.__compareSspPrices(request, requestOptions));
-    }
-
-    private async __compareSspPrices(
-        request: TurquoiseHealthApi.PriceComparisonRequest,
-        requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): Promise<core.WithRawResponse<TurquoiseHealthApi.CompareSspPricesResponse>> {
-        const { ssp_id: sspId, ..._body } = request;
-        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
-        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
-            _authRequest.headers,
-            this._options?.headers,
-            requestOptions?.headers,
-        );
-        const _response = await core.fetcher({
-            url: core.url.join(
-                (await core.Supplier.get(this._options.baseUrl)) ??
-                    (await core.Supplier.get(this._options.environment)),
-                `v1/consumer-pricing/ssps/${core.url.encodePathParam(sspId)}/price-comparison`,
-            ),
-            method: "POST",
-            headers: _headers,
-            contentType: "application/json",
-            queryParameters: requestOptions?.queryParams,
-            requestType: "json",
-            body: _body,
-            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
-            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
-            abortSignal: requestOptions?.abortSignal,
-            fetchFn: this._options?.fetch,
-            logging: this._options.logging,
-        });
-        if (_response.ok) {
-            return {
-                data: _response.body as TurquoiseHealthApi.CompareSspPricesResponse,
-                rawResponse: _response.rawResponse,
-            };
-        }
-
-        if (_response.error.reason === "status-code") {
-            switch (_response.error.statusCode) {
-                case 422:
-                    throw new TurquoiseHealthApi.UnprocessableEntityError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 429:
-                    throw new TurquoiseHealthApi.TooManyRequestsError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                case 500:
-                    throw new TurquoiseHealthApi.InternalServerError(
-                        _response.error.body as unknown,
-                        _response.rawResponse,
-                    );
-                default:
-                    throw new errors.TurquoiseHealthApiError({
-                        statusCode: _response.error.statusCode,
-                        body: _response.error.body,
-                        rawResponse: _response.rawResponse,
-                    });
-            }
-        }
-
-        switch (_response.error.reason) {
-            case "non-json":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    body: _response.error.rawBody,
-                    rawResponse: _response.rawResponse,
-                });
-            case "body-is-null":
-                throw new errors.TurquoiseHealthApiError({
-                    statusCode: _response.error.statusCode,
-                    rawResponse: _response.rawResponse,
-                });
-            case "timeout":
-                throw new errors.TurquoiseHealthApiTimeoutError(
-                    "Timeout exceeded when calling POST /v1/consumer-pricing/ssps/{ssp_id}/price-comparison.",
-                );
-            case "unknown":
-                throw new errors.TurquoiseHealthApiError({
-                    message: _response.error.errorMessage,
-                    rawResponse: _response.rawResponse,
-                });
-        }
-    }
-
-    /**
-     * Discover available service/surgery packages (SSPs). Supports optional name filtering and pagination.
+     * Discover available service/surgery packages (SSPs).Supports substring matching on name and description fields as well as a 'search' parameter for semantic search across both fields. When 'search' is provided, other filter parameters are ignored, and pagination is limited to first page of top results.You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.
      *
      * @param {TurquoiseHealthApi.V2ListSspsRequest} request
      * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
@@ -806,7 +46,7 @@ export class ConsumerPricingClient {
         request: TurquoiseHealthApi.V2ListSspsRequest = {},
         requestOptions?: ConsumerPricingClient.RequestOptions,
     ): Promise<core.WithRawResponse<TurquoiseHealthApi.EnvelopeSsp>> {
-        const { name, description, search, page_size: pageSize, cursor } = request;
+        const { name, description, search, min_score: minScore, page_size: pageSize, cursor } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         if (name !== undefined) {
             _queryParams.name = name;
@@ -818,6 +58,10 @@ export class ConsumerPricingClient {
 
         if (search !== undefined) {
             _queryParams.search = search;
+        }
+
+        if (minScore !== undefined) {
+            _queryParams.min_score = minScore?.toString() ?? null;
         }
 
         if (pageSize != null) {
@@ -857,7 +101,7 @@ export class ConsumerPricingClient {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new TurquoiseHealthApi.BadRequestError(
-                        _response.error.body as TurquoiseHealthApi.ErrorResponse,
+                        _response.error.body as unknown,
                         _response.rawResponse,
                     );
                 case 422:
@@ -968,7 +212,7 @@ export class ConsumerPricingClient {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new TurquoiseHealthApi.BadRequestError(
-                        _response.error.body as TurquoiseHealthApi.ErrorResponse,
+                        _response.error.body as unknown,
                         _response.rawResponse,
                     );
                 case 422:
@@ -1020,7 +264,7 @@ export class ConsumerPricingClient {
     }
 
     /**
-     * Search for providers by name, NPI, or location.
+     * Search for providers by name, NPI, or location. Supports a 'search' parameter for semantic search across provider names, which can be combined with location filters. When 'search' is provided, the name and npi filters are ignored, and pagination is limited to first page of top results. You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.
      *
      * @param {TurquoiseHealthApi.V2ListProvidersRequest} request
      * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
@@ -1047,6 +291,8 @@ export class ConsumerPricingClient {
         const {
             name,
             npi,
+            search,
+            min_score: minScore,
             page_size: pageSize,
             cursor,
             "near.lat": nearLat,
@@ -1064,6 +310,14 @@ export class ConsumerPricingClient {
 
         if (npi !== undefined) {
             _queryParams.npi = npi;
+        }
+
+        if (search !== undefined) {
+            _queryParams.search = search;
+        }
+
+        if (minScore !== undefined) {
+            _queryParams.min_score = minScore?.toString() ?? null;
         }
 
         if (pageSize != null) {
@@ -1131,7 +385,7 @@ export class ConsumerPricingClient {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new TurquoiseHealthApi.BadRequestError(
-                        _response.error.body as TurquoiseHealthApi.ErrorResponse,
+                        _response.error.body as unknown,
                         _response.rawResponse,
                     );
                 case 422:
@@ -1242,7 +496,7 @@ export class ConsumerPricingClient {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new TurquoiseHealthApi.BadRequestError(
-                        _response.error.body as TurquoiseHealthApi.ErrorResponse,
+                        _response.error.body as unknown,
                         _response.rawResponse,
                     );
                 case 422:
@@ -1294,7 +548,7 @@ export class ConsumerPricingClient {
     }
 
     /**
-     * Discover insurance networks, optionally filtered by network name, payer name, or payer ID.
+     * Discover insurance networks, optionally filtered by network name, payer name, or payer ID, or by semantic search across network and payer names. When using the 'search' parameter for semantic search, other filter parameters (name, payer_id) are ignored, and pagination is limited to the first page of top results.
      *
      * @param {TurquoiseHealthApi.V2ListNetworksRequest} request
      * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
@@ -1318,7 +572,7 @@ export class ConsumerPricingClient {
         request: TurquoiseHealthApi.V2ListNetworksRequest = {},
         requestOptions?: ConsumerPricingClient.RequestOptions,
     ): Promise<core.WithRawResponse<TurquoiseHealthApi.EnvelopeNetwork>> {
-        const { name, payer_id: payerId, page_size: pageSize, cursor } = request;
+        const { name, payer_id: payerId, search, min_score: minScore, page_size: pageSize, cursor } = request;
         const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
         if (name !== undefined) {
             _queryParams.name = name;
@@ -1326,6 +580,14 @@ export class ConsumerPricingClient {
 
         if (payerId !== undefined) {
             _queryParams.payer_id = payerId;
+        }
+
+        if (search !== undefined) {
+            _queryParams.search = search;
+        }
+
+        if (minScore !== undefined) {
+            _queryParams.min_score = minScore?.toString() ?? null;
         }
 
         if (pageSize != null) {
@@ -1365,7 +627,7 @@ export class ConsumerPricingClient {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new TurquoiseHealthApi.BadRequestError(
-                        _response.error.body as TurquoiseHealthApi.ErrorResponse,
+                        _response.error.body as unknown,
                         _response.rawResponse,
                     );
                 case 422:
@@ -1476,7 +738,7 @@ export class ConsumerPricingClient {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new TurquoiseHealthApi.BadRequestError(
-                        _response.error.body as TurquoiseHealthApi.ErrorResponse,
+                        _response.error.body as unknown,
                         _response.rawResponse,
                     );
                 case 422:
@@ -1542,7 +804,6 @@ export class ConsumerPricingClient {
      *     await client.consumerPricing.v2ListPrices({
      *         ssp_id: "GA002",
      *         network_id: "8361580493441765265",
-     *         rate_type: "negotiated",
      *         location: {
      *             zip_anchor: "80202"
      *         }
@@ -1551,7 +812,6 @@ export class ConsumerPricingClient {
      * @example
      *     await client.consumerPricing.v2ListPrices({
      *         ssp_id: "GA002",
-     *         rate_type: "cash",
      *         location: {
      *             within_state: "CO"
      *         }
@@ -1616,7 +876,7 @@ export class ConsumerPricingClient {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new TurquoiseHealthApi.BadRequestError(
-                        _response.error.body as TurquoiseHealthApi.ErrorResponse,
+                        _response.error.body as unknown,
                         _response.rawResponse,
                     );
                 case 422:
@@ -1737,7 +997,7 @@ export class ConsumerPricingClient {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new TurquoiseHealthApi.BadRequestError(
-                        _response.error.body as TurquoiseHealthApi.ErrorResponse,
+                        _response.error.body as unknown,
                         _response.rawResponse,
                     );
                 case 422:
@@ -1811,7 +1071,6 @@ export class ConsumerPricingClient {
      * @example
      *     await client.consumerPricing.v2ComparePrices({
      *         ssp_id: "GA002",
-     *         rate_type: "cash",
      *         location: {
      *             within_cbsa_name: "Denver-Aurora-Centennial, CO"
      *         }
@@ -1868,7 +1127,7 @@ export class ConsumerPricingClient {
             switch (_response.error.statusCode) {
                 case 400:
                     throw new TurquoiseHealthApi.BadRequestError(
-                        _response.error.body as TurquoiseHealthApi.ErrorResponse,
+                        _response.error.body as unknown,
                         _response.rawResponse,
                     );
                 case 422:
@@ -1910,6 +1169,1747 @@ export class ConsumerPricingClient {
             case "timeout":
                 throw new errors.TurquoiseHealthApiTimeoutError(
                     "Timeout exceeded when calling POST /v2/consumer-pricing/prices/price-comparison.",
+                );
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * List negotiated-rate networks, filterable by name (case-insensitive substring, matches network or payer name), payer_id (exact), relationships (provider_id/package_id — networks with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to networks with at least one price at an in-area provider, so `package_id` + location answers 'which networks price this package here' in one call. Results reflect networks Turquoise has priced. The network's payer is an {id, name} stub; the full entity lives at /v3/payers/{id}.
+     *
+     * @param {TurquoiseHealthApi.V3ListNetworksRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3ListNetworks()
+     */
+    public v3ListNetworks(
+        request: TurquoiseHealthApi.V3ListNetworksRequest = {},
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3ListEnvelopeNetwork> {
+        return core.HttpResponsePromise.fromPromise(this.__v3ListNetworks(request, requestOptions));
+    }
+
+    private async __v3ListNetworks(
+        request: TurquoiseHealthApi.V3ListNetworksRequest = {},
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3ListEnvelopeNetwork>> {
+        const {
+            name,
+            payer_id: payerId,
+            provider_id: providerId,
+            package_id: packageId,
+            search,
+            min_score: minScore,
+            page_size: pageSize,
+            cursor,
+            "location.near.lat": locationNearLat,
+            "location.near.lng": locationNearLng,
+            "location.near.radius_m": locationNearRadiusM,
+            "location.within.state": locationWithinState,
+            "location.within.cbsa": locationWithinCbsa,
+            "location.within.zip_codes": locationWithinZipCodes,
+            "location.zip": locationZip,
+        } = request;
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (name !== undefined) {
+            _queryParams.name = name;
+        }
+
+        if (payerId !== undefined) {
+            _queryParams.payer_id = payerId;
+        }
+
+        if (providerId !== undefined) {
+            _queryParams.provider_id = providerId;
+        }
+
+        if (packageId !== undefined) {
+            _queryParams.package_id = packageId;
+        }
+
+        if (search !== undefined) {
+            _queryParams.search = search;
+        }
+
+        if (minScore !== undefined) {
+            _queryParams.min_score = minScore?.toString() ?? null;
+        }
+
+        if (pageSize != null) {
+            _queryParams.page_size = pageSize.toString();
+        }
+
+        if (cursor !== undefined) {
+            _queryParams.cursor = cursor;
+        }
+
+        if (locationNearLat !== undefined) {
+            _queryParams["location.near.lat"] = locationNearLat?.toString() ?? null;
+        }
+
+        if (locationNearLng !== undefined) {
+            _queryParams["location.near.lng"] = locationNearLng?.toString() ?? null;
+        }
+
+        if (locationNearRadiusM !== undefined) {
+            _queryParams["location.near.radius_m"] = locationNearRadiusM?.toString() ?? null;
+        }
+
+        if (locationWithinState !== undefined) {
+            _queryParams["location.within.state"] = locationWithinState;
+        }
+
+        if (locationWithinCbsa !== undefined) {
+            _queryParams["location.within.cbsa"] = locationWithinCbsa;
+        }
+
+        if (locationWithinZipCodes !== undefined) {
+            _queryParams["location.within.zip_codes"] = locationWithinZipCodes;
+        }
+
+        if (locationZip !== undefined) {
+            _queryParams["location.zip"] = locationZip;
+        }
+
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                "v3/networks",
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return {
+                data: _response.body as TurquoiseHealthApi.V3ListEnvelopeNetwork,
+                rawResponse: _response.rawResponse,
+            };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError("Timeout exceeded when calling GET /v3/networks.");
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * Fetch a single network by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+     *
+     * @param {TurquoiseHealthApi.V3GetNetworkRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3GetNetwork({
+     *         network_id: "2010265101"
+     *     })
+     */
+    public v3GetNetwork(
+        request: TurquoiseHealthApi.V3GetNetworkRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3Network> {
+        return core.HttpResponsePromise.fromPromise(this.__v3GetNetwork(request, requestOptions));
+    }
+
+    private async __v3GetNetwork(
+        request: TurquoiseHealthApi.V3GetNetworkRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3Network>> {
+        const { network_id: networkId } = request;
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                `v3/networks/${core.url.encodePathParam(networkId)}`,
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: requestOptions?.queryParams,
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return { data: _response.body as TurquoiseHealthApi.V3Network, rawResponse: _response.rawResponse };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError(
+                    "Timeout exceeded when calling GET /v3/networks/{network_id}.",
+                );
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * List service packages, filterable by name (case-insensitive substring), anchor billing code (exact, matches package base codes only), and relationships (provider_id, network_id, payer_id — packages with at least one matching price). When multiple relationship filters are combined, they must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices. Results reflect packages Turquoise has priced.
+     *
+     * @param {TurquoiseHealthApi.V3ListPackagesRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3ListPackages()
+     */
+    public v3ListPackages(
+        request: TurquoiseHealthApi.V3ListPackagesRequest = {},
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3ListEnvelopePackage> {
+        return core.HttpResponsePromise.fromPromise(this.__v3ListPackages(request, requestOptions));
+    }
+
+    private async __v3ListPackages(
+        request: TurquoiseHealthApi.V3ListPackagesRequest = {},
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3ListEnvelopePackage>> {
+        const {
+            name,
+            anchor_code: anchorCode,
+            provider_id: providerId,
+            network_id: networkId,
+            payer_id: payerId,
+            search,
+            min_score: minScore,
+            page_size: pageSize,
+            cursor,
+        } = request;
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (name !== undefined) {
+            _queryParams.name = name;
+        }
+
+        if (anchorCode !== undefined) {
+            _queryParams.anchor_code = anchorCode;
+        }
+
+        if (providerId !== undefined) {
+            _queryParams.provider_id = providerId;
+        }
+
+        if (networkId !== undefined) {
+            _queryParams.network_id = networkId;
+        }
+
+        if (payerId !== undefined) {
+            _queryParams.payer_id = payerId;
+        }
+
+        if (search !== undefined) {
+            _queryParams.search = search;
+        }
+
+        if (minScore !== undefined) {
+            _queryParams.min_score = minScore?.toString() ?? null;
+        }
+
+        if (pageSize != null) {
+            _queryParams.page_size = pageSize.toString();
+        }
+
+        if (cursor !== undefined) {
+            _queryParams.cursor = cursor;
+        }
+
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                "v3/packages",
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return {
+                data: _response.body as TurquoiseHealthApi.V3ListEnvelopePackage,
+                rawResponse: _response.rawResponse,
+            };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError("Timeout exceeded when calling GET /v3/packages.");
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * Fetch a single package by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+     *
+     * @param {TurquoiseHealthApi.V3GetPackageRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3GetPackage({
+     *         package_id: "GA002"
+     *     })
+     */
+    public v3GetPackage(
+        request: TurquoiseHealthApi.V3GetPackageRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3Package> {
+        return core.HttpResponsePromise.fromPromise(this.__v3GetPackage(request, requestOptions));
+    }
+
+    private async __v3GetPackage(
+        request: TurquoiseHealthApi.V3GetPackageRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3Package>> {
+        const { package_id: packageId } = request;
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                `v3/packages/${core.url.encodePathParam(packageId)}`,
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: requestOptions?.queryParams,
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return { data: _response.body as TurquoiseHealthApi.V3Package, rawResponse: _response.rawResponse };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError(
+                    "Timeout exceeded when calling GET /v3/packages/{package_id}.",
+                );
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * The package's composition: codes, fee types, and association rates at the current package version.
+     *
+     * @param {TurquoiseHealthApi.V3ListPackageLineItemsRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3ListPackageLineItems({
+     *         package_id: "GA002"
+     *     })
+     */
+    public v3ListPackageLineItems(
+        request: TurquoiseHealthApi.V3ListPackageLineItemsRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3ListEnvelopeLineItem> {
+        return core.HttpResponsePromise.fromPromise(this.__v3ListPackageLineItems(request, requestOptions));
+    }
+
+    private async __v3ListPackageLineItems(
+        request: TurquoiseHealthApi.V3ListPackageLineItemsRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3ListEnvelopeLineItem>> {
+        const { package_id: packageId } = request;
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                `v3/packages/${core.url.encodePathParam(packageId)}/line_items`,
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: requestOptions?.queryParams,
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return {
+                data: _response.body as TurquoiseHealthApi.V3ListEnvelopeLineItem,
+                rawResponse: _response.rawResponse,
+            };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError(
+                    "Timeout exceeded when calling GET /v3/packages/{package_id}/line_items.",
+                );
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * List payers, filterable by name (case-insensitive substring), relationships (provider_id/package_id — payers with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to payers with at least one price at an in-area provider. Results reflect payers Turquoise has priced.
+     *
+     * @param {TurquoiseHealthApi.V3ListPayersRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3ListPayers()
+     */
+    public v3ListPayers(
+        request: TurquoiseHealthApi.V3ListPayersRequest = {},
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3ListEnvelopePayer> {
+        return core.HttpResponsePromise.fromPromise(this.__v3ListPayers(request, requestOptions));
+    }
+
+    private async __v3ListPayers(
+        request: TurquoiseHealthApi.V3ListPayersRequest = {},
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3ListEnvelopePayer>> {
+        const {
+            name,
+            provider_id: providerId,
+            package_id: packageId,
+            page_size: pageSize,
+            cursor,
+            "location.near.lat": locationNearLat,
+            "location.near.lng": locationNearLng,
+            "location.near.radius_m": locationNearRadiusM,
+            "location.within.state": locationWithinState,
+            "location.within.cbsa": locationWithinCbsa,
+            "location.within.zip_codes": locationWithinZipCodes,
+            "location.zip": locationZip,
+        } = request;
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (name !== undefined) {
+            _queryParams.name = name;
+        }
+
+        if (providerId !== undefined) {
+            _queryParams.provider_id = providerId;
+        }
+
+        if (packageId !== undefined) {
+            _queryParams.package_id = packageId;
+        }
+
+        if (pageSize != null) {
+            _queryParams.page_size = pageSize.toString();
+        }
+
+        if (cursor !== undefined) {
+            _queryParams.cursor = cursor;
+        }
+
+        if (locationNearLat !== undefined) {
+            _queryParams["location.near.lat"] = locationNearLat?.toString() ?? null;
+        }
+
+        if (locationNearLng !== undefined) {
+            _queryParams["location.near.lng"] = locationNearLng?.toString() ?? null;
+        }
+
+        if (locationNearRadiusM !== undefined) {
+            _queryParams["location.near.radius_m"] = locationNearRadiusM?.toString() ?? null;
+        }
+
+        if (locationWithinState !== undefined) {
+            _queryParams["location.within.state"] = locationWithinState;
+        }
+
+        if (locationWithinCbsa !== undefined) {
+            _queryParams["location.within.cbsa"] = locationWithinCbsa;
+        }
+
+        if (locationWithinZipCodes !== undefined) {
+            _queryParams["location.within.zip_codes"] = locationWithinZipCodes;
+        }
+
+        if (locationZip !== undefined) {
+            _queryParams["location.zip"] = locationZip;
+        }
+
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                "v3/payers",
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return {
+                data: _response.body as TurquoiseHealthApi.V3ListEnvelopePayer,
+                rawResponse: _response.rawResponse,
+            };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError("Timeout exceeded when calling GET /v3/payers.");
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * Fetch a single payer by ID. Missing or unpermissioned IDs return a 404 with the standard error body.
+     *
+     * @param {TurquoiseHealthApi.V3GetPayerRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3GetPayer({
+     *         payer_id: "7001"
+     *     })
+     */
+    public v3GetPayer(
+        request: TurquoiseHealthApi.V3GetPayerRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3Payer> {
+        return core.HttpResponsePromise.fromPromise(this.__v3GetPayer(request, requestOptions));
+    }
+
+    private async __v3GetPayer(
+        request: TurquoiseHealthApi.V3GetPayerRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3Payer>> {
+        const { payer_id: payerId } = request;
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                `v3/payers/${core.url.encodePathParam(payerId)}`,
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: requestOptions?.queryParams,
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return { data: _response.body as TurquoiseHealthApi.V3Payer, rawResponse: _response.rawResponse };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError(
+                    "Timeout exceeded when calling GET /v3/payers/{payer_id}.",
+                );
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * Search prices at the provider × package × pricing grain.
+     *
+     * @param {TurquoiseHealthApi.V3PricesQueryRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3QueryPrices({
+     *         package_id: "RA007",
+     *         provider_id: "2751",
+     *         pricing: {
+     *             type: "negotiated",
+     *             network_id: "network_id"
+     *         }
+     *     })
+     *
+     * @example
+     *     await client.consumerPricing.v3QueryPrices({
+     *         package_id: "RA007",
+     *         provider_id: "2751",
+     *         pricing: {
+     *             type: "cash"
+     *         }
+     *     })
+     *
+     * @example
+     *     await client.consumerPricing.v3QueryPrices({
+     *         package_id: "RA007",
+     *         pricing: {
+     *             type: "cash"
+     *         },
+     *         location: {
+     *             near: {
+     *                 lat: 41.8781,
+     *                 lng: -87.6298,
+     *                 radius_m: 40000
+     *             }
+     *         },
+     *         sort: "distance"
+     *     })
+     *
+     * @example
+     *     await client.consumerPricing.v3QueryPrices({
+     *         package_id: "RA007",
+     *         pricing: {
+     *             type: "cash"
+     *         },
+     *         location: {
+     *             zip: "60644"
+     *         }
+     *     })
+     *
+     * @example
+     *     await client.consumerPricing.v3QueryPrices({
+     *         package_id: "RA007",
+     *         pricing: {
+     *             type: "negotiated",
+     *             network_id: "network_id"
+     *         },
+     *         location: {
+     *             within: {
+     *                 state: "IL"
+     *             }
+     *         }
+     *     })
+     */
+    public v3QueryPrices(
+        request: TurquoiseHealthApi.V3PricesQueryRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3ListEnvelopeProviderPackagePrice> {
+        return core.HttpResponsePromise.fromPromise(this.__v3QueryPrices(request, requestOptions));
+    }
+
+    private async __v3QueryPrices(
+        request: TurquoiseHealthApi.V3PricesQueryRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3ListEnvelopeProviderPackagePrice>> {
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                "v3/prices/query",
+            ),
+            method: "POST",
+            headers: _headers,
+            contentType: "application/json",
+            queryParameters: requestOptions?.queryParams,
+            requestType: "json",
+            body: request,
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return {
+                data: _response.body as TurquoiseHealthApi.V3ListEnvelopeProviderPackagePrice,
+                rawResponse: _response.rawResponse,
+            };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError("Timeout exceeded when calling POST /v3/prices/query.");
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * Summary statistics (count, min/max/avg/median/q1/q3 as Money) over the prices matching the same request shape as /query, minus sort and pagination.
+     *
+     * @param {TurquoiseHealthApi.V3PricesCompareRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3ComparePrices({
+     *         package_id: "RA007",
+     *         provider_id: "2751",
+     *         pricing: {
+     *             type: "negotiated",
+     *             network_id: "network_id"
+     *         }
+     *     })
+     *
+     * @example
+     *     await client.consumerPricing.v3ComparePrices({
+     *         package_id: "RA007",
+     *         pricing: {
+     *             type: "cash"
+     *         },
+     *         location: {
+     *             within: {
+     *                 state: "IL"
+     *             }
+     *         }
+     *     })
+     *
+     * @example
+     *     await client.consumerPricing.v3ComparePrices({
+     *         package_id: "RA007",
+     *         pricing: {
+     *             type: "cash"
+     *         },
+     *         location: {
+     *             near: {
+     *                 lat: 41.8781,
+     *                 lng: -87.6298,
+     *                 radius_m: 40000
+     *             }
+     *         }
+     *     })
+     */
+    public v3ComparePrices(
+        request: TurquoiseHealthApi.V3PricesCompareRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3PriceComparison> {
+        return core.HttpResponsePromise.fromPromise(this.__v3ComparePrices(request, requestOptions));
+    }
+
+    private async __v3ComparePrices(
+        request: TurquoiseHealthApi.V3PricesCompareRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3PriceComparison>> {
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                "v3/prices/compare",
+            ),
+            method: "POST",
+            headers: _headers,
+            contentType: "application/json",
+            queryParameters: requestOptions?.queryParams,
+            requestType: "json",
+            body: request,
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return { data: _response.body as TurquoiseHealthApi.V3PriceComparison, rawResponse: _response.rawResponse };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError(
+                    "Timeout exceeded when calling POST /v3/prices/compare.",
+                );
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * Fetch a single price by its ID (the id returned by /query). `expand=line_items` attaches the package composition — this replaces v2's provider-breakdown endpoint.
+     *
+     * @param {TurquoiseHealthApi.V3GetPriceRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3GetPrice({
+     *         price_id: "prc_2751.RA007.8361580493441765265"
+     *     })
+     */
+    public v3GetPrice(
+        request: TurquoiseHealthApi.V3GetPriceRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3ProviderPackagePrice> {
+        return core.HttpResponsePromise.fromPromise(this.__v3GetPrice(request, requestOptions));
+    }
+
+    private async __v3GetPrice(
+        request: TurquoiseHealthApi.V3GetPriceRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3ProviderPackagePrice>> {
+        const { price_id: priceId, expand } = request;
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (expand !== undefined) {
+            _queryParams.expand = toJson(expand);
+        }
+
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                `v3/prices/${core.url.encodePathParam(priceId)}`,
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return {
+                data: _response.body as TurquoiseHealthApi.V3ProviderPackagePrice,
+                rawResponse: _response.rawResponse,
+            };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError(
+                    "Timeout exceeded when calling GET /v3/prices/{price_id}.",
+                );
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * List providers, filterable by name (case-insensitive substring), npi/type (exact), relationships (package_id/network_id/payer_id — providers with at least one matching price; combined relationship filters must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices), and one location mode: `location.near.*` (ranked by distance), `location.within.*` (state/cbsa/zip_codes), or `location.zip` (ZIP centroid + default 25km radius). Results reflect providers Turquoise has priced services for.
+     *
+     * @param {TurquoiseHealthApi.V3ListProvidersRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3ListProviders()
+     */
+    public v3ListProviders(
+        request: TurquoiseHealthApi.V3ListProvidersRequest = {},
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3ListEnvelopeProvider> {
+        return core.HttpResponsePromise.fromPromise(this.__v3ListProviders(request, requestOptions));
+    }
+
+    private async __v3ListProviders(
+        request: TurquoiseHealthApi.V3ListProvidersRequest = {},
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3ListEnvelopeProvider>> {
+        const {
+            name,
+            npi,
+            type: type_,
+            package_id: packageId,
+            network_id: networkId,
+            payer_id: payerId,
+            search,
+            min_score: minScore,
+            page_size: pageSize,
+            cursor,
+            "location.near.lat": locationNearLat,
+            "location.near.lng": locationNearLng,
+            "location.near.radius_m": locationNearRadiusM,
+            "location.within.state": locationWithinState,
+            "location.within.cbsa": locationWithinCbsa,
+            "location.within.zip_codes": locationWithinZipCodes,
+            "location.zip": locationZip,
+        } = request;
+        const _queryParams: Record<string, string | string[] | object | object[] | null> = {};
+        if (name !== undefined) {
+            _queryParams.name = name;
+        }
+
+        if (npi !== undefined) {
+            _queryParams.npi = npi;
+        }
+
+        if (type_ !== undefined) {
+            _queryParams.type = type_;
+        }
+
+        if (packageId !== undefined) {
+            _queryParams.package_id = packageId;
+        }
+
+        if (networkId !== undefined) {
+            _queryParams.network_id = networkId;
+        }
+
+        if (payerId !== undefined) {
+            _queryParams.payer_id = payerId;
+        }
+
+        if (search !== undefined) {
+            _queryParams.search = search;
+        }
+
+        if (minScore !== undefined) {
+            _queryParams.min_score = minScore?.toString() ?? null;
+        }
+
+        if (pageSize != null) {
+            _queryParams.page_size = pageSize.toString();
+        }
+
+        if (cursor !== undefined) {
+            _queryParams.cursor = cursor;
+        }
+
+        if (locationNearLat !== undefined) {
+            _queryParams["location.near.lat"] = locationNearLat?.toString() ?? null;
+        }
+
+        if (locationNearLng !== undefined) {
+            _queryParams["location.near.lng"] = locationNearLng?.toString() ?? null;
+        }
+
+        if (locationNearRadiusM !== undefined) {
+            _queryParams["location.near.radius_m"] = locationNearRadiusM?.toString() ?? null;
+        }
+
+        if (locationWithinState !== undefined) {
+            _queryParams["location.within.state"] = locationWithinState;
+        }
+
+        if (locationWithinCbsa !== undefined) {
+            _queryParams["location.within.cbsa"] = locationWithinCbsa;
+        }
+
+        if (locationWithinZipCodes !== undefined) {
+            _queryParams["location.within.zip_codes"] = locationWithinZipCodes;
+        }
+
+        if (locationZip !== undefined) {
+            _queryParams["location.zip"] = locationZip;
+        }
+
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                "v3/providers",
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: { ..._queryParams, ...requestOptions?.queryParams },
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return {
+                data: _response.body as TurquoiseHealthApi.V3ListEnvelopeProvider,
+                rawResponse: _response.rawResponse,
+            };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError("Timeout exceeded when calling GET /v3/providers.");
+            case "unknown":
+                throw new errors.TurquoiseHealthApiError({
+                    message: _response.error.errorMessage,
+                    rawResponse: _response.rawResponse,
+                });
+        }
+    }
+
+    /**
+     * Fetch a single provider by ID. Missing IDs return a 404 with the standard error body.
+     *
+     * @param {TurquoiseHealthApi.V3GetProviderRequest} request
+     * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
+     *
+     * @throws {@link TurquoiseHealthApi.BadRequestError}
+     * @throws {@link TurquoiseHealthApi.NotFoundError}
+     * @throws {@link TurquoiseHealthApi.UnprocessableEntityError}
+     * @throws {@link TurquoiseHealthApi.TooManyRequestsError}
+     * @throws {@link TurquoiseHealthApi.InternalServerError}
+     *
+     * @example
+     *     await client.consumerPricing.v3GetProvider({
+     *         provider_id: "2743"
+     *     })
+     */
+    public v3GetProvider(
+        request: TurquoiseHealthApi.V3GetProviderRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3Provider> {
+        return core.HttpResponsePromise.fromPromise(this.__v3GetProvider(request, requestOptions));
+    }
+
+    private async __v3GetProvider(
+        request: TurquoiseHealthApi.V3GetProviderRequest,
+        requestOptions?: ConsumerPricingClient.RequestOptions,
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3Provider>> {
+        const { provider_id: providerId } = request;
+        const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
+        const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
+            _authRequest.headers,
+            this._options?.headers,
+            requestOptions?.headers,
+        );
+        const _response = await core.fetcher({
+            url: core.url.join(
+                (await core.Supplier.get(this._options.baseUrl)) ??
+                    (await core.Supplier.get(this._options.environment)),
+                `v3/providers/${core.url.encodePathParam(providerId)}`,
+            ),
+            method: "GET",
+            headers: _headers,
+            queryParameters: requestOptions?.queryParams,
+            timeoutMs: (requestOptions?.timeoutInSeconds ?? this._options?.timeoutInSeconds ?? 60) * 1000,
+            maxRetries: requestOptions?.maxRetries ?? this._options?.maxRetries,
+            abortSignal: requestOptions?.abortSignal,
+            fetchFn: this._options?.fetch,
+            logging: this._options.logging,
+        });
+        if (_response.ok) {
+            return { data: _response.body as TurquoiseHealthApi.V3Provider, rawResponse: _response.rawResponse };
+        }
+
+        if (_response.error.reason === "status-code") {
+            switch (_response.error.statusCode) {
+                case 400:
+                    throw new TurquoiseHealthApi.BadRequestError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 404:
+                    throw new TurquoiseHealthApi.NotFoundError(
+                        _response.error.body as TurquoiseHealthApi.V3ErrorResponse,
+                        _response.rawResponse,
+                    );
+                case 422:
+                    throw new TurquoiseHealthApi.UnprocessableEntityError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 429:
+                    throw new TurquoiseHealthApi.TooManyRequestsError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                case 500:
+                    throw new TurquoiseHealthApi.InternalServerError(
+                        _response.error.body as unknown,
+                        _response.rawResponse,
+                    );
+                default:
+                    throw new errors.TurquoiseHealthApiError({
+                        statusCode: _response.error.statusCode,
+                        body: _response.error.body,
+                        rawResponse: _response.rawResponse,
+                    });
+            }
+        }
+
+        switch (_response.error.reason) {
+            case "non-json":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    body: _response.error.rawBody,
+                    rawResponse: _response.rawResponse,
+                });
+            case "body-is-null":
+                throw new errors.TurquoiseHealthApiError({
+                    statusCode: _response.error.statusCode,
+                    rawResponse: _response.rawResponse,
+                });
+            case "timeout":
+                throw new errors.TurquoiseHealthApiTimeoutError(
+                    "Timeout exceeded when calling GET /v3/providers/{provider_id}.",
                 );
             case "unknown":
                 throw new errors.TurquoiseHealthApiError({

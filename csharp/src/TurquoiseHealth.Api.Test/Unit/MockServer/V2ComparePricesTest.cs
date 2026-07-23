@@ -75,7 +75,6 @@ public class V2ComparePricesTest : BaseMockServerTest
         const string requestJson = """
             {
               "ssp_id": "GA002",
-              "rate_type": "cash",
               "location": {
                 "within_cbsa_name": "Denver-Aurora-Centennial, CO"
               }
@@ -121,7 +120,6 @@ public class V2ComparePricesTest : BaseMockServerTest
             new RateCompareRequest
             {
                 SspId = "GA002",
-                RateType = RateCompareRequestRateType.Cash,
                 Location = new RateCompareLocation
                 {
                     WithinCbsaName = "Denver-Aurora-Centennial, CO",

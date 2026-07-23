@@ -14,5 +14,6 @@ export const ConsumerPricingV2ErrorCode = {
     InsufficientData: "INSUFFICIENT_DATA",
     RateLimited: "RATE_LIMITED",
     PermissionDenied: "PERMISSION_DENIED",
+    SearchUnavailable: "SEARCH_UNAVAILABLE",
 } as const;
 export type ConsumerPricingV2ErrorCode = (typeof ConsumerPricingV2ErrorCode)[keyof typeof ConsumerPricingV2ErrorCode];

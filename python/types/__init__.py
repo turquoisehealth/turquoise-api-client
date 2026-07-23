@@ -6,99 +6,151 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .care_nav_error_response import CareNavErrorResponse
-    from .care_nav_error_response_detail import CareNavErrorResponseDetail
-    from .care_nav_provider import CareNavProvider
-    from .care_nav_sort_type import CareNavSortType
     from .consumer_pricing_v2error_code import ConsumerPricingV2ErrorCode
-    from .coordinates import Coordinates
     from .envelope_network import EnvelopeNetwork
     from .envelope_provider import EnvelopeProvider
     from .envelope_rate import EnvelopeRate
     from .envelope_ssp import EnvelopeSsp
     from .error_code import ErrorCode
-    from .error_detail import ErrorDetail
     from .error_payload import ErrorPayload
     from .error_response import ErrorResponse
-    from .geo_space import GeoSpace
-    from .insurance_network import InsuranceNetwork
-    from .insurance_network_page import InsuranceNetworkPage
-    from .location_input import LocationInput
     from .network import Network
     from .no_data_reason import NoDataReason
-    from .no_data_response import NoDataResponse
-    from .package_line_item import PackageLineItem
     from .page_meta import PageMeta
-    from .price_detail import PriceDetail
-    from .price_filter import PriceFilter
-    from .prices_comparison import PricesComparison
     from .provider import Provider
-    from .provider_breakdown import ProviderBreakdown
-    from .provider_location_details import ProviderLocationDetails
-    from .provider_page import ProviderPage
     from .rate import Rate
     from .rate_breakdown import RateBreakdown
     from .rate_breakdown_line_item import RateBreakdownLineItem
-    from .rate_breakdown_rate_type import RateBreakdownRateType
+    from .rate_breakdown_price_type import RateBreakdownPriceType
     from .rate_compare_location import RateCompareLocation
     from .rate_comparison import RateComparison
-    from .rate_rate_type import RateRateType
-    from .service_package import ServicePackage
-    from .service_package_page import ServicePackagePage
+    from .rate_price_type import RatePriceType
     from .single_resource_envelope_network import SingleResourceEnvelopeNetwork
     from .single_resource_envelope_provider import SingleResourceEnvelopeProvider
     from .single_resource_envelope_rate_breakdown import SingleResourceEnvelopeRateBreakdown
     from .single_resource_envelope_ssp import SingleResourceEnvelopeSsp
     from .ssp import Ssp
-    from .ssp_price import SspPrice
-    from .ssp_price_page import SspPricePage
+    from .v3billing_code import V3BillingCode
+    from .v3comparison_stats import V3ComparisonStats
+    from .v3consumer_pricing_v2error_code import V3ConsumerPricingV2ErrorCode
+    from .v3entity_ref import V3EntityRef
+    from .v3error_code import V3ErrorCode
+    from .v3error_payload import V3ErrorPayload
+    from .v3error_response import V3ErrorResponse
+    from .v3line_item import V3LineItem
+    from .v3list_envelope_line_item import V3ListEnvelopeLineItem
+    from .v3list_envelope_line_item_object import V3ListEnvelopeLineItemObject
+    from .v3list_envelope_network import V3ListEnvelopeNetwork
+    from .v3list_envelope_network_object import V3ListEnvelopeNetworkObject
+    from .v3list_envelope_package import V3ListEnvelopePackage
+    from .v3list_envelope_package_object import V3ListEnvelopePackageObject
+    from .v3list_envelope_payer import V3ListEnvelopePayer
+    from .v3list_envelope_payer_object import V3ListEnvelopePayerObject
+    from .v3list_envelope_provider import V3ListEnvelopeProvider
+    from .v3list_envelope_provider_object import V3ListEnvelopeProviderObject
+    from .v3list_envelope_provider_package_price import V3ListEnvelopeProviderPackagePrice
+    from .v3list_envelope_provider_package_price_object import V3ListEnvelopeProviderPackagePriceObject
+    from .v3location import V3Location
+    from .v3location_near import V3LocationNear
+    from .v3location_within import V3LocationWithin
+    from .v3match_context import V3MatchContext
+    from .v3money import V3Money
+    from .v3network import V3Network
+    from .v3network_object import V3NetworkObject
+    from .v3no_data_reason import V3NoDataReason
+    from .v3package import V3Package
+    from .v3package_object import V3PackageObject
+    from .v3package_type import V3PackageType
+    from .v3page_meta import V3PageMeta
+    from .v3payer import V3Payer
+    from .v3payer_object import V3PayerObject
+    from .v3price_comparison import V3PriceComparison
+    from .v3price_comparison_object import V3PriceComparisonObject
+    from .v3price_expand import V3PriceExpand
+    from .v3price_sort import V3PriceSort
+    from .v3pricing_cash import V3PricingCash
+    from .v3pricing_negotiated import V3PricingNegotiated
+    from .v3pricing_resolved import V3PricingResolved
+    from .v3pricing_resolved_type import V3PricingResolvedType
+    from .v3provider import V3Provider
+    from .v3provider_address import V3ProviderAddress
+    from .v3provider_object import V3ProviderObject
+    from .v3provider_package_price import V3ProviderPackagePrice
+    from .v3provider_package_price_object import V3ProviderPackagePriceObject
+    from .v3response_meta import V3ResponseMeta
 _dynamic_imports: typing.Dict[str, str] = {
-    "CareNavErrorResponse": ".care_nav_error_response",
-    "CareNavErrorResponseDetail": ".care_nav_error_response_detail",
-    "CareNavProvider": ".care_nav_provider",
-    "CareNavSortType": ".care_nav_sort_type",
     "ConsumerPricingV2ErrorCode": ".consumer_pricing_v2error_code",
-    "Coordinates": ".coordinates",
     "EnvelopeNetwork": ".envelope_network",
     "EnvelopeProvider": ".envelope_provider",
     "EnvelopeRate": ".envelope_rate",
     "EnvelopeSsp": ".envelope_ssp",
     "ErrorCode": ".error_code",
-    "ErrorDetail": ".error_detail",
     "ErrorPayload": ".error_payload",
     "ErrorResponse": ".error_response",
-    "GeoSpace": ".geo_space",
-    "InsuranceNetwork": ".insurance_network",
-    "InsuranceNetworkPage": ".insurance_network_page",
-    "LocationInput": ".location_input",
     "Network": ".network",
     "NoDataReason": ".no_data_reason",
-    "NoDataResponse": ".no_data_response",
-    "PackageLineItem": ".package_line_item",
     "PageMeta": ".page_meta",
-    "PriceDetail": ".price_detail",
-    "PriceFilter": ".price_filter",
-    "PricesComparison": ".prices_comparison",
     "Provider": ".provider",
-    "ProviderBreakdown": ".provider_breakdown",
-    "ProviderLocationDetails": ".provider_location_details",
-    "ProviderPage": ".provider_page",
     "Rate": ".rate",
     "RateBreakdown": ".rate_breakdown",
     "RateBreakdownLineItem": ".rate_breakdown_line_item",
-    "RateBreakdownRateType": ".rate_breakdown_rate_type",
+    "RateBreakdownPriceType": ".rate_breakdown_price_type",
     "RateCompareLocation": ".rate_compare_location",
     "RateComparison": ".rate_comparison",
-    "RateRateType": ".rate_rate_type",
-    "ServicePackage": ".service_package",
-    "ServicePackagePage": ".service_package_page",
+    "RatePriceType": ".rate_price_type",
     "SingleResourceEnvelopeNetwork": ".single_resource_envelope_network",
     "SingleResourceEnvelopeProvider": ".single_resource_envelope_provider",
     "SingleResourceEnvelopeRateBreakdown": ".single_resource_envelope_rate_breakdown",
     "SingleResourceEnvelopeSsp": ".single_resource_envelope_ssp",
     "Ssp": ".ssp",
-    "SspPrice": ".ssp_price",
-    "SspPricePage": ".ssp_price_page",
+    "V3BillingCode": ".v3billing_code",
+    "V3ComparisonStats": ".v3comparison_stats",
+    "V3ConsumerPricingV2ErrorCode": ".v3consumer_pricing_v2error_code",
+    "V3EntityRef": ".v3entity_ref",
+    "V3ErrorCode": ".v3error_code",
+    "V3ErrorPayload": ".v3error_payload",
+    "V3ErrorResponse": ".v3error_response",
+    "V3LineItem": ".v3line_item",
+    "V3ListEnvelopeLineItem": ".v3list_envelope_line_item",
+    "V3ListEnvelopeLineItemObject": ".v3list_envelope_line_item_object",
+    "V3ListEnvelopeNetwork": ".v3list_envelope_network",
+    "V3ListEnvelopeNetworkObject": ".v3list_envelope_network_object",
+    "V3ListEnvelopePackage": ".v3list_envelope_package",
+    "V3ListEnvelopePackageObject": ".v3list_envelope_package_object",
+    "V3ListEnvelopePayer": ".v3list_envelope_payer",
+    "V3ListEnvelopePayerObject": ".v3list_envelope_payer_object",
+    "V3ListEnvelopeProvider": ".v3list_envelope_provider",
+    "V3ListEnvelopeProviderObject": ".v3list_envelope_provider_object",
+    "V3ListEnvelopeProviderPackagePrice": ".v3list_envelope_provider_package_price",
+    "V3ListEnvelopeProviderPackagePriceObject": ".v3list_envelope_provider_package_price_object",
+    "V3Location": ".v3location",
+    "V3LocationNear": ".v3location_near",
+    "V3LocationWithin": ".v3location_within",
+    "V3MatchContext": ".v3match_context",
+    "V3Money": ".v3money",
+    "V3Network": ".v3network",
+    "V3NetworkObject": ".v3network_object",
+    "V3NoDataReason": ".v3no_data_reason",
+    "V3Package": ".v3package",
+    "V3PackageObject": ".v3package_object",
+    "V3PackageType": ".v3package_type",
+    "V3PageMeta": ".v3page_meta",
+    "V3Payer": ".v3payer",
+    "V3PayerObject": ".v3payer_object",
+    "V3PriceComparison": ".v3price_comparison",
+    "V3PriceComparisonObject": ".v3price_comparison_object",
+    "V3PriceExpand": ".v3price_expand",
+    "V3PriceSort": ".v3price_sort",
+    "V3PricingCash": ".v3pricing_cash",
+    "V3PricingNegotiated": ".v3pricing_negotiated",
+    "V3PricingResolved": ".v3pricing_resolved",
+    "V3PricingResolvedType": ".v3pricing_resolved_type",
+    "V3Provider": ".v3provider",
+    "V3ProviderAddress": ".v3provider_address",
+    "V3ProviderObject": ".v3provider_object",
+    "V3ProviderPackagePrice": ".v3provider_package_price",
+    "V3ProviderPackagePriceObject": ".v3provider_package_price_object",
+    "V3ResponseMeta": ".v3response_meta",
 }
 
 
@@ -124,50 +176,76 @@ def __dir__():
 
 
 __all__ = [
-    "CareNavErrorResponse",
-    "CareNavErrorResponseDetail",
-    "CareNavProvider",
-    "CareNavSortType",
     "ConsumerPricingV2ErrorCode",
-    "Coordinates",
     "EnvelopeNetwork",
     "EnvelopeProvider",
     "EnvelopeRate",
     "EnvelopeSsp",
     "ErrorCode",
-    "ErrorDetail",
     "ErrorPayload",
     "ErrorResponse",
-    "GeoSpace",
-    "InsuranceNetwork",
-    "InsuranceNetworkPage",
-    "LocationInput",
     "Network",
     "NoDataReason",
-    "NoDataResponse",
-    "PackageLineItem",
     "PageMeta",
-    "PriceDetail",
-    "PriceFilter",
-    "PricesComparison",
     "Provider",
-    "ProviderBreakdown",
-    "ProviderLocationDetails",
-    "ProviderPage",
     "Rate",
     "RateBreakdown",
     "RateBreakdownLineItem",
-    "RateBreakdownRateType",
+    "RateBreakdownPriceType",
     "RateCompareLocation",
     "RateComparison",
-    "RateRateType",
-    "ServicePackage",
-    "ServicePackagePage",
+    "RatePriceType",
     "SingleResourceEnvelopeNetwork",
     "SingleResourceEnvelopeProvider",
     "SingleResourceEnvelopeRateBreakdown",
     "SingleResourceEnvelopeSsp",
     "Ssp",
-    "SspPrice",
-    "SspPricePage",
+    "V3BillingCode",
+    "V3ComparisonStats",
+    "V3ConsumerPricingV2ErrorCode",
+    "V3EntityRef",
+    "V3ErrorCode",
+    "V3ErrorPayload",
+    "V3ErrorResponse",
+    "V3LineItem",
+    "V3ListEnvelopeLineItem",
+    "V3ListEnvelopeLineItemObject",
+    "V3ListEnvelopeNetwork",
+    "V3ListEnvelopeNetworkObject",
+    "V3ListEnvelopePackage",
+    "V3ListEnvelopePackageObject",
+    "V3ListEnvelopePayer",
+    "V3ListEnvelopePayerObject",
+    "V3ListEnvelopeProvider",
+    "V3ListEnvelopeProviderObject",
+    "V3ListEnvelopeProviderPackagePrice",
+    "V3ListEnvelopeProviderPackagePriceObject",
+    "V3Location",
+    "V3LocationNear",
+    "V3LocationWithin",
+    "V3MatchContext",
+    "V3Money",
+    "V3Network",
+    "V3NetworkObject",
+    "V3NoDataReason",
+    "V3Package",
+    "V3PackageObject",
+    "V3PackageType",
+    "V3PageMeta",
+    "V3Payer",
+    "V3PayerObject",
+    "V3PriceComparison",
+    "V3PriceComparisonObject",
+    "V3PriceExpand",
+    "V3PriceSort",
+    "V3PricingCash",
+    "V3PricingNegotiated",
+    "V3PricingResolved",
+    "V3PricingResolvedType",
+    "V3Provider",
+    "V3ProviderAddress",
+    "V3ProviderObject",
+    "V3ProviderPackagePrice",
+    "V3ProviderPackagePriceObject",
+    "V3ResponseMeta",
 ]
