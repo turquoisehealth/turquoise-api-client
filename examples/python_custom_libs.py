@@ -2,30 +2,60 @@
 Example: Using custom libraries with the Turquoise Health Python SDK
 
 This demonstrates how to use manually-coded libraries alongside the generated SDK.
+
+Recommended Approach:
+1. Set OAuth credentials as environment variables
+2. Create APIAuthHandler once (e.g., at module level or as singleton)
+3. Reuse the same handler across your application for automatic token refresh
 """
 
 import os
 from turquoise_health import TurquoiseHealth, APIAuthHandler
 
 
-def example_basic_auth_handler():
-    """Example: Using APIAuthHandler for basic authentication."""
-    # Set your token in environment variable
-    os.environ["TURQUOISE_API_TOKEN"] = "your-api-token-here"
+# RECOMMENDED: Create auth handler once and reuse it
+# This enables in-memory token caching and automatic refresh
+def example_oauth_client_credentials():
+    """
+    RECOMMENDED: OAuth client credentials with automatic token refresh.
 
-    # Use the auth handler
-    auth = APIAuthHandler.from_env()
-    client = TurquoiseHealth(
-        base_url="https://api.turquoise.health",
-        token=auth.get_token()
-    )
+    This is the recommended authentication method. The auth handler caches tokens
+    in memory and automatically refreshes them before expiration.
 
-    print("✓ Client initialized with APIAuthHandler")
-    return client
+    Important: Create the auth handler once and reuse it across your application
+    to avoid unnecessary token requests.
+    """
+    # Set OAuth credentials in environment
+    os.environ["TURQUOISE_CLIENT_ID"] = "your-client-id"
+    os.environ["TURQUOISE_CLIENT_SECRET"] = "your-client-secret"
+    os.environ["TURQUOISE_ORGANIZATION_ID"] = "your-org-id"
+
+    # Create auth handler once - reuse this instance!
+    auth = APIAuthHandler.from_client_credentials()
+
+    # Use as_callable() to enable automatic token refresh
+    client = TurquoiseHealth(token=auth.as_callable())
+
+    # Example: Make API calls
+    try:
+        ssps = client.consumer_pricing.ssps.list(query="MRI Brain")
+        print(f"✓ Found {len(ssps)} packages")
+
+        if ssps:
+            prices = client.consumer_pricing.prices.list(
+                ssp_id=ssps[0].id,
+                zip_code="90210"
+            )
+            print(f"✓ Found {len(prices)} prices")
+    except Exception as e:
+        print(f"  (API call skipped: {e})")
+
+    print("✓ Client initialized with OAuth auto-refresh")
+    return client, auth
 
 
 def example_dynamic_token():
-    """Example: Using a dynamic token provider."""
+    """Alternative: Using a dynamic token provider for custom token sources."""
 
     def get_token_from_vault():
         # In production, this might fetch from a secrets manager
@@ -34,37 +64,24 @@ def example_dynamic_token():
     # Create auth handler with dynamic token provider
     auth = APIAuthHandler(token_provider=get_token_from_vault)
 
-    # Use as a callable with the client
-    client = TurquoiseHealth(
-        base_url="https://api.turquoise.health",
-        token=auth.as_callable()
-    )
+    # Use as_callable() with the client
+    client = TurquoiseHealth(token=auth.as_callable())
 
     print("✓ Client initialized with dynamic token provider")
     return client
 
 
-def example_oauth_client_credentials():
-    """Example: Using OAuth client credentials with automatic token refresh."""
-    # Set OAuth credentials in environment
-    os.environ["TURQUOISE_CLIENT_ID"] = "your-client-id"
-    os.environ["TURQUOISE_CLIENT_SECRET"] = "your-client-secret"
-    os.environ["TURQUOISE_ORGANIZATION_ID"] = "your-org-id"
+def example_basic_env_token():
+    """Alternative: Using a static token from environment variable (no auto-refresh)."""
+    # Set your token in environment variable
+    os.environ["TURQUOISE_API_TOKEN"] = "your-api-token-here"
 
-    # Create auth handler with OAuth credentials
-    # Token will be automatically refreshed when it expires
-    try:
-        auth = APIAuthHandler.from_client_credentials()
-        client = TurquoiseHealth(
-            base_url="https://api.turquoise.health",
-            token=auth.as_callable()  # Returns a function that auto-refreshes
-        )
+    # Use the auth handler
+    auth = APIAuthHandler.from_env()
+    client = TurquoiseHealth(token=auth.get_token())
 
-        print("✓ Client initialized with OAuth auto-refresh")
-        return client
-    except ValueError as e:
-        print(f"  (Skipped: {e})")
-        return None
+    print("✓ Client initialized with static env token")
+    return client
 
 
 def example_import_from_lib():
@@ -83,21 +100,33 @@ def example_import_from_lib():
 
 if __name__ == "__main__":
     print("Turquoise Health SDK - Custom Libraries Examples\n")
+    print("Note: Set real credentials in environment variables to run API calls\n")
 
-    # Note: These examples won't actually connect without a real API token
-    print("Example 1: Basic Auth Handler")
+    print("=" * 60)
+    print("RECOMMENDED: OAuth Client Credentials (Auto-Refresh)")
+    print("=" * 60)
     try:
-        example_basic_auth_handler()
+        client, auth = example_oauth_client_credentials()
+        print("  → Reuse the 'auth' instance across your application!")
     except ValueError as e:
         print(f"  (Skipped: {e})")
 
-    print("\nExample 2: Dynamic Token Provider")
+    print("\n" + "=" * 60)
+    print("Alternative: Dynamic Token Provider")
+    print("=" * 60)
     example_dynamic_token()
 
-    print("\nExample 3: OAuth Client Credentials (Auto-Refresh)")
-    example_oauth_client_credentials()
+    print("\n" + "=" * 60)
+    print("Alternative: Static Token from Environment")
+    print("=" * 60)
+    try:
+        example_basic_env_token()
+    except ValueError as e:
+        print(f"  (Skipped: {e})")
 
-    print("\nExample 4: Import from lib module")
+    print("\n" + "=" * 60)
+    print("Alternative: Import from lib module")
+    print("=" * 60)
     example_import_from_lib()
 
     print("\n✨ All examples completed!")
