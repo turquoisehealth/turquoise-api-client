@@ -101,17 +101,24 @@ All requests require a Bearer token. Contact [Turquoise Health](https://turquois
 
 Pass your token at client construction — it is sent as `Authorization: Bearer <token>` on every request.
 
-### Custom Authentication Utilities
+### OAuth Client Credentials with Auto-Refresh
 
-Each SDK includes an `APIAuthHandler` utility for managing authentication. Example usage:
+Each SDK includes an `APIAuthHandler` utility for managing OAuth authentication with automatic token refresh. Set your credentials as environment variables:
+
+```bash
+export TURQUOISE_CLIENT_ID="your-client-id"
+export TURQUOISE_CLIENT_SECRET="your-client-secret"
+export TURQUOISE_ORGANIZATION_ID="your-org-id"
+```
 
 **Python:**
 
 ```python
 from turquoise_health import TurquoiseHealth, APIAuthHandler
 
-auth = APIAuthHandler.from_env("TURQUOISE_API_TOKEN")
-client = TurquoiseHealth(token=auth.get_token())
+# Creates an auth handler that automatically refreshes tokens
+auth = APIAuthHandler.from_client_credentials()
+client = TurquoiseHealth(token=auth.as_callable())
 ```
 
 **TypeScript:**
@@ -119,7 +126,8 @@ client = TurquoiseHealth(token=auth.get_token())
 ```typescript
 import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
 
-const auth = lib.APIAuthHandler.fromEnv("TURQUOISE_API_TOKEN");
+// Creates an auth handler that automatically refreshes tokens
+const auth = lib.APIAuthHandler.fromClientCredentials();
 const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
 ```
 
@@ -128,11 +136,14 @@ const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
 ```csharp
 using TurquoiseHealth.Api.Lib;
 
-var auth = APIAuthHandler.FromEnv("TURQUOISE_API_TOKEN");
+// Creates an auth handler that automatically refreshes tokens
+var auth = APIAuthHandler.FromClientCredentials();
 var client = new TurquoiseHealthApiClient(token: auth.GetToken());
 ```
 
-For complete details on custom libraries and adding your own, see [MANUAL_LIBRARIES.md](MANUAL_LIBRARIES.md).
+> **⚠️ Important**: Create the `APIAuthHandler` instance **once** and reuse it across your application (e.g., as a singleton or module-level variable). Each auth handler maintains an in-memory token cache with automatic refresh. Creating new instances for every request will bypass the cache and unnecessarily refetch tokens from the OAuth server, leading to performance degradation and potential rate limiting.
+
+For complete details on authentication patterns, including static tokens and custom token providers, see [MANUAL_LIBRARIES.md](MANUAL_LIBRARIES.md).
 
 ---
 
