@@ -4,7 +4,7 @@
 [![npm](https://img.shields.io/npm/v/@turquoise-health/api)](https://www.npmjs.com/package/@turquoise-health/api)
 [![NuGet](https://img.shields.io/nuget/v/TurquoiseHealth.Api)](https://www.nuget.org/packages/TurquoiseHealth.Api)
 
-Official client libraries for the [Turquoise Health Consumer Pricing API](https://turquoise.health/api/docs/). Surface consumer-friendly healthcare service cost estimates — including cash-pay and negotiated rates — in your application.
+Official client libraries for the [Turquoise Health Consumer Pricing API](https://turquoise.health/api/docs/).
 
 ---
 
@@ -20,8 +20,6 @@ pip install turquoise-health
 
 ```bash
 npm install @turquoise-health/api
-# or
-yarn add @turquoise-health/api
 ```
 
 ### C\#
@@ -34,13 +32,56 @@ dotnet add package TurquoiseHealth.Api
 
 ## Quickstart
 
+All requests require a Bearer token. Contact [Turquoise Health](https://turquoise.health) to obtain API credentials.
+
+### OAuth Client Credentials with Auto-Refresh
+
+Each SDK includes an `APIAuthHandler` utility for managing OAuth authentication with automatic token refresh. You will need to set your credentials as environment variables:
+
+```bash
+export TURQUOISE_CLIENT_ID="your-client-id"
+export TURQUOISE_CLIENT_SECRET="your-client-secret"
+export TURQUOISE_ORGANIZATION_ID="your-org-id"
+```
+
+**Python:**
+
+```python
+from turquoise_health import TurquoiseHealth, APIAuthHandler
+
+auth = APIAuthHandler.from_client_credentials()
+client = TurquoiseHealth(token=auth.as_callable())
+```
+
+**TypeScript:**
+
+```typescript
+import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
+
+const auth = lib.APIAuthHandler.fromClientCredentials();
+const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
+```
+
+**C#:**
+
+```csharp
+using TurquoiseHealth.Api.Lib;
+
+var auth = APIAuthHandler.FromClientCredentials();
+var client = new TurquoiseHealthApiClient(token: auth.GetToken());
+```
+
+> **⚠️ Important**: Create the `APIAuthHandler` instance **once** and reuse it across your application (e.g., as a singleton or module-level variable). Each auth handler maintains an in-memory token cache with automatic refresh. Creating new instances for every request will bypass the cache and unnecessarily refetch tokens from the OAuth server, leading to performance degradation and rate limiting errors.
+
+---
+
+## Using the client
+
+Once you have initialized the client with an auth handler, you can begin calling the api endpoints.
+
 ### Python
 
 ```python
-from turquoise_health import TurquoiseHealth
-
-client = TurquoiseHealth(token="YOUR_API_TOKEN")
-
 # Search for shoppable service packages
 ssps = client.consumer_pricing.ssps.list(query="MRI Brain")
 for ssp in ssps:
@@ -59,10 +100,6 @@ for price in prices:
 ### TypeScript / JavaScript
 
 ```typescript
-import { TurquoiseHealth } from "@turquoise-health/api";
-
-const client = new TurquoiseHealth({ token: "YOUR_API_TOKEN" });
-
 // Search for shoppable service packages
 const ssps = await client.consumerPricing.ssps.list({ query: "MRI Brain" });
 
@@ -77,10 +114,6 @@ const prices = await client.consumerPricing.prices.list({
 ### C\#
 
 ```csharp
-using TurquoiseHealth.Api;
-
-var client = new TurquoiseHealthClient("YOUR_API_TOKEN");
-
 // Search for shoppable service packages
 var ssps = await client.ConsumerPricing.Ssps.ListAsync(new SspsListRequest { Query = "MRI Brain" });
 
@@ -92,56 +125,6 @@ var prices = await client.ConsumerPricing.Prices.ListAsync(new PricesListRequest
     NetworkId = "your-network-id",
 });
 ```
-
----
-
-## Authentication
-
-All requests require a Bearer token. Contact [Turquoise Health](https://turquoise.health) to obtain API credentials.
-
-Pass your token at client construction — it is sent as `Authorization: Bearer <token>` on every request.
-
-### OAuth Client Credentials with Auto-Refresh
-
-Each SDK includes an `APIAuthHandler` utility for managing OAuth authentication with automatic token refresh. Set your credentials as environment variables:
-
-```bash
-export TURQUOISE_CLIENT_ID="your-client-id"
-export TURQUOISE_CLIENT_SECRET="your-client-secret"
-export TURQUOISE_ORGANIZATION_ID="your-org-id"
-```
-
-**Python:**
-
-```python
-from turquoise_health import TurquoiseHealth, APIAuthHandler
-
-# Creates an auth handler that automatically refreshes tokens
-auth = APIAuthHandler.from_client_credentials()
-client = TurquoiseHealth(token=auth.as_callable())
-```
-
-**TypeScript:**
-
-```typescript
-import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
-
-// Creates an auth handler that automatically refreshes tokens
-const auth = lib.APIAuthHandler.fromClientCredentials();
-const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
-```
-
-**C#:**
-
-```csharp
-using TurquoiseHealth.Api.Lib;
-
-// Creates an auth handler that automatically refreshes tokens
-var auth = APIAuthHandler.FromClientCredentials();
-var client = new TurquoiseHealthApiClient(token: auth.GetToken());
-```
-
-> **⚠️ Important**: Create the `APIAuthHandler` instance **once** and reuse it across your application (e.g., as a singleton or module-level variable). Each auth handler maintains an in-memory token cache with automatic refresh. Creating new instances for every request will bypass the cache and unnecessarily refetch tokens from the OAuth server, leading to performance degradation and potential rate limiting.
 
 ---
 
