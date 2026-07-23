@@ -34,8 +34,6 @@ dotnet add package TurquoiseHealth.Api
 
 All requests require a Bearer token. Contact [Turquoise Health](https://turquoise.health) to obtain API credentials.
 
-### OAuth Client Credentials with Auto-Refresh
-
 Each SDK includes an `APIAuthHandler` utility for managing OAuth authentication with automatic token refresh. You will need to set your credentials as environment variables:
 
 ```bash
