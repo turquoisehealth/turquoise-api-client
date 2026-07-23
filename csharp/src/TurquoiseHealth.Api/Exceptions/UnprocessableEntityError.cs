@@ -5,4 +5,4 @@ namespace TurquoiseHealth.Api;
 /// </summary>
 [Serializable]
 public class UnprocessableEntityError(object body)
-    : TurquoiseHealthApiApiException("UnprocessableEntityError", 422, body);
+    : TurquoisehealthApiApiException("UnprocessableEntityError", 422, body);

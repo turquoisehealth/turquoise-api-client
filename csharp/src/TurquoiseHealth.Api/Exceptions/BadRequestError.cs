@@ -5,4 +5,4 @@ namespace TurquoiseHealth.Api;
 /// </summary>
 [Serializable]
 public class BadRequestError(object body)
-    : TurquoiseHealthApiApiException("BadRequestError", 400, body);
+    : TurquoisehealthApiApiException("BadRequestError", 400, body);

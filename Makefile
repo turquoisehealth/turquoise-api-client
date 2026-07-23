@@ -1,4 +1,4 @@
-.PHONY: help test test-python test-typescript test-csharp install-test-deps clean venv update-lib-exports
+.PHONY: help test test-python test-typescript test-csharp install-test-deps clean venv update-lib-exports generate publish
 
 # Python virtual environment directory
 VENV := venv
@@ -17,12 +17,16 @@ help:
 	@echo "  make test-csharp       - Run C# integration tests"
 	@echo "  make install-test-deps - Install test dependencies for all languages"
 	@echo "  make update-lib-exports - Update SDK exports after Fern generation"
+	@echo "  make generate          - Regenerate SDKs from openapi.json (requires FERN_TOKEN)"
+	@echo "  make publish VERSION=v1.0.0 - Tag and publish SDKs to registries"
 	@echo "  make clean            - Clean test artifacts"
 	@echo ""
 	@echo "Prerequisites:"
 	@echo "  - Set TURQUOISE_API_TOKEN environment variable before running tests"
+	@echo "  - Set FERN_TOKEN environment variable before running 'make generate'"
 	@echo "  - Run 'make venv' to create Python virtual environment (recommended)"
 	@echo "  - Install dependencies: make install-test-deps"
+	@echo "  - Install Fern CLI: npm install -g fern-api"
 
 # Run all tests
 test: test-python test-typescript test-csharp
@@ -87,3 +91,16 @@ clean:
 update-lib-exports:
 	@echo "Updating SDK exports to include manual libraries..."
 	@python3 scripts/update_lib_exports.py
+
+# Regenerate SDKs from OpenAPI spec
+generate:
+	@./scripts/generate.sh
+
+# Publish SDKs by creating and pushing a version tag
+publish:
+	@if [ -z "$(VERSION)" ]; then \
+		echo "Error: VERSION is required"; \
+		echo "Usage: make publish VERSION=v3.2.0"; \
+		exit 1; \
+	fi
+	@./scripts/publish.sh $(VERSION)

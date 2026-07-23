@@ -2,11 +2,11 @@ using TurquoiseHealth.Api.Core;
 
 namespace TurquoiseHealth.Api;
 
-public partial class TurquoiseHealthApiClient
+public partial class TurquoisehealthApiClient
 {
     private readonly RawClient _client;
 
-    public TurquoiseHealthApiClient(string? token = null, ClientOptions? clientOptions = null)
+    public TurquoisehealthApiClient(string? token = null, ClientOptions? clientOptions = null)
     {
         var defaultHeaders = new Headers(
             new Dictionary<string, string>()

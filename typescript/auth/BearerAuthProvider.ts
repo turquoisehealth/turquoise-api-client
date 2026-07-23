@@ -23,7 +23,7 @@ export class BearerAuthProvider implements core.AuthProvider {
     public async getAuthRequest(_arg?: { endpointMetadata?: core.EndpointMetadata }): Promise<core.AuthRequest> {
         const token = await core.Supplier.get(this.token);
         if (token == null) {
-            throw new errors.TurquoiseHealthApiError({
+            throw new errors.TurquoisehealthApiError({
                 message: "Please specify a token by passing it in to the constructor",
             });
         }

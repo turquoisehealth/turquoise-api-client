@@ -5,4 +5,4 @@ namespace TurquoiseHealth.Api;
 /// </summary>
 [Serializable]
 public class TooManyRequestsError(object body)
-    : TurquoiseHealthApiApiException("TooManyRequestsError", 429, body);
+    : TurquoisehealthApiApiException("TooManyRequestsError", 429, body);

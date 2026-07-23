@@ -3,7 +3,7 @@
 import type * as core from "../../core/index.js";
 import * as errors from "../../errors/index.js";
 
-export class InternalServerError extends errors.TurquoiseHealthApiError {
+export class InternalServerError extends errors.TurquoisehealthApiError {
     constructor(body?: unknown, rawResponse?: core.RawResponse) {
         super({
             message: "InternalServerError",

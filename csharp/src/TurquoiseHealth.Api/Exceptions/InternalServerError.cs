@@ -5,4 +5,4 @@ namespace TurquoiseHealth.Api;
 /// </summary>
 [Serializable]
 public class InternalServerError(object body)
-    : TurquoiseHealthApiApiException("InternalServerError", 500, body);
+    : TurquoisehealthApiApiException("InternalServerError", 500, body);
