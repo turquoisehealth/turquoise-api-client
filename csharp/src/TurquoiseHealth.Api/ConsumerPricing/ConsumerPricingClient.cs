@@ -1668,6 +1668,76 @@ public partial class ConsumerPricingClient
     }
 
     /// <summary>
+    /// Fetch provider types
+    /// </summary>
+    /// <example><code>
+    /// await client.ConsumerPricing.V3GetProviderTypesAsync();
+    /// </code></example>
+    public async Task<IEnumerable<string>> V3GetProviderTypesAsync(
+        RequestOptions? options = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var response = await _client
+            .SendRequestAsync(
+                new JsonRequest
+                {
+                    BaseUrl = _client.Options.BaseUrl,
+                    Method = HttpMethod.Get,
+                    Path = "v3/providers/types",
+                    Options = options,
+                },
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+        if (response.StatusCode is >= 200 and < 400)
+        {
+            var responseBody = await response.Raw.Content.ReadAsStringAsync();
+            try
+            {
+                return JsonUtils.Deserialize<IEnumerable<string>>(responseBody)!;
+            }
+            catch (JsonException e)
+            {
+                throw new TurquoiseHealthApiException("Failed to deserialize response", e);
+            }
+        }
+
+        {
+            var responseBody = await response.Raw.Content.ReadAsStringAsync();
+            try
+            {
+                switch (response.StatusCode)
+                {
+                    case 400:
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
+                    case 404:
+                        throw new NotFoundError(
+                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                        );
+                    case 422:
+                        throw new UnprocessableEntityError(
+                            JsonUtils.Deserialize<object>(responseBody)
+                        );
+                    case 429:
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
+                    case 500:
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
+                }
+            }
+            catch (JsonException)
+            {
+                // unable to map error response, throwing generic error
+            }
+            throw new TurquoiseHealthApiApiException(
+                $"Error with status code {response.StatusCode}",
+                response.StatusCode,
+                responseBody
+            );
+        }
+    }
+
+    /// <summary>
     /// List providers, filterable by name (case-insensitive substring), npi/type (exact), relationships (package_id/network_id/payer_id — providers with at least one matching price; combined relationship filters must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices), and one location mode: `location.near.*` (ranked by distance), `location.within.*` (state/cbsa/zip_codes), or `location.zip` (ZIP centroid + default 25km radius). Results reflect providers Turquoise has priced services for.
     /// </summary>
     /// <example><code>
