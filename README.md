@@ -140,4 +140,4 @@ This library follows [Semantic Versioning](https://semver.org). The SDK version 
 
 ## Contributing
 
-This repository is auto-generated from the Turquoise Health OpenAPI spec using [Fern](https://buildwithfern.com). To report an API issue or request a change, contact your Turquoise Health integration partner.
+The clients in this repository are auto-generated from the Turquoise Health OpenAPI spec using [Fern](https://buildwithfern.com). To report an API issue or request a change, contact your Turquoise Health integration partner.
