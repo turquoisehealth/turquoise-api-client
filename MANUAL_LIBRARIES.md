@@ -1,12 +1,14 @@
 # Custom Libraries System
 
+**Developer Documentation**: This guide is for maintainers and contributors working on the SDK itself.
+
 Complete guide to adding manually-coded (non-Fern-generated) libraries to the SDK packages.
 
 ## Table of Contents
 
 - [Overview](#overview)
 - [Directory Structure](#directory-structure)
-- [Quick Start for Users](#quick-start-for-users)
+- [Testing Custom Library Imports](#testing-custom-library-imports)
 - [Adding New Libraries](#adding-new-libraries)
 - [After Fern Regeneration](#after-fern-regeneration)
 - [Developer Checklist](#developer-checklist)
@@ -69,9 +71,9 @@ examples/
 └── csharp_custom_libs.cs    # C# usage examples
 ```
 
-## Quick Start for Users
+## Testing Custom Library Imports
 
-After installing the package, import custom utilities alongside the main client:
+After adding a custom library, verify that end users can import it correctly:
 
 **Python:**
 
