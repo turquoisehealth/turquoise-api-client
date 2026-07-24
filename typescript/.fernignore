@@ -8,3 +8,6 @@ lib/**
 # Protect integration tests
 tests/
 tests/**
+
+# Protect TypeScript configuration
+tsconfig.json
