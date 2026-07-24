@@ -9,7 +9,7 @@
  * 3. Reuse the same handler across your application for automatic token refresh
  */
 
-import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
+import { TurquoiseHealthApiClient, lib } from "@turquoisehealth/api";
 
 /**
  * RECOMMENDED: OAuth client credentials with automatic token refresh

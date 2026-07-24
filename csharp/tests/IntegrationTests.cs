@@ -19,7 +19,7 @@ namespace TurquoiseHealth.Api.IntegrationTests;
 public class IntegrationTests
 {
     private const string BaseUrl = "https://api.turquoise.health";
-    private TurquoiseHealthApiClient? _client;
+    private TurquoisehealthApiClient? _client;
     private readonly string? _apiToken = Environment.GetEnvironmentVariable("TURQUOISE_API_TOKEN");
 
     [SetUp]
@@ -30,100 +30,15 @@ public class IntegrationTests
             Assert.Ignore("TURQUOISE_API_TOKEN environment variable not set");
         }
 
-        _client = new TurquoiseHealthApiClient(new ClientOptions
+        _client = new TurquoisehealthApiClient(_apiToken, new ClientOptions
         {
-            Environment = BaseUrl,
-            Token = _apiToken
+            BaseUrl = BaseUrl
         });
     }
 
     #region V1 Endpoints
-
-    [Test]
-    public async Task GetSSPs_ShouldReturnResults()
-    {
-        // Arrange & Act
-        var response = await _client!.ConsumerPricing.GetSSPsAsync(new GetSSPsRequest
-        {
-            PageSize = 5
-        });
-
-        // Assert
-        Assert.That(response, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Empty);
-        Assert.That(response.Meta, Is.Not.Null);
-
-        // Verify SSP structure
-        var ssp = response.Data[0];
-        Assert.That(ssp.Id, Is.Not.Null);
-        Assert.That(ssp.Name, Is.Not.Null);
-
-        Console.WriteLine($"✓ Retrieved {response.Data.Count} SSPs");
-    }
-
-    [Test]
-    public async Task GetSSPs_WithSearch_ShouldReturnResults()
-    {
-        // Arrange & Act
-        var response = await _client!.ConsumerPricing.GetSSPsAsync(new GetSSPsRequest
-        {
-            Search = "MRI",
-            PageSize = 5
-        });
-
-        // Assert
-        Assert.That(response, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Null);
-
-        Console.WriteLine($"✓ Search returned {response.Data.Count} SSPs");
-    }
-
-    [Test]
-    public async Task GetInsuranceNetworks_ShouldReturnResults()
-    {
-        // Arrange & Act
-        var response = await _client!.ConsumerPricing.GetInsuranceNetworksAsync(new GetInsuranceNetworksRequest
-        {
-            PageSize = 5
-        });
-
-        // Assert
-        Assert.That(response, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Empty);
-        Assert.That(response.Meta, Is.Not.Null);
-
-        // Verify network structure
-        var network = response.Data[0];
-        Assert.That(network.Id, Is.Not.Null);
-
-        Console.WriteLine($"✓ Retrieved {response.Data.Count} insurance networks");
-    }
-
-    [Test]
-    public async Task GetProviders_ShouldReturnResults()
-    {
-        // Arrange & Act
-        var response = await _client!.ConsumerPricing.GetProvidersAsync(new GetProvidersRequest
-        {
-            State = "CA",
-            PageSize = 5
-        });
-
-        // Assert
-        Assert.That(response, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Empty);
-        Assert.That(response.Meta, Is.Not.Null);
-
-        // Verify provider structure
-        var provider = response.Data[0];
-        Assert.That(provider.Id, Is.Not.Null);
-
-        Console.WriteLine($"✓ Retrieved {response.Data.Count} providers");
-    }
-
+    // V1 endpoints have been removed. Only V2 and V3 endpoints are available.
+    // See V2 Endpoints section below for updated tests.
     #endregion
 
     #region V2 Endpoints
@@ -139,15 +54,16 @@ public class IntegrationTests
 
         // Assert
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Empty);
+        Assert.That(response.Items, Is.Not.Null);
+        Assert.That(response.Items, Is.Not.Empty);
+        Assert.That(response.Page, Is.Not.Null);
 
         // Verify SSP structure
-        var ssp = response.Data[0];
+        var ssp = response.Items.First();
         Assert.That(ssp.Id, Is.Not.Null);
         Assert.That(ssp.Name, Is.Not.Null);
 
-        Console.WriteLine($"✓ V2: Retrieved {response.Data.Count} SSPs");
+        Console.WriteLine($"✓ V2: Retrieved {response.Items.Count()} SSPs");
     }
 
     [Test]
@@ -161,14 +77,15 @@ public class IntegrationTests
 
         // Assert
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Empty);
+        Assert.That(response.Items, Is.Not.Null);
+        Assert.That(response.Items, Is.Not.Empty);
+        Assert.That(response.Page, Is.Not.Null);
 
         // Verify network structure
-        var network = response.Data[0];
+        var network = response.Items.First();
         Assert.That(network.Id, Is.Not.Null);
 
-        Console.WriteLine($"✓ V2: Retrieved {response.Data.Count} networks");
+        Console.WriteLine($"✓ V2: Retrieved {response.Items.Count()} networks");
     }
 
     [Test]
@@ -177,20 +94,21 @@ public class IntegrationTests
         // Arrange & Act
         var response = await _client!.ConsumerPricing.V2ListProvidersAsync(new V2ListProvidersRequest
         {
-            State = "CA",
+            WithinState = "CA",
             PageSize = 5
         });
 
         // Assert
         Assert.That(response, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Null);
-        Assert.That(response.Data, Is.Not.Empty);
+        Assert.That(response.Items, Is.Not.Null);
+        Assert.That(response.Items, Is.Not.Empty);
+        Assert.That(response.Page, Is.Not.Null);
 
         // Verify provider structure
-        var provider = response.Data[0];
+        var provider = response.Items.First();
         Assert.That(provider.Id, Is.Not.Null);
 
-        Console.WriteLine($"✓ V2: Retrieved {response.Data.Count} providers");
+        Console.WriteLine($"✓ V2: Retrieved {response.Items.Count()} providers");
     }
 
     #endregion

@@ -29,7 +29,7 @@ interface APIAuthHandlerOptions {
  *
  * @example
  * ```typescript
- * import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
+ * import { TurquoiseHealthApiClient, lib } from "@turquoisehealth/api";
  *
  * // Static token from environment
  * const auth = lib.APIAuthHandler.fromEnv();
@@ -228,6 +228,8 @@ export class APIAuthHandler {
      * OAuth client credentials.
      *
      * @returns Supplier function that returns the current token
+     */
+    public asSupplier(): () => Promise<string> {
         return () => this.getToken();
     }
 }

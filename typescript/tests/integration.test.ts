@@ -12,7 +12,7 @@
  *   npm test
  */
 
-import { TurquoiseHealthApiClient } from "../../Client";
+import { TurquoisehealthApiClient } from "../index";
 
 // Check if API token is available
 const API_TOKEN = process.env.TURQUOISE_API_TOKEN;
@@ -22,7 +22,7 @@ const BASE_URL = "https://api.turquoise.health";
 const describeIfToken = API_TOKEN ? describe : describe.skip;
 
 describe("Turquoise Health API TypeScript Client", () => {
-  let client: TurquoiseHealthApiClient;
+  let client: TurquoisehealthApiClient;
 
   beforeAll(() => {
     if (!API_TOKEN) {
@@ -30,146 +30,85 @@ describe("Turquoise Health API TypeScript Client", () => {
       return;
     }
 
-    client = new TurquoiseHealthApiClient({
+    client = new TurquoisehealthApiClient({
       environment: BASE_URL,
       token: API_TOKEN
     });
   });
 
-  describeIfToken("V1 Endpoints", () => {
-    test("getSSPs - list shoppable service packages", async () => {
-      const response = await client.consumerPricing.getSSPs({
-        pageSize: 5
-      });
-
-      // Verify response structure
-      expect(response).toBeDefined();
-      expect(response.data).toBeInstanceOf(Array);
-      expect(response.meta).toBeDefined();
-
-      // Verify we got results
-      expect(response.data.length).toBeGreaterThan(0);
-
-      // Verify SSP structure
-      const ssp = response.data[0];
-      expect(ssp.id).toBeDefined();
-      expect(ssp.name).toBeDefined();
-
-      console.log(`✓ Retrieved ${response.data.length} SSPs`);
-    }, 30000);
-
-    test("getSSPs - search by keyword", async () => {
-      const response = await client.consumerPricing.getSSPs({
-        search: "MRI",
-        pageSize: 5
-      });
-
-      expect(response).toBeDefined();
-      expect(response.data).toBeInstanceOf(Array);
-
-      console.log(`✓ Search returned ${response.data.length} SSPs`);
-    }, 30000);
-
-    test("getInsuranceNetworks - list insurance networks", async () => {
-      const response = await client.consumerPricing.getInsuranceNetworks({
-        pageSize: 5
-      });
-
-      // Verify response structure
-      expect(response).toBeDefined();
-      expect(response.data).toBeInstanceOf(Array);
-      expect(response.meta).toBeDefined();
-
-      // Verify we got results
-      expect(response.data.length).toBeGreaterThan(0);
-
-      // Verify network structure
-      const network = response.data[0];
-      expect(network.id).toBeDefined();
-
-      console.log(`✓ Retrieved ${response.data.length} insurance networks`);
-    }, 30000);
-
-    test("getProviders - list healthcare providers", async () => {
-      const response = await client.consumerPricing.getProviders({
-        state: "CA",
-        pageSize: 5
-      });
-
-      // Verify response structure
-      expect(response).toBeDefined();
-      expect(response.data).toBeInstanceOf(Array);
-      expect(response.meta).toBeDefined();
-
-      // Verify we got results
-      expect(response.data.length).toBeGreaterThan(0);
-
-      // Verify provider structure
-      const provider = response.data[0];
-      expect(provider.id).toBeDefined();
-
-      console.log(`✓ Retrieved ${response.data.length} providers`);
-    }, 30000);
-  });
-
   describeIfToken("V2 Endpoints", () => {
-    test("v2ListSsps - list SSPs (v2)", async () => {
+    test("v2ListSsps - list shoppable service packages", async () => {
       const response = await client.consumerPricing.v2ListSsps({
-        pageSize: 5
+        page_size: 5
       });
 
       // Verify response structure
       expect(response).toBeDefined();
-      expect(response.data).toBeInstanceOf(Array);
+      expect(response.items).toBeInstanceOf(Array);
+      expect(response.page).toBeDefined();
 
       // Verify we got results
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.items.length).toBeGreaterThan(0);
 
       // Verify SSP structure
-      const ssp = response.data[0];
+      const ssp = response.items[0];
       expect(ssp.id).toBeDefined();
       expect(ssp.name).toBeDefined();
 
-      console.log(`✓ V2: Retrieved ${response.data.length} SSPs`);
+      console.log(`✓ Retrieved ${response.items.length} SSPs`);
     }, 30000);
 
-    test("v2ListNetworks - list networks (v2)", async () => {
+    test("v2ListSsps - search by keyword", async () => {
+      const response = await client.consumerPricing.v2ListSsps({
+        search: "MRI",
+        page_size: 5
+      });
+
+      expect(response).toBeDefined();
+      expect(response.items).toBeInstanceOf(Array);
+
+      console.log(`✓ Search returned ${response.items.length} SSPs`);
+    }, 30000);
+
+    test("v2ListNetworks - list insurance networks", async () => {
       const response = await client.consumerPricing.v2ListNetworks({
-        pageSize: 5
+        page_size: 5
       });
 
       // Verify response structure
       expect(response).toBeDefined();
-      expect(response.data).toBeInstanceOf(Array);
+      expect(response.items).toBeInstanceOf(Array);
+      expect(response.page).toBeDefined();
 
       // Verify we got results
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.items.length).toBeGreaterThan(0);
 
       // Verify network structure
-      const network = response.data[0];
+      const network = response.items[0];
       expect(network.id).toBeDefined();
 
-      console.log(`✓ V2: Retrieved ${response.data.length} networks`);
+      console.log(`✓ Retrieved ${response.items.length} insurance networks`);
     }, 30000);
 
-    test("v2ListProviders - list providers (v2)", async () => {
+    test("v2ListProviders - list healthcare providers", async () => {
       const response = await client.consumerPricing.v2ListProviders({
-        state: "CA",
-        pageSize: 5
+        "within.state": "CA",
+        page_size: 5
       });
 
       // Verify response structure
       expect(response).toBeDefined();
-      expect(response.data).toBeInstanceOf(Array);
+      expect(response.items).toBeInstanceOf(Array);
+      expect(response.page).toBeDefined();
 
       // Verify we got results
-      expect(response.data.length).toBeGreaterThan(0);
+      expect(response.items.length).toBeGreaterThan(0);
 
       // Verify provider structure
-      const provider = response.data[0];
+      const provider = response.items[0];
       expect(provider.id).toBeDefined();
 
-      console.log(`✓ V2: Retrieved ${response.data.length} providers`);
+      console.log(`✓ Retrieved ${response.items.length} providers`);
     }, 30000);
   });
 });

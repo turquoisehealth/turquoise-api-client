@@ -34,18 +34,18 @@ test: test-python test-typescript test-csharp
 	@echo "✓ All integration tests completed successfully!"
 
 # Python tests
-test-python: venv
+test-python: install-test-deps
 	@echo "Running Python integration tests..."
-	@$(PYTHON) -m pytest python/tests/test_integration.py -v -s
+	@PYTHONPATH=. $(PYTHON) -m pytest python/tests/test_integration.py -v -s
 
 # TypeScript tests
-test-typescript:
+test-typescript: install-test-deps
 	@echo "Running TypeScript integration tests..."
 	@cd typescript/tests && \
 		npm test
 
 # C# tests
-test-csharp:
+test-csharp: install-test-deps
 	@echo "Running C# integration tests..."
 	@cd csharp/tests && \
 		dotnet test --verbosity normal
@@ -61,7 +61,8 @@ venv:
 # Install test dependencies
 install-test-deps: venv
 	@echo "Installing test dependencies..."
-	@echo "Installing Python test dependencies..."
+	@echo "Installing Python SDK dependencies and test dependencies..."
+	@$(PIP) install httpx pydantic typing-extensions
 	@$(PIP) install -r python/tests/requirements-test.txt
 	@echo "Installing TypeScript test dependencies..."
 	@cd typescript/tests && npm install

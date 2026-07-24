@@ -8,10 +8,10 @@
  * Note: For development, compile the TypeScript SDK first:
  *   cd ../typescript && npm install && npm run build
  * Or install the published package:
- *   npm install @turquoise-health/api
+ *   npm install @turquoisehealth/api
  */
 
-import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
+import { TurquoiseHealthApiClient, lib } from "@turquoisehealth/api";
 
 /**
  * Example: Using APIAuthHandler with a token from environment variable
