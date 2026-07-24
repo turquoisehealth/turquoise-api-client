@@ -66,11 +66,17 @@ jobs:
           commit-message: "chore: regenerate SDKs for ${{ steps.version.outputs.raw }}"
           title: "chore: regenerate SDKs for ${{ steps.version.outputs.raw }}"
           body: |
-            Automated PR triggered by `turquoise-api` release **${{ steps.version.outputs.raw }}**.
+            ${{ github.event_name == 'repository_dispatch' && format('Automated PR triggered by `turquoise-api` release **{0}**.
 
             Changes:
-            - `openapi.json` updated to match the released API spec
+            - `openapi.json` updated from repository dispatch payload
             - All three SDKs regenerated via Fern
 
-            Review the diff to confirm the SDK changes match the intended API changes, then merge to trigger publishing.
+            Review the diff to confirm the SDK changes match the intended API changes, then merge to trigger publishing.', steps.version.outputs.raw) || format('Manual SDK regeneration for version **{0}**.
+
+            Changes:
+            - `openapi.json` {1}
+            - All three SDKs regenerated via Fern
+
+            Review the diff to confirm the SDK changes are correct, then merge to trigger publishing.', steps.version.outputs.raw, inputs.openapi_url != '' && format('updated from URL: `{0}`', inputs.openapi_url) || 'regenerated from existing spec') }}
           labels: automated
