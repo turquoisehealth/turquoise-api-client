@@ -99,6 +99,7 @@ if typing.TYPE_CHECKING:
         V3PricesQueryRequestSortDirection,
     )
 _dynamic_imports: typing.Dict[str, str] = {
+    "APIAuthHandler": ".lib",
     "AsyncTurquoiseHealth": ".client",
     "BadRequestError": ".errors",
     "ConsumerPricingV2ErrorCode": ".types",
@@ -186,6 +187,7 @@ _dynamic_imports: typing.Dict[str, str] = {
     "V3ProviderPackagePriceObject": ".types",
     "V3ResponseMeta": ".types",
     "consumer_pricing": ".consumer_pricing",
+    "lib": ".lib",
 }
 
 
@@ -298,4 +300,5 @@ __all__ = [
     "V3ProviderPackagePriceObject",
     "V3ResponseMeta",
     "consumer_pricing",
+    "lib",
 ]
