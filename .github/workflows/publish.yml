@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "v*"
+    branches:
+      - main
 
 jobs:
   publish:
@@ -14,6 +16,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Determine release type
+        id: release_type
+        run: |
+          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            echo "type=production" >> $GITHUB_OUTPUT
+            echo "npm_tag=latest" >> $GITHUB_OUTPUT
+            VERSION="${{ github.ref_name }}"
+            VERSION="${VERSION#v}"  # Strip 'v' prefix
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          else
+            echo "type=dev" >> $GITHUB_OUTPUT
+            echo "npm_tag=dev" >> $GITHUB_OUTPUT
+            SHORT_SHA="${{ github.sha }}"
+            SHORT_SHA="${SHORT_SHA:0:7}"
+            DEV_VERSION="0.0.0-dev.${SHORT_SHA}"
+            echo "version=$DEV_VERSION" >> $GITHUB_OUTPUT
+          fi
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -42,7 +62,8 @@ jobs:
       - name: Update library exports
         run: python3 scripts/update_lib_exports.py
 
-      - name: Publish Python SDK to PyPI
+      - name: Publish Python SDK to PyPI (production)
+        if: env.TWINE_PASSWORD != '' && steps.release_type.outputs.type == 'production'
         working-directory: python
         run: |
           pip install build twine
@@ -52,18 +73,53 @@ jobs:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
 
-      - name: Publish TypeScript SDK to npm
+      - name: Publish Python SDK to TestPyPI (dev)
+        if: env.TWINE_PASSWORD != '' && steps.release_type.outputs.type == 'dev'
+        working-directory: python
+        run: |
+          pip install build twine
+          python -m build
+          twine upload --repository testpypi dist/*
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.TESTPYPI_TOKEN }}
+
+      - name: Publish TypeScript SDK to npm (production)
+        if: env.NODE_AUTH_TOKEN != '' && steps.release_type.outputs.type == 'production'
         working-directory: typescript
         run: |
           npm ci
-          npm publish --access public
+          npm publish --access public --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish C# SDK to NuGet
+      - name: Publish TypeScript SDK to npm (dev)
+        if: env.NODE_AUTH_TOKEN != '' && steps.release_type.outputs.type == 'dev'
+        working-directory: typescript
+        run: |
+          npm ci
+          npm publish --access public --tag dev
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish C# SDK to NuGet (production)
+        if: env.NUGET_API_KEY != '' && steps.release_type.outputs.type == 'production'
         working-directory: csharp
         run: |
           dotnet build --configuration Release
           dotnet nuget push **/*.nupkg \
             --api-key ${{ secrets.NUGET_API_KEY }} \
             --source https://api.nuget.org/v3/index.json
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Publish C# SDK to NuGet (dev)
+        if: env.NUGET_API_KEY != '' && steps.release_type.outputs.type == 'dev'
+        working-directory: csharp
+        run: |
+          dotnet build --configuration Release
+          dotnet nuget push **/*.nupkg \
+            --api-key ${{ secrets.NUGET_API_KEY }} \
+            --source https://api.nuget.org/v3/index.json
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
