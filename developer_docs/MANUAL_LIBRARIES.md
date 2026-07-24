@@ -87,7 +87,7 @@ client = TurquoiseHealth(token=auth.get_token())
 **TypeScript:**
 
 ```typescript
-import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
+import { TurquoiseHealthApiClient, lib } from "@turquoisehealth/api";
 
 const auth = lib.APIAuthHandler.fromEnv();
 const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
@@ -161,7 +161,7 @@ var client = new TurquoiseHealthApiClient(token: auth.GetToken());
 4. **Test the import**:
 
    ```typescript
-   import { lib } from "@turquoise-health/api";
+   import { lib } from "@turquoisehealth/api";
    const calculator = new lib.RateCalculator();
    ```
 
@@ -324,7 +324,7 @@ class MyLibrary:
  *
  * @example
  * ```typescript
- * import { lib } from "@turquoise-health/api";
+ * import { lib } from "@turquoisehealth/api";
  * const myLib = new lib.MyLibrary();
  * ```
  */

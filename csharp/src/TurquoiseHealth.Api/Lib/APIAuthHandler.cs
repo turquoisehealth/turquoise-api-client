@@ -24,15 +24,15 @@ namespace TurquoiseHealth.Api.Lib;
 /// <code>
 /// using TurquoiseHealth.Api;
 /// using TurquoiseHealth.Api.Lib;
-/// 
+///
 /// // Static token from environment
 /// var auth = APIAuthHandler.FromEnv();
 /// var client = new TurquoiseHealthApiClient(token: auth.GetToken());
-/// 
+///
 /// // OAuth with client credentials (auto-refreshes when expired)
 /// var auth = APIAuthHandler.FromClientCredentials();
 /// var client = new TurquoiseHealthApiClient(token: auth.GetToken());
-/// 
+///
 /// // Custom token provider
 /// var auth = new APIAuthHandler(tokenProvider: () => GetTokenFromVault());
 /// var client = new TurquoiseHealthApiClient(token: auth.GetToken());
@@ -256,3 +256,5 @@ public class APIAuthHandler
     {
         public string? AccessToken { get; set; }
         public int? ExpiresIn { get; set; }
+    }
+}

@@ -1,7 +1,7 @@
 # Turquoise Health API Client
 
 [![PyPI](https://img.shields.io/pypi/v/turquoise-health)](https://pypi.org/project/turquoise-health/)
-[![npm](https://img.shields.io/npm/v/@turquoise-health/api)](https://www.npmjs.com/package/@turquoise-health/api)
+[![npm](https://img.shields.io/npm/v/@turquoisehealth/api)](https://www.npmjs.com/package/@turquoisehealth/api)
 [![NuGet](https://img.shields.io/nuget/v/TurquoiseHealth.Api)](https://www.nuget.org/packages/TurquoiseHealth.Api)
 
 Official client libraries for the [Turquoise Health Consumer Pricing API](https://turquoise.health/api/docs/).
@@ -19,7 +19,7 @@ pip install turquoise-health
 ### TypeScript
 
 ```bash
-npm install @turquoise-health/api
+npm install @turquoisehealth/api
 ```
 
 ### C\#
@@ -54,7 +54,7 @@ client = TurquoiseHealth(token=auth.as_callable())
 **TypeScript:**
 
 ```typescript
-import { TurquoiseHealthApiClient, lib } from "@turquoise-health/api";
+import { TurquoiseHealthApiClient, lib } from "@turquoisehealth/api";
 
 const auth = lib.APIAuthHandler.fromClientCredentials();
 const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
