@@ -16,11 +16,11 @@ public class V3ListNetworksTest : BaseMockServerTest
               "items": [
                 {
                   "object": "network",
-                  "id": "2010265101",
-                  "name": "National PPO",
+                  "id": "-3776001016975145508",
+                  "name": "National OAP",
                   "payer": {
-                    "id": "7001",
-                    "name": "Meridian Health Plan"
+                    "id": "76",
+                    "name": "Cigna"
                   }
                 }
               ],
@@ -32,10 +32,7 @@ public class V3ListNetworksTest : BaseMockServerTest
               "no_data_reason": "no_data",
               "disclosures": [
                 "disclosures"
-              ],
-              "meta": {
-                "dataset_version": "dataset_version"
-              }
+              ]
             }
             """;
 

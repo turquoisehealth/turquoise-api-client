@@ -16,8 +16,8 @@ public class V3ListPayersTest : BaseMockServerTest
               "items": [
                 {
                   "object": "payer",
-                  "id": "7001",
-                  "name": "Meridian Health Plan"
+                  "id": "76",
+                  "name": "Cigna"
                 }
               ],
               "page": {
@@ -28,10 +28,7 @@ public class V3ListPayersTest : BaseMockServerTest
               "no_data_reason": "no_data",
               "disclosures": [
                 "disclosures"
-              ],
-              "meta": {
-                "dataset_version": "dataset_version"
-              }
+              ]
             }
             """;
 

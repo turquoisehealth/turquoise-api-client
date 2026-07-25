@@ -11,7 +11,7 @@ export interface V3Network {
     /** The network's payer as an {id, name} stub; the full entity lives at /v3/payers/{id}. */
     payer: TurquoisehealthApi.V3EntityRef;
     /** Query-relative metadata (search only). */
-    context?: TurquoisehealthApi.V3MatchContext | null;
+    context?: TurquoisehealthApi.V3SearchContext | null;
 }
 
 export namespace V3Network {

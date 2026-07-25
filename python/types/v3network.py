@@ -5,8 +5,8 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .v3entity_ref import V3EntityRef
-from .v3match_context import V3MatchContext
 from .v3network_object import V3NetworkObject
+from .v3search_context import V3SearchContext
 
 
 class V3Network(UniversalBaseModel):
@@ -26,7 +26,7 @@ class V3Network(UniversalBaseModel):
     The network's payer as an {id, name} stub; the full entity lives at /v3/payers/{id}.
     """
 
-    context: typing.Optional[V3MatchContext] = pydantic.Field(default=None)
+    context: typing.Optional[V3SearchContext] = pydantic.Field(default=None)
     """
     Query-relative metadata (search only).
     """

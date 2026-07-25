@@ -12,10 +12,10 @@ public class V3ComparePricesTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "package_id": "RA007",
-              "provider_id": "2751",
+              "package_id": "OB002",
+              "provider_id": "5756",
               "pricing": {
-                "network_id": "network_id",
+                "network_id": "-3776001016975145508",
                 "type": "negotiated"
               }
             }
@@ -85,11 +85,11 @@ public class V3ComparePricesTest : BaseMockServerTest
         var response = await Client.ConsumerPricing.V3ComparePricesAsync(
             new V3PricesCompareRequest
             {
-                PackageId = "RA007",
-                ProviderId = "2751",
+                PackageId = "OB002",
+                ProviderId = "5756",
                 Pricing = new V3PricesCompareRequestPricing(
                     new V3PricesCompareRequestPricing.Negotiated(
-                        new V3PricingNegotiated { NetworkId = "network_id" }
+                        new V3PricingNegotiated { NetworkId = "-3776001016975145508" }
                     )
                 ),
             }
@@ -105,13 +105,16 @@ public class V3ComparePricesTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "package_id": "RA007",
+              "package_id": "RA008",
               "pricing": {
                 "type": "cash"
               },
               "location": {
                 "within": {
-                  "state": "IL"
+                  "zip_codes": [
+                    "80218",
+                    "80210"
+                  ]
                 }
               }
             }
@@ -181,11 +184,17 @@ public class V3ComparePricesTest : BaseMockServerTest
         var response = await Client.ConsumerPricing.V3ComparePricesAsync(
             new V3PricesCompareRequest
             {
-                PackageId = "RA007",
+                PackageId = "RA008",
                 Pricing = new V3PricesCompareRequestPricing(
                     new V3PricesCompareRequestPricing.Cash(new V3PricingCash())
                 ),
-                Location = new V3Location { Within = new V3LocationWithin { State = "IL" } },
+                Location = new V3Location
+                {
+                    Within = new V3LocationWithin
+                    {
+                        ZipCodes = new List<string>() { "80218", "80210" },
+                    },
+                },
             }
         );
         Assert.That(
@@ -199,15 +208,15 @@ public class V3ComparePricesTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "package_id": "RA007",
+              "package_id": "RA008",
               "pricing": {
                 "type": "cash"
               },
               "location": {
                 "near": {
-                  "lat": 41.8781,
-                  "lng": -87.6298,
-                  "radius_m": 40000
+                  "lat": 39.745961,
+                  "lng": -104.971559,
+                  "radius_m": 25000
                 }
               }
             }
@@ -277,7 +286,7 @@ public class V3ComparePricesTest : BaseMockServerTest
         var response = await Client.ConsumerPricing.V3ComparePricesAsync(
             new V3PricesCompareRequest
             {
-                PackageId = "RA007",
+                PackageId = "RA008",
                 Pricing = new V3PricesCompareRequestPricing(
                     new V3PricesCompareRequestPricing.Cash(new V3PricingCash())
                 ),
@@ -285,9 +294,9 @@ public class V3ComparePricesTest : BaseMockServerTest
                 {
                     Near = new V3LocationNear
                     {
-                        Lat = 41.8781,
-                        Lng = -87.6298,
-                        RadiusM = 40000,
+                        Lat = 39.745961,
+                        Lng = -104.971559,
+                        RadiusM = 25000,
                     },
                 },
             }

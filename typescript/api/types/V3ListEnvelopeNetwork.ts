@@ -10,7 +10,6 @@ export interface V3ListEnvelopeNetwork {
     no_data_reason?: TurquoisehealthApi.V3NoDataReason | null;
     /** Human-readable caveats about what this result does and does not imply. */
     disclosures?: string[];
-    meta?: TurquoisehealthApi.V3ResponseMeta;
 }
 
 export namespace V3ListEnvelopeNetwork {
