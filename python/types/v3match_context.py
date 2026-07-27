@@ -8,8 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class V3MatchContext(UniversalBaseModel):
     """
-    Query-relative metadata. Present only when a search or near/zip
-    location was supplied — never part of the entity shape itself.
+    Query-relative metadata for resources with a concrete location.
     """
 
     score: typing.Optional[float] = pydantic.Field(default=None)

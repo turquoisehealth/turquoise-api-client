@@ -36,7 +36,7 @@ public record V3Network : IJsonOnDeserialized
     /// Query-relative metadata (search only).
     /// </summary>
     [JsonPropertyName("context")]
-    public V3MatchContext? Context { get; set; }
+    public V3SearchContext? Context { get; set; }
 
     [JsonIgnore]
     public ReadOnlyAdditionalProperties AdditionalProperties { get; private set; } = new();

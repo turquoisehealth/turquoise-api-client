@@ -9,7 +9,7 @@ export interface V3Payer {
     /** Display name; null when reference data is missing. */
     name?: string | null;
     /** Query-relative metadata (search only). */
-    context?: TurquoisehealthApi.V3MatchContext | null;
+    context?: TurquoisehealthApi.V3SearchContext | null;
 }
 
 export namespace V3Payer {

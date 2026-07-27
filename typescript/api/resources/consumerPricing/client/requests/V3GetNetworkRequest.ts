@@ -3,7 +3,7 @@
 /**
  * @example
  *     {
- *         network_id: "2010265101"
+ *         network_id: "-3776001016975145508"
  *     }
  */
 export interface V3GetNetworkRequest {
