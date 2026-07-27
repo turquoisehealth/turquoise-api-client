@@ -13,17 +13,16 @@ public class V3GetPayerTest : BaseMockServerTest
         const string mockResponse = """
             {
               "object": "payer",
-              "id": "7001",
-              "name": "Meridian Health Plan",
+              "id": "76",
+              "name": "Cigna",
               "context": {
-                "score": 1.1,
-                "distance_m": 1.1
+                "score": 1.1
               }
             }
             """;
 
         Server
-            .Given(WireMock.RequestBuilders.Request.Create().WithPath("/v3/payers/7001").UsingGet())
+            .Given(WireMock.RequestBuilders.Request.Create().WithPath("/v3/payers/76").UsingGet())
             .RespondWith(
                 WireMock
                     .ResponseBuilders.Response.Create()
@@ -32,7 +31,7 @@ public class V3GetPayerTest : BaseMockServerTest
             );
 
         var response = await Client.ConsumerPricing.V3GetPayerAsync(
-            new V3GetPayerRequest { PayerId = "7001" }
+            new V3GetPayerRequest { PayerId = "76" }
         );
         Assert.That(
             response,

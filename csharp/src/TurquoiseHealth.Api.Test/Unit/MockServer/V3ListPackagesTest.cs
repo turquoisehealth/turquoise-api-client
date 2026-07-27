@@ -16,18 +16,26 @@ public class V3ListPackagesTest : BaseMockServerTest
               "items": [
                 {
                   "object": "package",
-                  "id": "GA002",
+                  "id": "OB002",
                   "type": "ssp",
-                  "name": "Colonoscopy",
-                  "description": "A colonoscopy is a standard medical procedure used to diagnose and treat gastrointestinal tract conditions.",
+                  "name": "Delivery - caesarean",
+                  "description": "Cesarean delivery (C-section) is a surgical procedure in which the baby is delivered through incisions made in the abdomen and uterus. It may be planned in advance due to specific medical conditions or performed as an emergency if complications arise during labor. The procedure is done under regional or general anesthesia, and most patients stay in the hospital for two to four days. Recovery from a C-section typically takes longer than from a vaginal delivery, and your care team will provide instructions for wound care and activity during healing.",
                   "anchor_codes": [
                     {
-                      "code": "45378",
+                      "code": "59510",
                       "code_type": "HCPCS"
                     },
                     {
-                      "code": "45385",
-                      "code_type": "HCPCS"
+                      "code": "784",
+                      "code_type": "MS-DRG"
+                    },
+                    {
+                      "code": "785",
+                      "code_type": "MS-DRG"
+                    },
+                    {
+                      "code": "786",
+                      "code_type": "MS-DRG"
                     }
                   ],
                   "disclosures": [
@@ -43,10 +51,7 @@ public class V3ListPackagesTest : BaseMockServerTest
               "no_data_reason": "no_data",
               "disclosures": [
                 "disclosures"
-              ],
-              "meta": {
-                "dataset_version": "dataset_version"
-              }
+              ]
             }
             """;
 

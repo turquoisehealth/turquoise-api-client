@@ -4,5 +4,11 @@ namespace TurquoiseHealth.Api;
 /// This exception type will be thrown for any non-2XX API responses.
 /// </summary>
 [Serializable]
-public class TooManyRequestsError(object body)
-    : TurquoisehealthApiApiException("TooManyRequestsError", 429, body);
+public class TooManyRequestsError(V3ErrorResponse body)
+    : TurquoisehealthApiApiException("TooManyRequestsError", 429, body)
+{
+    /// <summary>
+    /// The body of the response that triggered the exception.
+    /// </summary>
+    public new V3ErrorResponse Body => body;
+}

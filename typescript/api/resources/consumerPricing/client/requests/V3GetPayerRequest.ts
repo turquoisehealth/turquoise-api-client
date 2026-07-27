@@ -3,7 +3,7 @@
 /**
  * @example
  *     {
- *         payer_id: "7001"
+ *         payer_id: "76"
  *     }
  */
 export interface V3GetPayerRequest {

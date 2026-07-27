@@ -32,9 +32,6 @@ public record V3ListEnvelopePayer : IJsonOnDeserialized
     [JsonPropertyName("disclosures")]
     public IEnumerable<string>? Disclosures { get; set; }
 
-    [JsonPropertyName("meta")]
-    public V3ResponseMeta? Meta { get; set; }
-
     [JsonIgnore]
     public ReadOnlyAdditionalProperties AdditionalProperties { get; private set; } = new();
 

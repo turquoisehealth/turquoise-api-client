@@ -13,27 +13,27 @@ public class V3GetProviderTest : BaseMockServerTest
         const string mockResponse = """
             {
               "object": "provider",
-              "id": "2743",
-              "name": "Loretto Hospital",
+              "id": "5756",
+              "name": "Intermountain Health Saint Joseph Hospital",
               "type": "Short Term Acute Care Hospital",
-              "npi": "1447280284",
+              "npi": "1417946021",
               "address": {
-                "city": "Chicago",
-                "state": "IL",
-                "zip_code": "60644",
-                "latitude": 41.8721272,
-                "longitude": -87.7636486
+                "city": "Denver",
+                "state": "CO",
+                "zip_code": "80218",
+                "latitude": 39.745961,
+                "longitude": -104.971559
               },
               "context": {
                 "score": 1.1,
-                "distance_m": 1240
+                "distance_m": 1644
               }
             }
             """;
 
         Server
             .Given(
-                WireMock.RequestBuilders.Request.Create().WithPath("/v3/providers/2743").UsingGet()
+                WireMock.RequestBuilders.Request.Create().WithPath("/v3/providers/5756").UsingGet()
             )
             .RespondWith(
                 WireMock
@@ -43,7 +43,7 @@ public class V3GetProviderTest : BaseMockServerTest
             );
 
         var response = await Client.ConsumerPricing.V3GetProviderAsync(
-            new V3GetProviderRequest { ProviderId = "2743" }
+            new V3GetProviderRequest { ProviderId = "5756" }
         );
         Assert.That(
             response,

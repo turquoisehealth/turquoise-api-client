@@ -16,19 +16,19 @@ public class V3ListProvidersTest : BaseMockServerTest
               "items": [
                 {
                   "object": "provider",
-                  "id": "2743",
-                  "name": "Loretto Hospital",
+                  "id": "5756",
+                  "name": "Intermountain Health Saint Joseph Hospital",
                   "type": "Short Term Acute Care Hospital",
-                  "npi": "1447280284",
+                  "npi": "1417946021",
                   "address": {
-                    "city": "Chicago",
-                    "state": "IL",
-                    "zip_code": "60644",
-                    "latitude": 41.8721272,
-                    "longitude": -87.7636486
+                    "city": "Denver",
+                    "state": "CO",
+                    "zip_code": "80218",
+                    "latitude": 39.745961,
+                    "longitude": -104.971559
                   },
                   "context": {
-                    "distance_m": 1240
+                    "distance_m": 1644
                   }
                 }
               ],
@@ -40,10 +40,7 @@ public class V3ListProvidersTest : BaseMockServerTest
               "no_data_reason": "no_data",
               "disclosures": [
                 "disclosures"
-              ],
-              "meta": {
-                "dataset_version": "dataset_version"
-              }
+              ]
             }
             """;
 

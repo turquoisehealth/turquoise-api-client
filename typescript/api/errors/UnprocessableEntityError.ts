@@ -2,9 +2,10 @@
 
 import type * as core from "../../core/index.js";
 import * as errors from "../../errors/index.js";
+import type * as TurquoisehealthApi from "../index.js";
 
 export class UnprocessableEntityError extends errors.TurquoisehealthApiError {
-    constructor(body?: unknown, rawResponse?: core.RawResponse) {
+    constructor(body: TurquoisehealthApi.V3ErrorResponse, rawResponse?: core.RawResponse) {
         super({
             message: "UnprocessableEntityError",
             statusCode: 422,
