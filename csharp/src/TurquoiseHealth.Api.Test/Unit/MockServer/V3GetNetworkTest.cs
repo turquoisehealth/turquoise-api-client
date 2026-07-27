@@ -13,15 +13,14 @@ public class V3GetNetworkTest : BaseMockServerTest
         const string mockResponse = """
             {
               "object": "network",
-              "id": "2010265101",
-              "name": "National PPO",
+              "id": "-3776001016975145508",
+              "name": "National OAP",
               "payer": {
-                "id": "7001",
-                "name": "Meridian Health Plan"
+                "id": "76",
+                "name": "Cigna"
               },
               "context": {
-                "score": 1.1,
-                "distance_m": 1.1
+                "score": 1.1
               }
             }
             """;
@@ -30,7 +29,7 @@ public class V3GetNetworkTest : BaseMockServerTest
             .Given(
                 WireMock
                     .RequestBuilders.Request.Create()
-                    .WithPath("/v3/networks/2010265101")
+                    .WithPath("/v3/networks/-3776001016975145508")
                     .UsingGet()
             )
             .RespondWith(
@@ -41,7 +40,7 @@ public class V3GetNetworkTest : BaseMockServerTest
             );
 
         var response = await Client.ConsumerPricing.V3GetNetworkAsync(
-            new V3GetNetworkRequest { NetworkId = "2010265101" }
+            new V3GetNetworkRequest { NetworkId = "-3776001016975145508" }
         );
         Assert.That(
             response,

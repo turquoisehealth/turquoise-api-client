@@ -5,17 +5,20 @@ using TurquoiseHealth.Api.Core;
 namespace TurquoiseHealth.Api;
 
 /// <summary>
-/// Top-level error envelope for v2.
+/// Query-relative semantic-search metadata.
 /// </summary>
 [Serializable]
-public record ErrorResponse : IJsonOnDeserialized
+public record V3SearchContext : IJsonOnDeserialized
 {
     [JsonExtensionData]
     private readonly IDictionary<string, JsonElement> _extensionData =
         new Dictionary<string, JsonElement>();
 
-    [JsonPropertyName("error")]
-    public required ErrorPayload Error { get; set; }
+    /// <summary>
+    /// Semantic similarity (0-1).
+    /// </summary>
+    [JsonPropertyName("score")]
+    public double? Score { get; set; }
 
     [JsonIgnore]
     public ReadOnlyAdditionalProperties AdditionalProperties { get; private set; } = new();

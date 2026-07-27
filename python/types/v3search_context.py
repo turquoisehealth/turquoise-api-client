@@ -6,30 +6,14 @@ import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 
-class RateBreakdownLineItem(UniversalBaseModel):
-    line_code: str = pydantic.Field()
+class V3SearchContext(UniversalBaseModel):
     """
-    CPT or HCPCS code.
-    """
-
-    code_type: str = pydantic.Field()
-    """
-    Billing code type.
+    Query-relative semantic-search metadata.
     """
 
-    fee_type: str = pydantic.Field()
+    score: typing.Optional[float] = pydantic.Field(default=None)
     """
-    Fee category (professional, facility, etc).
-    """
-
-    description: str = pydantic.Field()
-    """
-    Human-readable line item description.
-    """
-
-    line_item_association_rate: float = pydantic.Field()
-    """
-    Likelihood this line item is part of the SSP.
+    Semantic similarity (0-1).
     """
 
     if IS_PYDANTIC_V2:

@@ -1,12 +1,3 @@
-export type { PricesRequest } from "./PricesRequest.js";
-export type { ProviderBreakdownRequest } from "./ProviderBreakdownRequest.js";
-export type { RateCompareRequest } from "./RateCompareRequest.js";
-export type { V2GetNetworkRequest } from "./V2GetNetworkRequest.js";
-export type { V2GetProviderRequest } from "./V2GetProviderRequest.js";
-export type { V2GetSspRequest } from "./V2GetSspRequest.js";
-export type { V2ListNetworksRequest } from "./V2ListNetworksRequest.js";
-export type { V2ListProvidersRequest } from "./V2ListProvidersRequest.js";
-export type { V2ListSspsRequest } from "./V2ListSspsRequest.js";
 export type { V3GetNetworkRequest } from "./V3GetNetworkRequest.js";
 export type { V3GetPackageRequest } from "./V3GetPackageRequest.js";
 export type { V3GetPayerRequest } from "./V3GetPayerRequest.js";
