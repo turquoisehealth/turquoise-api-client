@@ -45,142 +45,80 @@ def client():
     )
 
 
-class TestV1Endpoints:
-    """Test v1 API endpoints."""
+class TestV3Endpoints:
+    """Test v3 API endpoints."""
 
     @skip_if_no_token
-    def test_get_ssps(self, client):
+    def test_v3list_packages(self, client):
         """Test listing shoppable service packages."""
-        response = client.consumer_pricing.get_ssps(page_size=5)
+        response = client.consumer_pricing.v3list_packages(page_size=5)
 
         # Verify response structure
         assert response is not None
-        assert hasattr(response, 'data')
-        assert isinstance(response.data, list)
-        assert hasattr(response, 'meta')
+        assert hasattr(response, 'items')
+        assert isinstance(response.items, list)
+        assert hasattr(response, 'page')
 
         # Verify we got results
-        assert len(response.data) > 0
+        assert len(response.items) > 0
 
-        # Verify SSP structure
-        ssp = response.data[0]
-        assert hasattr(ssp, 'id')
-        assert hasattr(ssp, 'name')
+        # Verify package structure
+        package = response.items[0]
+        assert hasattr(package, 'id')
+        assert hasattr(package, 'name')
 
-        print(f"✓ Retrieved {len(response.data)} SSPs")
+        print(f"✓ Retrieved {len(response.items)} packages")
 
     @skip_if_no_token
-    def test_get_ssps_with_search(self, client):
-        """Test searching SSPs by keyword."""
-        response = client.consumer_pricing.get_ssps(search="MRI", page_size=5)
+    def test_v3list_packages_with_search(self, client):
+        """Test searching packages by keyword."""
+        response = client.consumer_pricing.v3list_packages(search="MRI", page_size=5)
 
         assert response is not None
-        assert hasattr(response, 'data')
-        assert isinstance(response.data, list)
+        assert hasattr(response, 'items')
+        assert isinstance(response.items, list)
 
-        print(f"✓ Search returned {len(response.data)} SSPs")
+        print(f"✓ Search returned {len(response.items)} packages")
 
     @skip_if_no_token
-    def test_get_insurance_networks(self, client):
+    def test_v3list_networks(self, client):
         """Test listing insurance networks."""
-        response = client.consumer_pricing.get_insurance_networks(page_size=5)
+        response = client.consumer_pricing.v3list_networks(page_size=5)
 
         # Verify response structure
         assert response is not None
-        assert hasattr(response, 'data')
-        assert isinstance(response.data, list)
-        assert hasattr(response, 'meta')
+        assert hasattr(response, 'items')
+        assert isinstance(response.items, list)
+        assert hasattr(response, 'page')
 
         # Verify we got results
-        assert len(response.data) > 0
+        assert len(response.items) > 0
 
         # Verify network structure
-        network = response.data[0]
+        network = response.items[0]
         assert hasattr(network, 'id')
 
-        print(f"✓ Retrieved {len(response.data)} insurance networks")
+        print(f"✓ Retrieved {len(response.items)} insurance networks")
 
     @skip_if_no_token
-    def test_get_providers(self, client):
+    def test_v3list_providers(self, client):
         """Test listing healthcare providers."""
-        response = client.consumer_pricing.get_providers(state="CA", page_size=5)
+        response = client.consumer_pricing.v3list_providers(location_within_state="CA", page_size=5)
 
         # Verify response structure
         assert response is not None
-        assert hasattr(response, 'data')
-        assert isinstance(response.data, list)
-        assert hasattr(response, 'meta')
+        assert hasattr(response, 'items')
+        assert isinstance(response.items, list)
+        assert hasattr(response, 'page')
 
         # Verify we got results
-        assert len(response.data) > 0
+        assert len(response.items) > 0
 
         # Verify provider structure
-        provider = response.data[0]
+        provider = response.items[0]
         assert hasattr(provider, 'id')
 
-        print(f"✓ Retrieved {len(response.data)} providers")
-
-
-class TestV2Endpoints:
-    """Test v2 API endpoints."""
-
-    @skip_if_no_token
-    def test_v2list_ssps(self, client):
-        """Test v2 endpoint for listing SSPs."""
-        response = client.consumer_pricing.v2list_ssps(page_size=5)
-
-        # Verify response structure
-        assert response is not None
-        assert hasattr(response, 'data')
-        assert isinstance(response.data, list)
-
-        # Verify we got results
-        assert len(response.data) > 0
-
-        # Verify SSP structure
-        ssp = response.data[0]
-        assert hasattr(ssp, 'id')
-        assert hasattr(ssp, 'name')
-
-        print(f"✓ V2: Retrieved {len(response.data)} SSPs")
-
-    @skip_if_no_token
-    def test_v2list_networks(self, client):
-        """Test v2 endpoint for listing networks."""
-        response = client.consumer_pricing.v2list_networks(page_size=5)
-
-        # Verify response structure
-        assert response is not None
-        assert hasattr(response, 'data')
-        assert isinstance(response.data, list)
-
-        # Verify we got results
-        assert len(response.data) > 0
-
-        # Verify network structure
-        network = response.data[0]
-        assert hasattr(network, 'id')
-
-        print(f"✓ V2: Retrieved {len(response.data)} networks")
-
-    @skip_if_no_token
-    def test_v2list_providers(self, client):
-        """Test v2 endpoint for listing providers."""
-        response = client.consumer_pricing.v2list_providers(state="CA", page_size=5)
-
-        # Verify response structure
-        assert response is not None
-        assert hasattr(response, 'data')
-        assert isinstance(response.data, list)
-
-        # Verify we got results
-        assert len(response.data) > 0
-
-        # Verify provider structure
-        provider = response.data[0]
-        assert hasattr(provider, 'id')
-
-        print(f"✓ V2: Retrieved {len(response.data)} providers")
+        print(f"✓ Retrieved {len(response.items)} providers")
 
 
 if __name__ == "__main__":

@@ -4,17 +4,17 @@ import { ConsumerPricingClient } from "./api/resources/consumerPricing/client/Cl
 import type { BaseClientOptions, BaseRequestOptions } from "./BaseClient.js";
 import { type NormalizedClientOptionsWithAuth, normalizeClientOptionsWithAuth } from "./BaseClient.js";
 
-export declare namespace TurquoisehealthApiClient {
+export declare namespace TurquoiseHealthApiClient {
     export interface Options extends BaseClientOptions {}
 
     export interface RequestOptions extends BaseRequestOptions {}
 }
 
-export class TurquoisehealthApiClient {
-    protected readonly _options: NormalizedClientOptionsWithAuth<TurquoisehealthApiClient.Options>;
+export class TurquoiseHealthApiClient {
+    protected readonly _options: NormalizedClientOptionsWithAuth<TurquoiseHealthApiClient.Options>;
     protected _consumerPricing: ConsumerPricingClient | undefined;
 
-    constructor(options: TurquoisehealthApiClient.Options) {
+    constructor(options: TurquoiseHealthApiClient.Options) {
         this._options = normalizeClientOptionsWithAuth(options);
     }
 
