@@ -8,3 +8,7 @@ lib/**
 # Protect integration tests
 tests/
 tests/**
+
+# Protect packaging manifest (Fern's local-file-system output does
+# not generate a pyproject.toml)
+pyproject.toml
