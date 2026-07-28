@@ -63,6 +63,12 @@ jobs:
       - name: Update library exports
         run: python3 scripts/update_lib_exports.py
 
+      - name: Stamp package versions
+        run: |
+          VERSION="${{ steps.release_type.outputs.version }}"
+          npm --prefix typescript version "$VERSION" --no-git-tag-version --allow-same-version
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" python/pyproject.toml
+
       - name: Publish Python SDK to PyPI (production)
         if: env.TWINE_PASSWORD != '' && steps.release_type.outputs.type == 'production'
         working-directory: python

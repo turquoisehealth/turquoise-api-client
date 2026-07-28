@@ -11,3 +11,8 @@ tests/**
 
 # Protect TypeScript configuration
 tsconfig.json
+
+# Protect npm packaging manifest (Fern's local-file-system output
+# does not generate a package.json/lockfile)
+package.json
+package-lock.json
