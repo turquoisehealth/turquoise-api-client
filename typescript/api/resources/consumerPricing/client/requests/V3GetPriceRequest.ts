@@ -5,7 +5,7 @@ import type * as TurquoisehealthApi from "../../../../index.js";
 /**
  * @example
  *     {
- *         price_id: "prc_2751.RA007.8361580493441765265"
+ *         price_id: "prc_5756.OB002.-3776001016975145508"
  *     }
  */
 export interface V3GetPriceRequest {

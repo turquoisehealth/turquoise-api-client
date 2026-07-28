@@ -15,11 +15,11 @@ public class V3ListPackageLineItemsTest : BaseMockServerTest
               "object": "list",
               "items": [
                 {
-                  "code": "45385",
-                  "code_type": "HCPCS",
+                  "code": "786",
+                  "code_type": "MS-DRG",
                   "fee_type": "base_code",
-                  "description": "Colonoscopy",
-                  "association_rate": 1
+                  "description": "CESAREAN SECTION WITHOUT STERILIZATION WITH MCC",
+                  "association_rate": 0.4491
                 }
               ],
               "page": {
@@ -30,10 +30,7 @@ public class V3ListPackageLineItemsTest : BaseMockServerTest
               "no_data_reason": "no_data",
               "disclosures": [
                 "disclosures"
-              ],
-              "meta": {
-                "dataset_version": "dataset_version"
-              }
+              ]
             }
             """;
 
@@ -41,7 +38,7 @@ public class V3ListPackageLineItemsTest : BaseMockServerTest
             .Given(
                 WireMock
                     .RequestBuilders.Request.Create()
-                    .WithPath("/v3/packages/GA002/line_items")
+                    .WithPath("/v3/packages/OB002/line_items")
                     .UsingGet()
             )
             .RespondWith(
@@ -52,7 +49,7 @@ public class V3ListPackageLineItemsTest : BaseMockServerTest
             );
 
         var response = await Client.ConsumerPricing.V3ListPackageLineItemsAsync(
-            new V3ListPackageLineItemsRequest { PackageId = "GA002" }
+            new V3ListPackageLineItemsRequest { PackageId = "OB002" }
         );
         Assert.That(
             response,

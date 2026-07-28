@@ -3,7 +3,7 @@
 /**
  * @example
  *     {
- *         package_id: "GA002"
+ *         package_id: "OB002"
  *     }
  */
 export interface V3GetPackageRequest {

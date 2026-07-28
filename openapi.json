@@ -6,296 +6,14 @@
     "version": "0.1.0"
   },
   "paths": {
-    "/v2/consumer-pricing/ssps": {
-      "get": {
-        "tags": [
-          "Consumer Pricing"
-        ],
-        "summary": "List SSPs",
-        "description": "Discover available service/surgery packages (SSPs).Supports substring matching on name and description fields as well as a 'search' parameter for semantic search across both fields. When 'search' is provided, other filter parameters are ignored, and pagination is limited to first page of top results.You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.",
-        "operationId": "v2_list_ssps",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Case-insensitive substring match on SSP name. Ignored when 'search' parameter is provided.",
-              "examples": [
-                "colonoscopy",
-                "MRI",
-                "delivery"
-              ],
-              "title": "Name"
-            },
-            "description": "Case-insensitive substring match on SSP name. Ignored when 'search' parameter is provided."
-          },
-          {
-            "name": "description",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Case-insensitive substring match on SSP patient description. Ignored when 'search' parameter is provided.",
-              "examples": [
-                "screening",
-                "hernia"
-              ],
-              "title": "Description"
-            },
-            "description": "Case-insensitive substring match on SSP patient description. Ignored when 'search' parameter is provided."
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Semantic search across SSP name and description using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to first page of top results.",
-              "examples": [
-                "mri",
-                "xray",
-                "delivery"
-              ],
-              "title": "Search"
-            },
-            "description": "Semantic search across SSP name and description using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to first page of top results."
-          },
-          {
-            "name": "min_score",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number",
-                  "maximum": 1.0,
-                  "minimum": 0.0
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.",
-              "examples": [
-                0.3,
-                0.4,
-                0.7
-              ],
-              "title": "Min Score"
-            },
-            "description": "Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided."
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 250,
-              "minimum": 1,
-              "description": "Page size.",
-              "default": 25,
-              "title": "Page Size"
-            },
-            "description": "Page size."
-          },
-          {
-            "name": "cursor",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Opaque cursor from a previous response's page.next_cursor.",
-              "title": "Cursor"
-            },
-            "description": "Opaque cursor from a previous response's page.next_cursor."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Envelope_SSP_"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/v2/consumer-pricing/ssps/{ssp_id}": {
-      "get": {
-        "tags": [
-          "Consumer Pricing"
-        ],
-        "summary": "Get SSP Details",
-        "description": "Retrieve an SSP name and patient-ready description from the relevant SSP ID.",
-        "operationId": "v2_get_ssp",
-        "parameters": [
-          {
-            "name": "ssp_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "SSP identifier.",
-              "examples": [
-                "GA002",
-                "RA005",
-                "RA011",
-                "OB001",
-                "MS006",
-                "OP000"
-              ],
-              "title": "Ssp Id"
-            },
-            "description": "SSP identifier."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SingleResourceEnvelope_SSP_"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/v2/consumer-pricing/providers": {
+    "/v3/providers": {
       "get": {
         "tags": [
           "Consumer Pricing"
         ],
         "summary": "List Providers",
-        "description": "Search for providers by name, NPI, or location. Supports a 'search' parameter for semantic search across provider names, which can be combined with location filters. When 'search' is provided, the name and npi filters are ignored, and pagination is limited to first page of top results. You can also provide a minimum similarity score threshold (0-1) for semantic search results using the 'min_score' parameter.",
-        "operationId": "v2_list_providers",
+        "description": "Retrieve a list of providers, filtered over a search by name, NPI, provider type, or location. Additionally, filter to a list of providers with Turquoise price estimates available by a selected payer, network, or package. Results reflect provider, payer, and package combinations that Turquoise has priced services for; the list may not be comprehensive of all contacted payer networks or services that are available.",
+        "operationId": "v3_list_providers",
         "parameters": [
           {
             "name": "name",
@@ -310,10 +28,13 @@
                   "type": "null"
                 }
               ],
-              "description": "Case-insensitive substring match on provider name. Ignored when 'search' parameter is provided.",
+              "description": "Case-insensitive substring match on provider name.",
+              "examples": [
+                "Intermountain Health Saint Joseph Hospital"
+              ],
               "title": "Name"
             },
-            "description": "Case-insensitive substring match on provider name. Ignored when 'search' parameter is provided."
+            "description": "Case-insensitive substring match on provider name."
           },
           {
             "name": "npi",
@@ -328,13 +49,16 @@
                   "type": "null"
                 }
               ],
-              "description": "Exact NPI match. Ignored when 'search' parameter is provided.",
+              "description": "Exact NPI match.",
+              "examples": [
+                "1417946021"
+              ],
               "title": "Npi"
             },
-            "description": "Exact NPI match. Ignored when 'search' parameter is provided."
+            "description": "Exact NPI match."
           },
           {
-            "name": "search",
+            "name": "type",
             "in": "query",
             "required": false,
             "schema": {
@@ -346,57 +70,16 @@
                   "type": "null"
                 }
               ],
-              "description": "Semantic search across provider names using AI embeddings. Returns results with similarity scores. Can be combined with location filters (within.*, near.*, zip_anchor) to restrict results before ranking. When provided, the name and npi filters are ignored and pagination is limited to the first page of top results.",
+              "description": "Provider type as reported in the dataset (exact match).",
               "examples": [
-                "mountain view surgical",
-                "imaging center",
-                "community hospital"
+                "Short Term Acute Care Hospital"
               ],
-              "title": "Search"
+              "title": "Type"
             },
-            "description": "Semantic search across provider names using AI embeddings. Returns results with similarity scores. Can be combined with location filters (within.*, near.*, zip_anchor) to restrict results before ranking. When provided, the name and npi filters are ignored and pagination is limited to the first page of top results."
+            "description": "Provider type as reported in the dataset (exact match)."
           },
           {
-            "name": "min_score",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number",
-                  "maximum": 1.0,
-                  "minimum": 0.0
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.",
-              "examples": [
-                0.3,
-                0.4,
-                0.7
-              ],
-              "title": "Min Score"
-            },
-            "description": "Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided."
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 250,
-              "minimum": 1,
-              "description": "Page size.",
-              "default": 25,
-              "title": "Page Size"
-            },
-            "description": "Page size."
-          },
-          {
-            "name": "cursor",
+            "name": "package_id",
             "in": "query",
             "required": false,
             "schema": {
@@ -408,100 +91,16 @@
                   "type": "null"
                 }
               ],
-              "description": "Opaque cursor from a previous response's page.next_cursor.",
-              "title": "Cursor"
-            },
-            "description": "Opaque cursor from a previous response's page.next_cursor."
-          },
-          {
-            "name": "near.lat",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Latitude anchor for `near` mode. Must be paired with `near.lng`.",
+              "description": "Providers with at least one price for this package.",
               "examples": [
-                39.625533
+                "OB002"
               ],
-              "title": "Near.Lat"
+              "title": "Package Id"
             },
-            "description": "Latitude anchor for `near` mode. Must be paired with `near.lng`."
+            "description": "Providers with at least one price for this package."
           },
           {
-            "name": "near.lng",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Longitude anchor for `near` mode. Must be paired with `near.lat`.",
-              "examples": [
-                -104.898823
-              ],
-              "title": "Near.Lng"
-            },
-            "description": "Longitude anchor for `near` mode. Must be paired with `near.lat`."
-          },
-          {
-            "name": "near.radius_m",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 1
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Search radius in meters for `near` mode. Defaults to 25 000 when omitted.",
-              "examples": [
-                25000
-              ],
-              "title": "Near.Radius M"
-            },
-            "description": "Search radius in meters for `near` mode. Defaults to 25 000 when omitted."
-          },
-          {
-            "name": "within.state",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "minLength": 2,
-                  "maxLength": 2
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Two-letter USPS state code for `within` mode (exact match).",
-              "examples": [
-                "CO"
-              ],
-              "title": "Within.State"
-            },
-            "description": "Two-letter USPS state code for `within` mode (exact match)."
-          },
-          {
-            "name": "within.cbsa_name",
+            "name": "network_id",
             "in": "query",
             "required": false,
             "schema": {
@@ -513,238 +112,13 @@
                   "type": "null"
                 }
               ],
-              "description": "CBSA name for `within` mode (case-insensitive substring match).",
+              "description": "Providers with at least one price under this network (combined with package_id/payer_id, the same price row must match).",
               "examples": [
-                "Denver-Aurora-Centennial, CO"
+                "-3776001016975145508"
               ],
-              "title": "Within.Cbsa Name"
+              "title": "Network Id"
             },
-            "description": "CBSA name for `within` mode (case-insensitive substring match)."
-          },
-          {
-            "name": "within.zip_codes",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "array",
-                  "items": {
-                    "type": "string"
-                  }
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "ZIP codes for `within` mode (exact match, any-of). Repeat the param for multiple values.",
-              "examples": [
-                [
-                  "80129",
-                  "80237"
-                ]
-              ],
-              "title": "Within.Zip Codes"
-            },
-            "description": "ZIP codes for `within` mode (exact match, any-of). Repeat the param for multiple values."
-          },
-          {
-            "name": "zip_anchor",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Convenience: resolves a ZIP to its centroid, then runs `near` with the default radius.",
-              "examples": [
-                "80202"
-              ],
-              "title": "Zip Anchor"
-            },
-            "description": "Convenience: resolves a ZIP to its centroid, then runs `near` with the default radius."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Envelope_Provider_"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/v2/consumer-pricing/providers/{provider_id}": {
-      "get": {
-        "tags": [
-          "Consumer Pricing"
-        ],
-        "summary": "Get Provider Details",
-        "description": "Return relevant information about a specific provider from the provider ID, including name, NPI, and location.",
-        "operationId": "v2_get_provider",
-        "parameters": [
-          {
-            "name": "provider_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "Provider identifier.",
-              "examples": [
-                "21929",
-                "60898",
-                "5736"
-              ],
-              "title": "Provider Id"
-            },
-            "description": "Provider identifier."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SingleResourceEnvelope_Provider_"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/v2/consumer-pricing/payers/networks": {
-      "get": {
-        "tags": [
-          "Consumer Pricing"
-        ],
-        "summary": "Get Insurance Networks",
-        "description": "Discover insurance networks, optionally filtered by network name, payer name, or payer ID, or by semantic search across network and payer names. When using the 'search' parameter for semantic search, other filter parameters (name, payer_id) are ignored, and pagination is limited to the first page of top results.",
-        "operationId": "v2_list_networks",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Case-insensitive substring match on network or payer name. Ignored when 'search' parameter is provided.",
-              "examples": [
-                "cigna",
-                "Choice Plus",
-                "National PPO"
-              ],
-              "title": "Name"
-            },
-            "description": "Case-insensitive substring match on network or payer name. Ignored when 'search' parameter is provided."
+            "description": "Providers with at least one price under this network (combined with package_id/payer_id, the same price row must match)."
           },
           {
             "name": "payer_id",
@@ -759,15 +133,13 @@
                   "type": "null"
                 }
               ],
-              "description": "Filter to networks under this payer. Ignored when 'search' parameter is provided.",
+              "description": "Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match).",
               "examples": [
-                "643",
-                "7",
                 "76"
               ],
               "title": "Payer Id"
             },
-            "description": "Filter to networks under this payer. Ignored when 'search' parameter is provided."
+            "description": "Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match)."
           },
           {
             "name": "search",
@@ -782,15 +154,13 @@
                   "type": "null"
                 }
               ],
-              "description": "Semantic search across network and payer names using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to the first page of top results.",
+              "description": "Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.",
               "examples": [
-                "cigna",
-                "anthem",
-                "blue cross"
+                "Saint Joseph hospital in Denver"
               ],
               "title": "Search"
             },
-            "description": "Semantic search across network and payer names using AI embeddings. Returns results with similarity scores. When provided, other filter parameters are ignored and pagination is limited to the first page of top results."
+            "description": "Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated."
           },
           {
             "name": "min_score",
@@ -807,15 +177,10 @@
                   "type": "null"
                 }
               ],
-              "description": "Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided.",
-              "examples": [
-                0.3,
-                0.4,
-                0.7
-              ],
+              "description": "Minimum similarity score (0-1).",
               "title": "Min Score"
             },
-            "description": "Minimum similarity score threshold (0-1) for semantic search results. Only applies when 'search' param is provided."
+            "description": "Minimum similarity score (0-1)."
           },
           {
             "name": "page_size",
@@ -825,11 +190,9 @@
               "type": "integer",
               "maximum": 250,
               "minimum": 1,
-              "description": "Page size.",
               "default": 25,
               "title": "Page Size"
-            },
-            "description": "Page size."
+            }
           },
           {
             "name": "cursor",
@@ -844,10 +207,150 @@
                   "type": "null"
                 }
               ],
-              "description": "Opaque cursor from a previous response's page.next_cursor.",
+              "description": "Opaque cursor from a previous page.next_cursor.",
               "title": "Cursor"
             },
-            "description": "Opaque cursor from a previous response's page.next_cursor."
+            "description": "Opaque cursor from a previous page.next_cursor."
+          },
+          {
+            "name": "location.near.lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "examples": [
+                39.745961
+              ],
+              "title": "Location.Near.Lat"
+            }
+          },
+          {
+            "name": "location.near.lng",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "examples": [
+                -104.971559
+              ],
+              "title": "Location.Near.Lng"
+            }
+          },
+          {
+            "name": "location.near.radius_m",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "examples": [
+                25000
+              ],
+              "title": "Location.Near.Radius M"
+            }
+          },
+          {
+            "name": "location.within.state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 2
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "examples": [
+                "CO"
+              ],
+              "title": "Location.Within.State"
+            }
+          },
+          {
+            "name": "location.within.cbsa",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "examples": [
+                "Denver-Aurora-Centennial, CO"
+              ],
+              "title": "Location.Within.Cbsa"
+            }
+          },
+          {
+            "name": "location.within.zip_codes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated ZIP codes (exact match, any-of).",
+              "examples": [
+                "80218,80210"
+              ],
+              "title": "Location.Within.Zip Codes"
+            },
+            "description": "Comma-separated ZIP codes (exact match, any-of)."
+          },
+          {
+            "name": "location.zip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Resolves the ZIP to its centroid, then runs `near` with the default radius.",
+              "examples": [
+                "80218"
+              ],
+              "title": "Location.Zip"
+            },
+            "description": "Resolves the ZIP to its centroid, then runs `near` with the default radius."
           }
         ],
         "responses": {
@@ -856,7 +359,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Envelope_Network_"
+                  "$ref": "#/components/schemas/V3ListEnvelope_Provider_"
                 }
               }
             }
@@ -866,7 +369,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -876,7 +389,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -886,7 +399,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -896,7 +409,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -909,28 +422,109 @@
         ]
       }
     },
-    "/v2/consumer-pricing/payers/networks/{network_id}": {
+    "/v3/providers/types": {
       "get": {
         "tags": [
           "Consumer Pricing"
         ],
-        "summary": "Get Insurance Network Details",
-        "description": "Return relevant information about a specific insurance network from the network ID.",
-        "operationId": "v2_get_network",
+        "summary": "Get Provider Types",
+        "description": "Fetch provider types. Results return valid inputs to filter by provider types across the API.",
+        "operationId": "v3_get_provider_types",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "title": "Response V3 Get Provider Types"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/v3/providers/{provider_id}": {
+      "get": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "Get Provider Details",
+        "description": "Fetch details for a single provider by provider ID.",
+        "operationId": "v3_get_provider",
         "parameters": [
           {
-            "name": "network_id",
+            "name": "provider_id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string",
-              "description": "Network identifier (Int64String on the wire).",
+              "description": "Provider identifier.",
               "examples": [
-                "8361580493441765265"
+                "5756"
               ],
-              "title": "Network Id"
+              "title": "Provider Id"
             },
-            "description": "Network identifier (Int64String on the wire)."
+            "description": "Provider identifier."
           }
         ],
         "responses": {
@@ -939,7 +533,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/SingleResourceEnvelope_Network_"
+                  "$ref": "#/components/schemas/V3Provider"
                 }
               }
             }
@@ -949,7 +543,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -959,7 +563,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -969,7 +573,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -979,7 +583,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -992,74 +596,257 @@
         ]
       }
     },
-    "/v2/consumer-pricing/prices": {
-      "post": {
+    "/v3/payers": {
+      "get": {
         "tags": [
           "Consumer Pricing"
         ],
-        "summary": "Search Prices",
-        "description": "List of providers that can satisfy a given SSP, with the total expected price, in a given geographic area. Requests support location filtering via ZIP code, CBSA name, state, or coordinates. When no Network ID is provided, cash prices are shown.",
-        "operationId": "v2_list_prices",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PricesRequest"
-              },
-              "examples": {
-                "by_zip_anchor_negotiated": {
-                  "summary": "Negotiated rates near a ZIP anchor",
-                  "description": "Anchor on a ZIP centroid and filter to one SSP + one network. Uses the default 25 km radius.",
-                  "value": {
-                    "ssp_id": "GA002",
-                    "network_id": "8361580493441765265",
-                    "location": {
-                      "zip_anchor": "80202"
-                    }
-                  }
+        "summary": "List Payers",
+        "description": "Retrieve a list of payers, filtered over a search by name, location for care, or specific providers and services priced in the Turquoise data. Location scopes to payers with at least one price at an in-area provider. Results reflect provider, payer, and package combinations that Turquoise has priced services for; the list may not be comprehensive of all contracted providers or services that are available.",
+        "operationId": "v3_list_payers",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
                 },
-                "by_state_cash": {
-                  "summary": "Cash prices within a state",
-                  "description": "Filter to one SSP across all providers in Colorado with no network (cash prices).",
-                  "value": {
-                    "ssp_id": "GA002",
-                    "location": {
-                      "within_state": "CO"
-                    }
-                  }
-                },
-                "by_near_coordinates": {
-                  "summary": "Search near coordinates",
-                  "description": "Find one SSP's prices within 25 km of a lat/lng anchor.",
-                  "value": {
-                    "ssp_id": "RA005",
-                    "location": {
-                      "near_lat": 39.625533,
-                      "near_lng": -104.898823,
-                      "near_radius_m": 25000
-                    },
-                    "page_size": 50
-                  }
-                },
-                "by_provider_scope": {
-                  "summary": "All rates for one provider",
-                  "description": "Provider-only scope (no location). Useful for a provider profile view.",
-                  "value": {
-                    "provider_id": "21929"
-                  }
+                {
+                  "type": "null"
                 }
-              }
+              ],
+              "description": "Case-insensitive substring match on payer name.",
+              "examples": [
+                "Cigna",
+                "Blue Cross"
+              ],
+              "title": "Name"
+            },
+            "description": "Case-insensitive substring match on payer name."
+          },
+          {
+            "name": "provider_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Payers with at least one price at this provider.",
+              "examples": [
+                "5756"
+              ],
+              "title": "Provider Id"
+            },
+            "description": "Payers with at least one price at this provider."
+          },
+          {
+            "name": "package_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Payers with at least one price for this package.",
+              "examples": [
+                "OB002"
+              ],
+              "title": "Package Id"
+            },
+            "description": "Payers with at least one price for this package."
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 250,
+              "minimum": 1,
+              "default": 25,
+              "title": "Page Size"
             }
           },
-          "required": true
-        },
+          {
+            "name": "cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Opaque cursor from a previous page.next_cursor.",
+              "title": "Cursor"
+            },
+            "description": "Opaque cursor from a previous page.next_cursor."
+          },
+          {
+            "name": "location.near.lat",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "examples": [
+                39.745961
+              ],
+              "title": "Location.Near.Lat"
+            }
+          },
+          {
+            "name": "location.near.lng",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "examples": [
+                -104.971559
+              ],
+              "title": "Location.Near.Lng"
+            }
+          },
+          {
+            "name": "location.near.radius_m",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "examples": [
+                25000
+              ],
+              "title": "Location.Near.Radius M"
+            }
+          },
+          {
+            "name": "location.within.state",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 2
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "examples": [
+                "CO"
+              ],
+              "title": "Location.Within.State"
+            }
+          },
+          {
+            "name": "location.within.cbsa",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "examples": [
+                "Denver-Aurora-Centennial, CO"
+              ],
+              "title": "Location.Within.Cbsa"
+            }
+          },
+          {
+            "name": "location.within.zip_codes",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Comma-separated ZIP codes (exact match, any-of).",
+              "examples": [
+                "80218,80210"
+              ],
+              "title": "Location.Within.Zip Codes"
+            },
+            "description": "Comma-separated ZIP codes (exact match, any-of)."
+          },
+          {
+            "name": "location.zip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Resolves the ZIP to its centroid, then runs `near` with the default radius.",
+              "examples": [
+                "80218"
+              ],
+              "title": "Location.Zip"
+            },
+            "description": "Resolves the ZIP to its centroid, then runs `near` with the default radius."
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Envelope_Rate_"
+                  "$ref": "#/components/schemas/V3ListEnvelope_Payer_"
                 }
               }
             }
@@ -1069,7 +856,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -1079,7 +876,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -1089,7 +886,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -1099,7 +896,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -1112,163 +909,37 @@
         ]
       }
     },
-    "/v2/consumer-pricing/prices/provider-breakdown": {
-      "post": {
+    "/v3/payers/{payer_id}": {
+      "get": {
         "tags": [
           "Consumer Pricing"
         ],
-        "summary": "Get SSP Prices by Provider",
-        "description": "Get SSP breakdown and fee information about a selected SSP from a single provider. When no Network ID is provided, cash prices are shown.",
-        "operationId": "v2_get_price_breakdown",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ProviderBreakdownRequest"
-              },
-              "examples": {
-                "cash": {
-                  "summary": "Cash-price line-item breakdown",
-                  "description": "Per-billing-code breakdown for one (provider, SSP) tuple at cash prices.",
-                  "value": {
-                    "provider_id": "21929",
-                    "ssp_id": "RA011"
-                  }
-                },
-                "negotiated": {
-                  "summary": "Negotiated-rate line-item breakdown",
-                  "description": "Per-billing-code breakdown for one (provider, SSP, network) tuple.",
-                  "value": {
-                    "provider_id": "21929",
-                    "ssp_id": "RA011",
-                    "network_id": "8361580493441765265"
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/SingleResourceEnvelope_RateBreakdown_"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
+        "summary": "Get Payer Details",
+        "description": "Fetch details about a single payer by payer ID.",
+        "operationId": "v3_get_payer",
+        "parameters": [
           {
-            "BearerAuth": []
+            "name": "payer_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "Payer identifier.",
+              "examples": [
+                "76"
+              ],
+              "title": "Payer Id"
+            },
+            "description": "Payer identifier."
           }
-        ]
-      }
-    },
-    "/v2/consumer-pricing/prices/price-comparison": {
-      "post": {
-        "tags": [
-          "Consumer Pricing"
         ],
-        "summary": "Compare SSP Prices",
-        "description": "Get summary statistics (min, max, average, quartiles) for prices matching the selected filters. When no Network ID is provided, cash prices are shown.",
-        "operationId": "v2_compare_prices",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/RateCompareRequest"
-              },
-              "examples": {
-                "by_state": {
-                  "summary": "Compare prices across a state",
-                  "description": "Bounded statistics for one SSP across all in-state providers, one network.",
-                  "value": {
-                    "ssp_id": "RA011",
-                    "network_id": "8361580493441765265",
-                    "location": {
-                      "within_state": "CO"
-                    }
-                  }
-                },
-                "by_cbsa_cash": {
-                  "summary": "Compare cash prices within a CBSA",
-                  "description": "Bounded statistics for one SSP within Denver-Aurora-Centennial, CO, cash only.",
-                  "value": {
-                    "ssp_id": "GA002",
-                    "location": {
-                      "within_cbsa_name": "Denver-Aurora-Centennial, CO"
-                    }
-                  }
-                },
-                "by_zip_codes": {
-                  "summary": "Compare prices in specific ZIP codes",
-                  "description": "Bounded statistics for one SSP restricted to a list of ZIP codes (exact match).",
-                  "value": {
-                    "ssp_id": "RA005",
-                    "location": {
-                      "within_zip_codes": [
-                        "80129",
-                        "80237"
-                      ]
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RateComparison"
+                  "$ref": "#/components/schemas/V3Payer"
                 }
               }
             }
@@ -1278,7 +949,17 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -1288,7 +969,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -1298,7 +979,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -1308,7 +989,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
+                  "$ref": "#/components/schemas/V3ErrorResponse"
                 }
               }
             }
@@ -1327,7 +1008,7 @@
           "Consumer Pricing"
         ],
         "summary": "List Networks",
-        "description": "List negotiated-rate networks, filterable by name (case-insensitive substring, matches network or payer name), payer_id (exact), relationships (provider_id/package_id \u2014 networks with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to networks with at least one price at an in-area provider, so `package_id` + location answers 'which networks price this package here' in one call. Results reflect networks Turquoise has priced. The network's payer is an {id, name} stub; the full entity lives at /v3/payers/{id}.",
+        "description": "Retrieve a list of payer networks, filtered over a search by name, payer organization (e.g., Cigna), location for care, or specific providers and services priced in the Turquoise data. Location scopes to payer networks with at least one price at an in-area provider. Results reflect provider, payer network, and package combinations that Turquoise has priced services for; the list may not be comprehensive of all contracted providers or services that are available.",
         "operationId": "v3_list_networks",
         "parameters": [
           {
@@ -1344,6 +1025,10 @@
                 }
               ],
               "description": "Case-insensitive substring match on network or payer name.",
+              "examples": [
+                "Cigna",
+                "National OAP"
+              ],
               "title": "Name"
             },
             "description": "Case-insensitive substring match on network or payer name."
@@ -1362,6 +1047,9 @@
                 }
               ],
               "description": "Exact payer id match.",
+              "examples": [
+                "76"
+              ],
               "title": "Payer Id"
             },
             "description": "Exact payer id match."
@@ -1380,6 +1068,9 @@
                 }
               ],
               "description": "Networks with at least one price at this provider.",
+              "examples": [
+                "5756"
+              ],
               "title": "Provider Id"
             },
             "description": "Networks with at least one price at this provider."
@@ -1398,6 +1089,9 @@
                 }
               ],
               "description": "Networks with at least one price for this package.",
+              "examples": [
+                "OB002"
+              ],
               "title": "Package Id"
             },
             "description": "Networks with at least one price for this package."
@@ -1416,6 +1110,9 @@
                 }
               ],
               "description": "Semantic search over network and payer names. Composes with the other filters; returns a single relevance-ordered page (no cursor).",
+              "examples": [
+                "Cigna"
+              ],
               "title": "Search"
             },
             "description": "Semantic search over network and payer names. Composes with the other filters; returns a single relevance-ordered page (no cursor)."
@@ -1483,6 +1180,9 @@
                   "type": "null"
                 }
               ],
+              "examples": [
+                39.745961
+              ],
               "title": "Location.Near.Lat"
             }
           },
@@ -1498,6 +1198,9 @@
                 {
                   "type": "null"
                 }
+              ],
+              "examples": [
+                -104.971559
               ],
               "title": "Location.Near.Lng"
             }
@@ -1515,6 +1218,9 @@
                 {
                   "type": "null"
                 }
+              ],
+              "examples": [
+                25000
               ],
               "title": "Location.Near.Radius M"
             }
@@ -1534,6 +1240,9 @@
                   "type": "null"
                 }
               ],
+              "examples": [
+                "CO"
+              ],
               "title": "Location.Within.State"
             }
           },
@@ -1549,6 +1258,9 @@
                 {
                   "type": "null"
                 }
+              ],
+              "examples": [
+                "Denver-Aurora-Centennial, CO"
               ],
               "title": "Location.Within.Cbsa"
             }
@@ -1567,6 +1279,9 @@
                 }
               ],
               "description": "Comma-separated ZIP codes (exact match, any-of).",
+              "examples": [
+                "80218,80210"
+              ],
               "title": "Location.Within.Zip Codes"
             },
             "description": "Comma-separated ZIP codes (exact match, any-of)."
@@ -1585,6 +1300,9 @@
                 }
               ],
               "description": "Resolves the ZIP to its centroid, then runs `near` with the default radius.",
+              "examples": [
+                "80218"
+              ],
               "title": "Location.Zip"
             },
             "description": "Resolves the ZIP to its centroid, then runs `near` with the default radius."
@@ -1664,8 +1382,8 @@
         "tags": [
           "Consumer Pricing"
         ],
-        "summary": "Get a Network",
-        "description": "Fetch a single network by ID. Missing or unpermissioned IDs return a 404 with the standard error body.",
+        "summary": "Get Network Details",
+        "description": "Fetch details about a single network by network ID.",
         "operationId": "v3_get_network",
         "parameters": [
           {
@@ -1676,7 +1394,7 @@
               "type": "string",
               "description": "Network identifier (string-wrapped 64-bit integer).",
               "examples": [
-                "2010265101"
+                "-3776001016975145508"
               ],
               "title": "Network Id"
             },
@@ -1758,7 +1476,7 @@
           "Consumer Pricing"
         ],
         "summary": "List Packages",
-        "description": "List service packages, filterable by name (case-insensitive substring), anchor billing code (exact, matches package base codes only), and relationships (provider_id, network_id, payer_id \u2014 packages with at least one matching price). When multiple relationship filters are combined, they must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices. Results reflect packages Turquoise has priced.",
+        "description": "Return a list of service packages, filtered over name or anchor code. Additionally, filter to a list of packages with Turquoise price estimates available by a selected payer, network, or provider. Results reflect provider, payer, and package combinations that Turquoise has priced services for; the list may not be comprehensive of all payer networks or providers that support this service. When multiple relationship filters are combined, they must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices.",
         "operationId": "v3_list_packages",
         "parameters": [
           {
@@ -1775,6 +1493,9 @@
                 }
               ],
               "description": "Case-insensitive substring match on package name.",
+              "examples": [
+                "delivery"
+              ],
               "title": "Name"
             },
             "description": "Case-insensitive substring match on package name."
@@ -1794,7 +1515,7 @@
               ],
               "description": "Billing code lookup; matches against anchor_codes[].code (package base codes only). Returns every package anchored by the code \u2014 exactly one in the current catalog, but uniqueness is not contractual (an anchor's full upstream identity includes revenue code and billing class, which this API collapses).",
               "examples": [
-                "45385"
+                "59510"
               ],
               "title": "Anchor Code"
             },
@@ -1814,6 +1535,9 @@
                 }
               ],
               "description": "Packages priced at this provider.",
+              "examples": [
+                "5756"
+              ],
               "title": "Provider Id"
             },
             "description": "Packages priced at this provider."
@@ -1832,6 +1556,9 @@
                 }
               ],
               "description": "Packages with at least one price under this network (combined with provider_id/payer_id, the same price row must match).",
+              "examples": [
+                "-3776001016975145508"
+              ],
               "title": "Network Id"
             },
             "description": "Packages with at least one price under this network (combined with provider_id/payer_id, the same price row must match)."
@@ -1850,6 +1577,9 @@
                 }
               ],
               "description": "Packages priced under any of this payer's networks (combined with other relationship filters, the same price row must match).",
+              "examples": [
+                "76"
+              ],
               "title": "Payer Id"
             },
             "description": "Packages priced under any of this payer's networks (combined with other relationship filters, the same price row must match)."
@@ -1868,6 +1598,9 @@
                 }
               ],
               "description": "Semantic search over package name and description. Composes with the other filters; returns a single relevance-ordered page (no cursor). 503 search_unavailable when the embedding index is not populated.",
+              "examples": [
+                "cesarean delivery"
+              ],
               "title": "Search"
             },
             "description": "Semantic search over package name and description. Composes with the other filters; returns a single relevance-ordered page (no cursor). 503 search_unavailable when the embedding index is not populated."
@@ -1997,8 +1730,8 @@
         "tags": [
           "Consumer Pricing"
         ],
-        "summary": "Get a Package",
-        "description": "Fetch a single package by ID. Missing or unpermissioned IDs return a 404 with the standard error body.",
+        "summary": "Get Package Details",
+        "description": "Fetch package details by package ID.",
         "operationId": "v3_get_package",
         "parameters": [
           {
@@ -2009,7 +1742,9 @@
               "type": "string",
               "description": "Package identifier.",
               "examples": [
-                "GA002"
+                "OB002",
+                "RA005",
+                "GA003"
               ],
               "title": "Package Id"
             },
@@ -2090,8 +1825,8 @@
         "tags": [
           "Consumer Pricing"
         ],
-        "summary": "List a Package's Line Items",
-        "description": "The package's composition: codes, fee types, and association rates at the current package version.",
+        "summary": "List a Package's Contents",
+        "description": "Review a service package's composition. This includes common codes and fee types, and association rates across variations of packages for a given service.",
         "operationId": "v3_list_package_line_items",
         "parameters": [
           {
@@ -2102,7 +1837,9 @@
               "type": "string",
               "description": "Package identifier.",
               "examples": [
-                "GA002"
+                "OB002",
+                "RA005",
+                "GA003"
               ],
               "title": "Package Id"
             },
@@ -2178,547 +1915,13 @@
         ]
       }
     },
-    "/v3/payers": {
-      "get": {
-        "tags": [
-          "Consumer Pricing"
-        ],
-        "summary": "List Payers",
-        "description": "List payers, filterable by name (case-insensitive substring), relationships (provider_id/package_id \u2014 payers with at least one matching price), and one location mode: `location.near.*`, `location.within.*` (state/cbsa/zip_codes), or `location.zip`. Location scopes to payers with at least one price at an in-area provider. Results reflect payers Turquoise has priced.",
-        "operationId": "v3_list_payers",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Case-insensitive substring match on payer name.",
-              "title": "Name"
-            },
-            "description": "Case-insensitive substring match on payer name."
-          },
-          {
-            "name": "provider_id",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Payers with at least one price at this provider.",
-              "title": "Provider Id"
-            },
-            "description": "Payers with at least one price at this provider."
-          },
-          {
-            "name": "package_id",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Payers with at least one price for this package.",
-              "title": "Package Id"
-            },
-            "description": "Payers with at least one price for this package."
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 250,
-              "minimum": 1,
-              "default": 25,
-              "title": "Page Size"
-            }
-          },
-          {
-            "name": "cursor",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Opaque cursor from a previous page.next_cursor.",
-              "title": "Cursor"
-            },
-            "description": "Opaque cursor from a previous page.next_cursor."
-          },
-          {
-            "name": "location.near.lat",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Location.Near.Lat"
-            }
-          },
-          {
-            "name": "location.near.lng",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Location.Near.Lng"
-            }
-          },
-          {
-            "name": "location.near.radius_m",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 1
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Location.Near.Radius M"
-            }
-          },
-          {
-            "name": "location.within.state",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "minLength": 2,
-                  "maxLength": 2
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Location.Within.State"
-            }
-          },
-          {
-            "name": "location.within.cbsa",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Location.Within.Cbsa"
-            }
-          },
-          {
-            "name": "location.within.zip_codes",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Comma-separated ZIP codes (exact match, any-of).",
-              "title": "Location.Within.Zip Codes"
-            },
-            "description": "Comma-separated ZIP codes (exact match, any-of)."
-          },
-          {
-            "name": "location.zip",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Resolves the ZIP to its centroid, then runs `near` with the default radius.",
-              "title": "Location.Zip"
-            },
-            "description": "Resolves the ZIP to its centroid, then runs `near` with the default radius."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ListEnvelope_Payer_"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/v3/payers/{payer_id}": {
-      "get": {
-        "tags": [
-          "Consumer Pricing"
-        ],
-        "summary": "Get a Payer",
-        "description": "Fetch a single payer by ID. Missing or unpermissioned IDs return a 404 with the standard error body.",
-        "operationId": "v3_get_payer",
-        "parameters": [
-          {
-            "name": "payer_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "Payer identifier.",
-              "examples": [
-                "7001"
-              ],
-              "title": "Payer Id"
-            },
-            "description": "Payer identifier."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3Payer"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/v3/prices/query": {
-      "post": {
-        "tags": [
-          "Consumer Pricing"
-        ],
-        "summary": "Search Prices",
-        "description": "Search prices at the provider \u00d7 package \u00d7 pricing grain.",
-        "operationId": "v3_query_prices",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/V3PricesQueryRequest"
-              },
-              "examples": {
-                "by_provider_negotiated": {
-                  "summary": "A provider's negotiated prices",
-                  "description": "Negotiated prices for a package at one provider under a given network.",
-                  "value": {
-                    "package_id": "RA007",
-                    "provider_id": "2751",
-                    "pricing": {
-                      "type": "negotiated",
-                      "network_id": "8361580493441765265"
-                    }
-                  }
-                },
-                "by_provider_cash": {
-                  "summary": "A provider's cash price",
-                  "description": "The cash (self-pay) price for a package at one provider.",
-                  "value": {
-                    "package_id": "RA007",
-                    "provider_id": "2751",
-                    "pricing": {
-                      "type": "cash"
-                    }
-                  }
-                },
-                "near_point": {
-                  "summary": "Near a lat/lng, sorted by distance",
-                  "description": "Cash prices within a radius of an anchor point, nearest first.",
-                  "value": {
-                    "package_id": "RA007",
-                    "pricing": {
-                      "type": "cash"
-                    },
-                    "location": {
-                      "near": {
-                        "lat": 41.8781,
-                        "lng": -87.6298,
-                        "radius_m": 40000
-                      }
-                    },
-                    "sort": "distance"
-                  }
-                },
-                "by_zip": {
-                  "summary": "Around a ZIP code",
-                  "description": "Resolves the ZIP to its centroid, then runs a near search at the default radius.",
-                  "value": {
-                    "package_id": "RA007",
-                    "pricing": {
-                      "type": "cash"
-                    },
-                    "location": {
-                      "zip": "60644"
-                    }
-                  }
-                },
-                "within_state": {
-                  "summary": "Within a state",
-                  "description": "All matching prices in a USPS state, cheapest total first.",
-                  "value": {
-                    "package_id": "RA007",
-                    "pricing": {
-                      "type": "negotiated",
-                      "network_id": "8361580493441765265"
-                    },
-                    "location": {
-                      "within": {
-                        "state": "IL"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ListEnvelope_ProviderPackagePrice_"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
     "/v3/prices/compare": {
       "post": {
         "tags": [
           "Consumer Pricing"
         ],
-        "summary": "Price Statistics",
-        "description": "Summary statistics (count, min/max/avg/median/q1/q3 as Money) over the prices matching the same request shape as /query, minus sort and pagination.",
+        "summary": "Get Price Statistics",
+        "description": "Return summary statistics (min, max, average, median, quartiles) over prices matching the same filters as /query, excluding sorting and pagination. Use this endpoint to compare prices across relevant criteria.",
         "operationId": "v3_compare_prices",
         "requestBody": {
           "content": {
@@ -2729,44 +1932,44 @@
               "examples": {
                 "by_provider_negotiated": {
                   "summary": "Stats for a provider's negotiated prices",
-                  "description": "Summary statistics for a package at one provider under a given network.",
                   "value": {
-                    "package_id": "RA007",
-                    "provider_id": "2751",
+                    "package_id": "OB002",
+                    "provider_id": "5756",
                     "pricing": {
                       "type": "negotiated",
-                      "network_id": "8361580493441765265"
+                      "network_id": "-3776001016975145508"
                     }
                   }
                 },
-                "cash_within_state": {
-                  "summary": "Cash-price stats within a state",
-                  "description": "Distribution of cash prices for a package across a USPS state.",
+                "cash_within_zip_codes": {
+                  "summary": "Cash-price stats within a set of ZIP codes",
                   "value": {
-                    "package_id": "RA007",
+                    "package_id": "RA008",
                     "pricing": {
                       "type": "cash"
                     },
                     "location": {
                       "within": {
-                        "state": "IL"
+                        "zip_codes": [
+                          "80218",
+                          "80210"
+                        ]
                       }
                     }
                   }
                 },
                 "cash_near_point": {
                   "summary": "Cash-price stats near a lat/lng",
-                  "description": "Distribution of cash prices within a radius of an anchor point.",
                   "value": {
-                    "package_id": "RA007",
+                    "package_id": "RA008",
                     "pricing": {
                       "type": "cash"
                     },
                     "location": {
                       "near": {
-                        "lat": 41.8781,
-                        "lng": -87.6298,
-                        "radius_m": 40000
+                        "lat": 39.745961,
+                        "lng": -104.971559,
+                        "radius_m": 25000
                       }
                     }
                   }
@@ -2845,13 +2048,170 @@
         ]
       }
     },
+    "/v3/prices/query": {
+      "post": {
+        "tags": [
+          "Consumer Pricing"
+        ],
+        "summary": "List Prices",
+        "description": "Return prices for valid provider, service package, and pricing arrangement (cash or negotiated) combinations.",
+        "operationId": "v3_query_prices",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/V3PricesQueryRequest"
+              },
+              "examples": {
+                "by_provider_negotiated": {
+                  "summary": "A provider's negotiated prices",
+                  "value": {
+                    "package_id": "OB002",
+                    "provider_id": "5756",
+                    "pricing": {
+                      "type": "negotiated",
+                      "network_id": "-3776001016975145508"
+                    }
+                  }
+                },
+                "by_provider_cash": {
+                  "summary": "A provider's cash (self-pay) price",
+                  "value": {
+                    "package_id": "RA008",
+                    "provider_id": "5756",
+                    "pricing": {
+                      "type": "cash"
+                    }
+                  }
+                },
+                "near_point": {
+                  "summary": "Near a lat/lng, sorted by distance",
+                  "value": {
+                    "package_id": "RA008",
+                    "pricing": {
+                      "type": "cash"
+                    },
+                    "location": {
+                      "near": {
+                        "lat": 39.745961,
+                        "lng": -104.971559,
+                        "radius_m": 25000
+                      }
+                    },
+                    "sort": "distance"
+                  }
+                },
+                "by_zip": {
+                  "summary": "Around a ZIP code",
+                  "value": {
+                    "package_id": "RA008",
+                    "pricing": {
+                      "type": "cash"
+                    },
+                    "location": {
+                      "zip": "80218"
+                    }
+                  }
+                },
+                "within_zip_codes": {
+                  "summary": "Within a set of ZIP codes",
+                  "value": {
+                    "package_id": "OB002",
+                    "pricing": {
+                      "type": "negotiated",
+                      "network_id": "-3776001016975145508"
+                    },
+                    "location": {
+                      "within": {
+                        "zip_codes": [
+                          "80218",
+                          "80210"
+                        ]
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ListEnvelope_ProviderPackagePrice_"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit exceeded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/V3ErrorResponse"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
     "/v3/prices/{price_id}": {
       "get": {
         "tags": [
           "Consumer Pricing"
         ],
         "summary": "Get a Price",
-        "description": "Fetch a single price by its ID (the id returned by /query). `expand=line_items` attaches the package composition \u2014 this replaces v2's provider-breakdown endpoint.",
+        "description": "Fetch a single price by its unique price ID. Expand line items to review the priced package composition.",
         "operationId": "v3_get_price",
         "parameters": [
           {
@@ -2862,7 +2222,7 @@
               "type": "string",
               "description": "Price identifier.",
               "examples": [
-                "prc_2751.RA007.8361580493441765265"
+                "prc_5756.OB002.-3776001016975145508"
               ],
               "title": "Price Id"
             },
@@ -2885,6 +2245,11 @@
                 }
               ],
               "description": "Relations to inline. Repeat the param to request several.",
+              "examples": [
+                [
+                  "line_items"
+                ]
+              ],
               "title": "Expand"
             },
             "description": "Relations to inline. Repeat the param to request several."
@@ -2958,1903 +2323,10 @@
           }
         ]
       }
-    },
-    "/v3/providers/types": {
-      "get": {
-        "tags": [
-          "Consumer Pricing"
-        ],
-        "summary": "Get Provider Types",
-        "description": "Fetch provider types",
-        "operationId": "v3_get_provider_types",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "type": "string"
-                  },
-                  "type": "array",
-                  "title": "Response V3 Get Provider Types"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/v3/providers": {
-      "get": {
-        "tags": [
-          "Consumer Pricing"
-        ],
-        "summary": "List Providers",
-        "description": "List providers, filterable by name (case-insensitive substring), npi/type (exact), relationships (package_id/network_id/payer_id \u2014 providers with at least one matching price; combined relationship filters must be satisfied by the same price row, so results are always fulfillable via GET /v3/prices), and one location mode: `location.near.*` (ranked by distance), `location.within.*` (state/cbsa/zip_codes), or `location.zip` (ZIP centroid + default 25km radius). Results reflect providers Turquoise has priced services for.",
-        "operationId": "v3_list_providers",
-        "parameters": [
-          {
-            "name": "name",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Case-insensitive substring match on provider name.",
-              "title": "Name"
-            },
-            "description": "Case-insensitive substring match on provider name."
-          },
-          {
-            "name": "npi",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Exact NPI match.",
-              "title": "Npi"
-            },
-            "description": "Exact NPI match."
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Provider type as reported in the dataset (exact match).",
-              "title": "Type"
-            },
-            "description": "Provider type as reported in the dataset (exact match)."
-          },
-          {
-            "name": "package_id",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Providers with at least one price for this package.",
-              "title": "Package Id"
-            },
-            "description": "Providers with at least one price for this package."
-          },
-          {
-            "name": "network_id",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Providers with at least one price under this network (combined with package_id/payer_id, the same price row must match).",
-              "title": "Network Id"
-            },
-            "description": "Providers with at least one price under this network (combined with package_id/payer_id, the same price row must match)."
-          },
-          {
-            "name": "payer_id",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match).",
-              "title": "Payer Id"
-            },
-            "description": "Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match)."
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.",
-              "title": "Search"
-            },
-            "description": "Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated."
-          },
-          {
-            "name": "min_score",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number",
-                  "maximum": 1.0,
-                  "minimum": 0.0
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Minimum similarity score (0-1).",
-              "title": "Min Score"
-            },
-            "description": "Minimum similarity score (0-1)."
-          },
-          {
-            "name": "page_size",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "maximum": 250,
-              "minimum": 1,
-              "default": 25,
-              "title": "Page Size"
-            }
-          },
-          {
-            "name": "cursor",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Opaque cursor from a previous page.next_cursor.",
-              "title": "Cursor"
-            },
-            "description": "Opaque cursor from a previous page.next_cursor."
-          },
-          {
-            "name": "location.near.lat",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Location.Near.Lat"
-            }
-          },
-          {
-            "name": "location.near.lng",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "number"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Location.Near.Lng"
-            }
-          },
-          {
-            "name": "location.near.radius_m",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "integer",
-                  "minimum": 1
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Location.Near.Radius M"
-            }
-          },
-          {
-            "name": "location.within.state",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string",
-                  "minLength": 2,
-                  "maxLength": 2
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Location.Within.State"
-            }
-          },
-          {
-            "name": "location.within.cbsa",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "title": "Location.Within.Cbsa"
-            }
-          },
-          {
-            "name": "location.within.zip_codes",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Comma-separated ZIP codes (exact match, any-of).",
-              "title": "Location.Within.Zip Codes"
-            },
-            "description": "Comma-separated ZIP codes (exact match, any-of)."
-          },
-          {
-            "name": "location.zip",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "null"
-                }
-              ],
-              "description": "Resolves the ZIP to its centroid, then runs `near` with the default radius.",
-              "title": "Location.Zip"
-            },
-            "description": "Resolves the ZIP to its centroid, then runs `near` with the default radius."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ListEnvelope_Provider_"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
-    },
-    "/v3/providers/{provider_id}": {
-      "get": {
-        "tags": [
-          "Consumer Pricing"
-        ],
-        "summary": "Get a Provider",
-        "description": "Fetch a single provider by ID. Missing IDs return a 404 with the standard error body.",
-        "operationId": "v3_get_provider",
-        "parameters": [
-          {
-            "name": "provider_id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "description": "Provider identifier.",
-              "examples": [
-                "2743"
-              ],
-              "title": "Provider Id"
-            },
-            "description": "Provider identifier."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3Provider"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "422": {
-            "description": "Validation error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "429": {
-            "description": "Rate limit exceeded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal server error",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/V3ErrorResponse"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "BearerAuth": []
-          }
-        ]
-      }
     }
   },
   "components": {
     "schemas": {
-      "Envelope_Network_": {
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/Network"
-            },
-            "type": "array",
-            "title": "Items"
-          },
-          "page": {
-            "$ref": "#/components/schemas/PageMeta"
-          },
-          "no_data_reason": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/NoDataReason"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
-          }
-        },
-        "type": "object",
-        "required": [
-          "items",
-          "page"
-        ],
-        "title": "Envelope[Network]"
-      },
-      "Envelope_Provider_": {
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/Provider"
-            },
-            "type": "array",
-            "title": "Items"
-          },
-          "page": {
-            "$ref": "#/components/schemas/PageMeta"
-          },
-          "no_data_reason": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/NoDataReason"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
-          }
-        },
-        "type": "object",
-        "required": [
-          "items",
-          "page"
-        ],
-        "title": "Envelope[Provider]"
-      },
-      "Envelope_Rate_": {
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/Rate"
-            },
-            "type": "array",
-            "title": "Items"
-          },
-          "page": {
-            "$ref": "#/components/schemas/PageMeta"
-          },
-          "no_data_reason": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/NoDataReason"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
-          }
-        },
-        "type": "object",
-        "required": [
-          "items",
-          "page"
-        ],
-        "title": "Envelope[Rate]"
-      },
-      "Envelope_SSP_": {
-        "properties": {
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/SSP"
-            },
-            "type": "array",
-            "title": "Items"
-          },
-          "page": {
-            "$ref": "#/components/schemas/PageMeta"
-          },
-          "no_data_reason": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/NoDataReason"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
-          }
-        },
-        "type": "object",
-        "required": [
-          "items",
-          "page"
-        ],
-        "title": "Envelope[SSP]"
-      },
-      "ErrorCode": {
-        "type": "string",
-        "enum": [
-          "INVALID_REQUEST",
-          "INVALID_STATE_FORMAT",
-          "INVALID_ID_FORMAT",
-          "INVALID_EXPAND",
-          "INSUFFICIENT_SCOPE",
-          "LOCATION_REQUIRED",
-          "LOCATION_AMBIGUOUS",
-          "UNRESOLVABLE_LOCATION",
-          "NOT_FOUND",
-          "INSUFFICIENT_DATA",
-          "RATE_LIMITED",
-          "PERMISSION_DENIED",
-          "SEARCH_UNAVAILABLE"
-        ],
-        "title": "ErrorCode",
-        "description": "Stable error code registry for the Consumer Pricing v2 surface."
-      },
-      "ErrorPayload": {
-        "properties": {
-          "code": {
-            "$ref": "#/components/schemas/ErrorCode",
-            "description": "Stable, documented error code. Switch on this in code."
-          },
-          "message": {
-            "type": "string",
-            "title": "Message",
-            "description": "Human-readable error summary, suitable for narration to an end user."
-          },
-          "hint": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Hint",
-            "description": "Actionable suggestion for the caller, when applicable."
-          },
-          "expected": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Expected",
-            "description": "What the API expected (format, value range, etc)."
-          },
-          "received": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Received",
-            "description": "What the API actually received."
-          },
-          "field": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Field",
-            "description": "Dot-path of the offending request field, when applicable."
-          }
-        },
-        "type": "object",
-        "required": [
-          "code",
-          "message"
-        ],
-        "title": "ErrorPayload"
-      },
-      "ErrorResponse": {
-        "properties": {
-          "error": {
-            "$ref": "#/components/schemas/ErrorPayload"
-          }
-        },
-        "type": "object",
-        "required": [
-          "error"
-        ],
-        "title": "ErrorResponse",
-        "description": "Top-level error envelope for v2."
-      },
-      "Network": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "pattern": "^-?\\d+$",
-            "title": "Id",
-            "description": "Network identifier. Int64String \u2014 JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
-          },
-          "name": {
-            "type": "string",
-            "title": "Name",
-            "description": "Insurance network name."
-          },
-          "payer_id": {
-            "type": "string",
-            "title": "Payer Id",
-            "description": "Insurance payer identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
-          },
-          "payer_name": {
-            "type": "string",
-            "title": "Payer Name",
-            "description": "Insurance payer name."
-          },
-          "score": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1.0,
-                "minimum": 0.0
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Score",
-            "description": "Semantic similarity score (0-1) when results are from a search query. Higher is more relevant."
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "name",
-          "payer_id",
-          "payer_name"
-        ],
-        "title": "Network",
-        "description": "Insurance network row.",
-        "examples": [
-          {
-            "id": "8361580493441765265",
-            "name": "UnitedHealthcare Choice Plus",
-            "payer_id": "643",
-            "payer_name": "UnitedHealthcare",
-            "score": 0.89
-          }
-        ]
-      },
-      "NoDataReason": {
-        "type": "string",
-        "enum": [
-          "no_data",
-          "permission_denied"
-        ],
-        "title": "NoDataReason"
-      },
-      "PageMeta": {
-        "properties": {
-          "size": {
-            "type": "integer",
-            "title": "Size",
-            "description": "Number of items in this page."
-          },
-          "total": {
-            "type": "integer",
-            "title": "Total",
-            "description": "Count of the full filtered set, not just this page."
-          },
-          "next_cursor": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Next Cursor",
-            "description": "Opaque cursor for the next page. Null when no more pages."
-          }
-        },
-        "type": "object",
-        "required": [
-          "size",
-          "total"
-        ],
-        "title": "PageMeta",
-        "description": "Pagination metadata. Cursor is opaque; clients pass it back unchanged.",
-        "examples": [
-          {
-            "size": 2,
-            "total": 2
-          }
-        ]
-      },
-      "PricesRequest": {
-        "properties": {
-          "ssp_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ssp Id",
-            "description": "Filter to a single SSP. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
-            "examples": [
-              "RA005",
-              "RA011",
-              "OB001",
-              "GA002",
-              "MS006",
-              "OP000"
-            ]
-          },
-          "provider_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Provider Id",
-            "description": "Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
-            "examples": [
-              "21929",
-              "60898",
-              "5736"
-            ]
-          },
-          "network_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^-?\\d+$",
-                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Network Id",
-            "description": "Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String \u2014 JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
-            "examples": [
-              "8361580493441765265",
-              "-2162498661799343237",
-              "2469641715717297819"
-            ]
-          },
-          "location": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/RateCompareLocation"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes."
-          },
-          "page_size": {
-            "type": "integer",
-            "maximum": 250.0,
-            "minimum": 1.0,
-            "title": "Page Size",
-            "description": "Page size, 1-250.",
-            "default": 25
-          },
-          "cursor": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Cursor",
-            "description": "Opaque cursor from a previous response's `page.next_cursor`."
-          }
-        },
-        "type": "object",
-        "title": "PricesRequest",
-        "description": "POST /v2/consumer-pricing/prices body."
-      },
-      "Provider": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id",
-            "description": "Provider identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
-          },
-          "name": {
-            "type": "string",
-            "title": "Name",
-            "description": "Provider facility or organization name."
-          },
-          "type": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Type",
-            "description": "Provider type (hospital, ASC, imaging center, etc)."
-          },
-          "npi": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Npi",
-            "description": "National Provider Identifier."
-          },
-          "city": {
-            "type": "string",
-            "title": "City",
-            "description": "City the provider is located in."
-          },
-          "state": {
-            "type": "string",
-            "title": "State",
-            "description": "Two-letter USPS state code."
-          },
-          "zip_code": {
-            "type": "string",
-            "title": "Zip Code",
-            "description": "Provider ZIP code."
-          },
-          "distance_m": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Distance M",
-            "description": "Distance from the search anchor in meters. Null when no `near`/`zip_anchor` location was supplied."
-          },
-          "latitude": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Latitude",
-            "description": "Provider HQ latitude."
-          },
-          "longitude": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Longitude",
-            "description": "Provider HQ longitude."
-          },
-          "score": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Score",
-            "description": "Semantic similarity score (0-1). Only present when using the 'search' parameter."
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "name",
-          "city",
-          "state",
-          "zip_code"
-        ],
-        "title": "Provider",
-        "description": "Provider list/detail row.",
-        "examples": [
-          {
-            "city": "Denver",
-            "distance_m": 1,
-            "id": "21929",
-            "latitude": 39.625533,
-            "longitude": -104.898823,
-            "name": "Mountain View Surgical Specialists",
-            "npi": "1144903113",
-            "state": "CO",
-            "type": "ASC",
-            "zip_code": "80237"
-          }
-        ]
-      },
-      "ProviderBreakdownRequest": {
-        "properties": {
-          "provider_id": {
-            "type": "string",
-            "title": "Provider Id",
-            "description": "Provider identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
-            "examples": [
-              "21929",
-              "60898",
-              "5736"
-            ]
-          },
-          "ssp_id": {
-            "type": "string",
-            "title": "Ssp Id",
-            "description": "SSP identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
-            "examples": [
-              "RA005",
-              "RA011",
-              "OB001",
-              "GA002",
-              "MS006",
-              "OP000"
-            ]
-          },
-          "network_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^-?\\d+$",
-                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Network Id",
-            "description": "Optional network filter. Omit for cash-price breakdown. Int64String \u2014 JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
-            "examples": [
-              "8361580493441765265",
-              "-2162498661799343237",
-              "2469641715717297819"
-            ]
-          }
-        },
-        "type": "object",
-        "required": [
-          "provider_id",
-          "ssp_id"
-        ],
-        "title": "ProviderBreakdownRequest",
-        "description": "POST /v2/consumer-pricing/prices/provider_breakdown body."
-      },
-      "Rate": {
-        "properties": {
-          "price_type": {
-            "type": "string",
-            "enum": [
-              "cash",
-              "negotiated"
-            ],
-            "title": "Price Type",
-            "description": "`cash` \u21d4 `network_id is null`. `negotiated` otherwise."
-          },
-          "provider_id": {
-            "type": "string",
-            "title": "Provider Id",
-            "description": "Provider identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
-          },
-          "ssp_id": {
-            "type": "string",
-            "title": "Ssp Id",
-            "description": "SSP identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
-          },
-          "network_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^-?\\d+$",
-                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Network Id",
-            "description": "Network identifier; null for cash rates. Int64String \u2014 JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
-          },
-          "amount": {
-            "type": "string",
-            "title": "Amount",
-            "description": "String-decimal money value, e.g. \"1250.00\"."
-          },
-          "amount_cents": {
-            "type": "integer",
-            "title": "Amount Cents",
-            "description": "Integer minor units, e.g. 125000."
-          },
-          "currency": {
-            "type": "string",
-            "title": "Currency",
-            "description": "ISO currency code. Always USD today.",
-            "default": "USD"
-          }
-        },
-        "type": "object",
-        "required": [
-          "price_type",
-          "provider_id",
-          "ssp_id",
-          "amount",
-          "amount_cents"
-        ],
-        "title": "Rate",
-        "description": "SSP-total rate row at the (provider \u00d7 ssp \u00d7 [network]) grain.",
-        "examples": [
-          {
-            "amount": "335.16",
-            "amount_cents": 33516,
-            "currency": "USD",
-            "price_type": "cash",
-            "provider_id": "0001",
-            "ssp_id": "GA002"
-          }
-        ]
-      },
-      "RateBreakdown": {
-        "properties": {
-          "price_type": {
-            "type": "string",
-            "enum": [
-              "cash",
-              "negotiated"
-            ],
-            "title": "Price Type"
-          },
-          "provider_id": {
-            "type": "string",
-            "title": "Provider Id"
-          },
-          "ssp_id": {
-            "type": "string",
-            "title": "Ssp Id"
-          },
-          "network_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^-?\\d+$",
-                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Network Id"
-          },
-          "total_amount": {
-            "type": "string",
-            "title": "Total Amount",
-            "description": "SSP-total amount from /prices."
-          },
-          "total_amount_cents": {
-            "type": "integer",
-            "title": "Total Amount Cents"
-          },
-          "currency": {
-            "type": "string",
-            "title": "Currency",
-            "default": "USD"
-          },
-          "line_items": {
-            "items": {
-              "$ref": "#/components/schemas/RateBreakdownLineItem"
-            },
-            "type": "array",
-            "title": "Line Items"
-          }
-        },
-        "type": "object",
-        "required": [
-          "price_type",
-          "provider_id",
-          "ssp_id",
-          "total_amount",
-          "total_amount_cents",
-          "line_items"
-        ],
-        "title": "RateBreakdown",
-        "examples": [
-          {
-            "currency": "USD",
-            "line_items": [
-              {
-                "code_type": "HCPCS",
-                "description": "Colonoscopy",
-                "fee_type": "Base Code",
-                "line_code": "45385",
-                "line_item_association_rate": 1
-              },
-              {
-                "code_type": "HCPCS",
-                "description": "Colonoscopy",
-                "fee_type": "Professional Fee",
-                "line_code": "45385",
-                "line_item_association_rate": 1
-              },
-              {
-                "code_type": "RC",
-                "description": "Pharmacy - Extension of 025X - Drugs requiring detailed coding",
-                "fee_type": "Facility Fee",
-                "line_code": "0636",
-                "line_item_association_rate": 0.633119
-              }
-            ],
-            "network_id": "999999999999",
-            "price_type": "cash",
-            "provider_id": "0001",
-            "ssp_id": "GA002",
-            "total_amount": "335.16",
-            "total_amount_cents": 33516
-          }
-        ]
-      },
-      "RateBreakdownLineItem": {
-        "properties": {
-          "line_code": {
-            "type": "string",
-            "title": "Line Code",
-            "description": "CPT or HCPCS code."
-          },
-          "code_type": {
-            "type": "string",
-            "title": "Code Type",
-            "description": "Billing code type."
-          },
-          "fee_type": {
-            "type": "string",
-            "title": "Fee Type",
-            "description": "Fee category (professional, facility, etc)."
-          },
-          "description": {
-            "type": "string",
-            "title": "Description",
-            "description": "Human-readable line item description."
-          },
-          "line_item_association_rate": {
-            "type": "number",
-            "title": "Line Item Association Rate",
-            "description": "Likelihood this line item is part of the SSP."
-          }
-        },
-        "type": "object",
-        "required": [
-          "line_code",
-          "code_type",
-          "fee_type",
-          "description",
-          "line_item_association_rate"
-        ],
-        "title": "RateBreakdownLineItem",
-        "examples": [
-          {
-            "code_type": "HCPCS",
-            "description": "Colonoscopy",
-            "fee_type": "Base Code",
-            "line_code": "45385",
-            "line_item_association_rate": 1
-          }
-        ]
-      },
-      "RateCompareLocation": {
-        "properties": {
-          "near_lat": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Near Lat",
-            "description": "Latitude for `near` mode. Must be paired with `near_lng`.",
-            "examples": [
-              39.625533
-            ]
-          },
-          "near_lng": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Near Lng",
-            "description": "Longitude for `near` mode. Must be paired with `near_lat`.",
-            "examples": [
-              -104.898823
-            ]
-          },
-          "near_radius_m": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Near Radius M",
-            "description": "Search radius in meters for `near` mode. Defaults to 25 000 when omitted.",
-            "examples": [
-              25000
-            ]
-          },
-          "within_state": {
-            "anyOf": [
-              {
-                "type": "string",
-                "maxLength": 2,
-                "minLength": 2
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Within State",
-            "description": "Two-letter USPS state code for `within` mode (exact match).",
-            "examples": [
-              "CO"
-            ]
-          },
-          "within_cbsa_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Within Cbsa Name",
-            "description": "CBSA name for `within` mode (case-insensitive substring match).",
-            "examples": [
-              "Denver-Aurora-Centennial, CO"
-            ]
-          },
-          "within_zip_codes": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Within Zip Codes",
-            "description": "ZIP codes for `within` mode (exact match, any-of).",
-            "examples": [
-              [
-                "80129",
-                "80237"
-              ]
-            ]
-          },
-          "zip_anchor": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Zip Anchor",
-            "description": "Convenience: resolves a ZIP to its centroid, then runs `near` with the default radius.",
-            "examples": [
-              "80202"
-            ]
-          }
-        },
-        "type": "object",
-        "title": "RateCompareLocation",
-        "description": "Structured location for POST bodies. Exactly zero or one mode permitted.\n\nValidated by the service layer (location.py shares LocationQuery for GET\nquery params; this is the body equivalent)."
-      },
-      "RateCompareRequest": {
-        "properties": {
-          "ssp_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Ssp Id",
-            "description": "Filter to a single SSP. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
-            "examples": [
-              "RA005",
-              "RA011",
-              "OB001",
-              "GA002",
-              "MS006",
-              "OP000"
-            ]
-          },
-          "provider_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Provider Id",
-            "description": "Filter to a single provider. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
-            "examples": [
-              "21929",
-              "60898",
-              "5736"
-            ]
-          },
-          "network_id": {
-            "anyOf": [
-              {
-                "type": "string",
-                "pattern": "^-?\\d+$",
-                "description": "Signed 64-bit integer serialized as a string to preserve precision in JSON."
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Network Id",
-            "description": "Filter to a single insurance network. Omit (or pass null) to get cash prices. Int64String \u2014 JSON string-wrapped 64-bit integer, because JSON cannot safely represent values above 2^53. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage.",
-            "examples": [
-              "8361580493441765265",
-              "-2162498661799343237",
-              "2469641715717297819"
-            ]
-          },
-          "location": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/RateCompareLocation"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Optional location scope. Exactly zero or one of `near`, `within`, or `zip_anchor` modes."
-          }
-        },
-        "type": "object",
-        "title": "RateCompareRequest",
-        "description": "POST /v2/consumer-pricing/prices/price_comparison body."
-      },
-      "RateComparison": {
-        "properties": {
-          "count": {
-            "type": "integer",
-            "title": "Count",
-            "description": "Number of rate rows the statistics were computed over."
-          },
-          "currency": {
-            "type": "string",
-            "title": "Currency",
-            "default": "USD"
-          },
-          "min_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Min Amount"
-          },
-          "min_amount_cents": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Min Amount Cents"
-          },
-          "max_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Amount"
-          },
-          "max_amount_cents": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Max Amount Cents"
-          },
-          "avg_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Avg Amount"
-          },
-          "avg_amount_cents": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Avg Amount Cents"
-          },
-          "median_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Median Amount"
-          },
-          "median_amount_cents": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Median Amount Cents"
-          },
-          "q1_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Q1 Amount"
-          },
-          "q1_amount_cents": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Q1 Amount Cents"
-          },
-          "q3_amount": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Q3 Amount"
-          },
-          "q3_amount_cents": {
-            "anyOf": [
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Q3 Amount Cents"
-          }
-        },
-        "type": "object",
-        "required": [
-          "count"
-        ],
-        "title": "RateComparison",
-        "description": "Bounded statistic bundle. No envelope per the ticket.",
-        "examples": [
-          {
-            "avg_amount": "2060.44",
-            "avg_amount_cents": 206044,
-            "count": 44,
-            "currency": "USD",
-            "max_amount": "5123.59",
-            "max_amount_cents": 512359,
-            "median_amount": "1818.48",
-            "median_amount_cents": 181848,
-            "min_amount": "447.14",
-            "min_amount_cents": 44714,
-            "q1_amount": "1016.93",
-            "q1_amount_cents": 101693,
-            "q3_amount": "3051.33",
-            "q3_amount_cents": 305133
-          }
-        ]
-      },
-      "SSP": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "title": "Id",
-            "description": "SSP identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Do not bake into URLs, bookmarks, or persistent storage."
-          },
-          "name": {
-            "type": "string",
-            "title": "Name",
-            "description": "Display name of the service package."
-          },
-          "patient_description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Patient Description",
-            "description": "Patient-facing description of the service package."
-          },
-          "score": {
-            "anyOf": [
-              {
-                "type": "number",
-                "maximum": 1.0,
-                "minimum": 0.0
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Score",
-            "description": "Semantic similarity score (0-1) when results are from a search query. Higher is more relevant."
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "name"
-        ],
-        "title": "SSP",
-        "description": "Standard Service Package row.\n\nSparse by default. Component billing codes and pricing relationships are\nreachable via the dedicated rate endpoints.",
-        "examples": [
-          {
-            "id": "GA002",
-            "name": "Colonoscopy",
-            "patient_description": "A colonoscopy is a standard medical procedure used to diagnose and treat gastrointestinal tract conditions, particularly those affecting the large intestine (rectum, colon, and anus) and a portion of the small intestine (the ileum).",
-            "score": 0.87
-          }
-        ]
-      },
-      "SingleResourceEnvelope_Network_": {
-        "properties": {
-          "data": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/Network"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "no_data_reason": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/NoDataReason"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set when `data` is null. `no_data` means the resource was not found; `permission_denied` means it exists but is excluded by your data permissions."
-          }
-        },
-        "type": "object",
-        "title": "SingleResourceEnvelope[Network]"
-      },
-      "SingleResourceEnvelope_Provider_": {
-        "properties": {
-          "data": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/Provider"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "no_data_reason": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/NoDataReason"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set when `data` is null. `no_data` means the resource was not found; `permission_denied` means it exists but is excluded by your data permissions."
-          }
-        },
-        "type": "object",
-        "title": "SingleResourceEnvelope[Provider]"
-      },
-      "SingleResourceEnvelope_RateBreakdown_": {
-        "properties": {
-          "data": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/RateBreakdown"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "no_data_reason": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/NoDataReason"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set when `data` is null. `no_data` means the resource was not found; `permission_denied` means it exists but is excluded by your data permissions."
-          }
-        },
-        "type": "object",
-        "title": "SingleResourceEnvelope[RateBreakdown]"
-      },
-      "SingleResourceEnvelope_SSP_": {
-        "properties": {
-          "data": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/SSP"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "no_data_reason": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/NoDataReason"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set when `data` is null. `no_data` means the resource was not found; `permission_denied` means it exists but is excluded by your data permissions."
-          }
-        },
-        "type": "object",
-        "title": "SingleResourceEnvelope[SSP]"
-      },
       "ConsumerPricingV2ErrorCode": {
         "enum": [
           "INVALID_REQUEST",
@@ -4882,7 +2354,7 @@
             "title": "Code",
             "description": "Billing code.",
             "examples": [
-              "45385"
+              "59510"
             ]
           },
           "code_type": {
@@ -5098,10 +2570,10 @@
         "description": "A component of a package's composition (from `api_ssp_contents`).",
         "examples": [
           {
-            "association_rate": 1.0,
-            "code": "45385",
-            "code_type": "HCPCS",
-            "description": "Colonoscopy",
+            "association_rate": 0.4491,
+            "code": "786",
+            "code_type": "MS-DRG",
+            "description": "CESAREAN SECTION WITHOUT STERILIZATION WITH MCC",
             "fee_type": "base_code"
           }
         ]
@@ -5142,9 +2614,6 @@
             "type": "array",
             "title": "Disclosures",
             "description": "Human-readable caveats about what this result does and does not imply."
-          },
-          "meta": {
-            "$ref": "#/components/schemas/V3ResponseMeta"
           }
         },
         "type": "object",
@@ -5190,9 +2659,6 @@
             "type": "array",
             "title": "Disclosures",
             "description": "Human-readable caveats about what this result does and does not imply."
-          },
-          "meta": {
-            "$ref": "#/components/schemas/V3ResponseMeta"
           }
         },
         "type": "object",
@@ -5238,9 +2704,6 @@
             "type": "array",
             "title": "Disclosures",
             "description": "Human-readable caveats about what this result does and does not imply."
-          },
-          "meta": {
-            "$ref": "#/components/schemas/V3ResponseMeta"
           }
         },
         "type": "object",
@@ -5286,9 +2749,6 @@
             "type": "array",
             "title": "Disclosures",
             "description": "Human-readable caveats about what this result does and does not imply."
-          },
-          "meta": {
-            "$ref": "#/components/schemas/V3ResponseMeta"
           }
         },
         "type": "object",
@@ -5334,9 +2794,6 @@
             "type": "array",
             "title": "Disclosures",
             "description": "Human-readable caveats about what this result does and does not imply."
-          },
-          "meta": {
-            "$ref": "#/components/schemas/V3ResponseMeta"
           }
         },
         "type": "object",
@@ -5382,9 +2839,6 @@
             "type": "array",
             "title": "Disclosures",
             "description": "Human-readable caveats about what this result does and does not imply."
-          },
-          "meta": {
-            "$ref": "#/components/schemas/V3ResponseMeta"
           }
         },
         "type": "object",
@@ -5426,7 +2880,10 @@
               }
             ],
             "title": "Zip",
-            "description": "Resolves the ZIP to its centroid, then runs `near`."
+            "description": "Resolves the ZIP to its centroid, then runs `near`.",
+            "examples": [
+              "80218"
+            ]
           }
         },
         "type": "object",
@@ -5438,19 +2895,28 @@
           "lat": {
             "type": "number",
             "title": "Lat",
-            "description": "Latitude of the search anchor."
+            "description": "Latitude of the search anchor.",
+            "examples": [
+              39.745961
+            ]
           },
           "lng": {
             "type": "number",
             "title": "Lng",
-            "description": "Longitude of the search anchor."
+            "description": "Longitude of the search anchor.",
+            "examples": [
+              -104.971559
+            ]
           },
           "radius_m": {
             "type": "integer",
             "minimum": 1.0,
             "title": "Radius M",
             "description": "Search radius in meters.",
-            "default": 25000
+            "default": 25000,
+            "examples": [
+              25000
+            ]
           }
         },
         "type": "object",
@@ -5474,7 +2940,10 @@
               }
             ],
             "title": "State",
-            "description": "Two-letter USPS state code."
+            "description": "Two-letter USPS state code.",
+            "examples": [
+              "CO"
+            ]
           },
           "cbsa": {
             "anyOf": [
@@ -5486,7 +2955,10 @@
               }
             ],
             "title": "Cbsa",
-            "description": "CBSA name (case-insensitive substring match)."
+            "description": "CBSA name (case-insensitive substring match).",
+            "examples": [
+              "Denver-Aurora-Centennial, CO"
+            ]
           },
           "zip_codes": {
             "anyOf": [
@@ -5501,7 +2973,13 @@
               }
             ],
             "title": "Zip Codes",
-            "description": "ZIP codes (exact match, any-of)."
+            "description": "ZIP codes (exact match, any-of).",
+            "examples": [
+              [
+                "80218",
+                "80210"
+              ]
+            ]
           }
         },
         "type": "object",
@@ -5539,7 +3017,7 @@
         },
         "type": "object",
         "title": "MatchContext",
-        "description": "Query-relative metadata. Present only when a search or near/zip\nlocation was supplied \u2014 never part of the entity shape itself."
+        "description": "Query-relative metadata for resources with a concrete location."
       },
       "V3Money": {
         "properties": {
@@ -5593,7 +3071,7 @@
           "context": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/V3MatchContext"
+                "$ref": "#/components/schemas/V3SearchContext"
               },
               {
                 "type": "null"
@@ -5611,12 +3089,12 @@
         "title": "Network",
         "examples": [
           {
-            "id": "2010265101",
-            "name": "National PPO",
+            "id": "-3776001016975145508",
+            "name": "National OAP",
             "object": "network",
             "payer": {
-              "id": "7001",
-              "name": "Meridian Health Plan"
+              "id": "76",
+              "name": "Cigna"
             }
           }
         ]
@@ -5684,13 +3162,13 @@
           "context": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/V3MatchContext"
+                "$ref": "#/components/schemas/V3SearchContext"
               },
               {
                 "type": "null"
               }
             ],
-            "description": "Query-relative metadata (search/near only)."
+            "description": "Query-relative metadata (search only)."
           }
         },
         "type": "object",
@@ -5703,20 +3181,28 @@
           {
             "anchor_codes": [
               {
-                "code": "45378",
+                "code": "59510",
                 "code_type": "HCPCS"
               },
               {
-                "code": "45385",
-                "code_type": "HCPCS"
+                "code": "784",
+                "code_type": "MS-DRG"
+              },
+              {
+                "code": "785",
+                "code_type": "MS-DRG"
+              },
+              {
+                "code": "786",
+                "code_type": "MS-DRG"
               }
             ],
-            "description": "A colonoscopy is a standard medical procedure used to diagnose and treat gastrointestinal tract conditions.",
+            "description": "Cesarean delivery (C-section) is a surgical procedure in which the baby is delivered through incisions made in the abdomen and uterus. It may be planned in advance due to specific medical conditions or performed as an emergency if complications arise during labor. The procedure is done under regional or general anesthesia, and most patients stay in the hospital for two to four days. Recovery from a C-section typically takes longer than from a vaginal delivery, and your care team will provide instructions for wound care and activity during healing.",
             "disclosures": [
               "The full package depends on your provider and insurance plan. A final price includes additional institutional and professional fee codes."
             ],
-            "id": "GA002",
-            "name": "Colonoscopy",
+            "id": "OB002",
+            "name": "Delivery - caesarean",
             "object": "package",
             "type": "ssp"
           }
@@ -5782,7 +3268,7 @@
           "context": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/V3MatchContext"
+                "$ref": "#/components/schemas/V3SearchContext"
               },
               {
                 "type": "null"
@@ -5798,8 +3284,8 @@
         "title": "Payer",
         "examples": [
           {
-            "id": "7001",
-            "name": "Meridian Health Plan",
+            "id": "76",
+            "name": "Cigna",
             "object": "payer"
           }
         ]
@@ -5867,7 +3353,10 @@
           "package_id": {
             "type": "string",
             "minLength": 1,
-            "title": "Package Id"
+            "title": "Package Id",
+            "examples": [
+              "OB002"
+            ]
           },
           "provider_id": {
             "anyOf": [
@@ -5878,7 +3367,10 @@
                 "type": "null"
               }
             ],
-            "title": "Provider Id"
+            "title": "Provider Id",
+            "examples": [
+              "5756"
+            ]
           },
           "pricing": {
             "oneOf": [
@@ -5924,7 +3416,7 @@
             "minLength": 1,
             "title": "Package Id",
             "examples": [
-              "RA007"
+              "OB002"
             ]
           },
           "provider_id": {
@@ -5938,7 +3430,7 @@
             ],
             "title": "Provider Id",
             "examples": [
-              "2751"
+              "5756"
             ]
           },
           "pricing": {
@@ -6034,7 +3526,10 @@
           "network_id": {
             "type": "string",
             "title": "Network Id",
-            "description": "Network identifier (string-wrapped 64-bit integer)."
+            "description": "Network identifier (string-wrapped 64-bit integer).",
+            "examples": [
+              "-3776001016975145508"
+            ]
           }
         },
         "type": "object",
@@ -6149,18 +3644,18 @@
         "examples": [
           {
             "address": {
-              "city": "Chicago",
-              "latitude": 41.8721272,
-              "longitude": -87.7636486,
-              "state": "IL",
-              "zip_code": "60644"
+              "city": "Denver",
+              "latitude": 39.745961,
+              "longitude": -104.971559,
+              "state": "CO",
+              "zip_code": "80218"
             },
             "context": {
-              "distance_m": 1240
+              "distance_m": 1644.0
             },
-            "id": "2743",
-            "name": "Loretto Hospital",
-            "npi": "1447280284",
+            "id": "5756",
+            "name": "Intermountain Health Saint Joseph Hospital",
+            "npi": "1417946021",
             "object": "provider",
             "type": "Short Term Acute Care Hospital"
           }
@@ -6281,31 +3776,41 @@
         "title": "ProviderPackagePrice",
         "examples": [
           {
-            "id": "prc_2751.RA007.2010265101",
+            "id": "prc_5756.OB002.-3776001016975145508",
             "object": "price",
             "package": {
-              "id": "RA007",
-              "name": "MRI with Contrast"
+              "id": "OB002",
+              "name": "Delivery - caesarean"
             },
             "pricing": {
               "network": {
-                "id": "2010265101",
-                "name": "Example PPO"
+                "id": "-3776001016975145508",
+                "name": "National OAP"
               },
               "payer": {
-                "id": "643",
-                "name": "Example Payer"
+                "id": "76",
+                "name": "Cigna"
               },
               "type": "negotiated"
             },
             "provider": {
-              "id": "2751",
-              "name": "Provident Hospital of Cook County"
+              "address": {
+                "city": "Denver",
+                "latitude": 39.745961,
+                "longitude": -104.971559,
+                "state": "CO",
+                "zip_code": "80218"
+              },
+              "id": "5756",
+              "name": "Intermountain Health Saint Joseph Hospital",
+              "npi": "1417946021",
+              "object": "provider",
+              "type": "Short Term Acute Care Hospital"
             },
             "total": {
-              "amount": "1250.00",
+              "amount": "34705.48",
               "currency": "USD",
-              "minor_units": 125000
+              "minor_units": 3470548
             }
           }
         ]
@@ -6327,6 +3832,27 @@
         },
         "type": "object",
         "title": "ResponseMeta"
+      },
+      "V3SearchContext": {
+        "properties": {
+          "score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score",
+            "description": "Semantic similarity (0-1)."
+          }
+        },
+        "type": "object",
+        "title": "SearchContext",
+        "description": "Query-relative semantic-search metadata."
       },
       "V3ConsumerPricingV2ErrorCode": {
         "enum": [

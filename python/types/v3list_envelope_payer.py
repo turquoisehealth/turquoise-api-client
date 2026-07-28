@@ -8,7 +8,6 @@ from .v3list_envelope_payer_object import V3ListEnvelopePayerObject
 from .v3no_data_reason import V3NoDataReason
 from .v3page_meta import V3PageMeta
 from .v3payer import V3Payer
-from .v3response_meta import V3ResponseMeta
 
 
 class V3ListEnvelopePayer(UniversalBaseModel):
@@ -24,8 +23,6 @@ class V3ListEnvelopePayer(UniversalBaseModel):
     """
     Human-readable caveats about what this result does and does not imply.
     """
-
-    meta: typing.Optional[V3ResponseMeta] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

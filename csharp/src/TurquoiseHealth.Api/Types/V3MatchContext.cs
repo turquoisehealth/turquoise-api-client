@@ -5,8 +5,7 @@ using TurquoiseHealth.Api.Core;
 namespace TurquoiseHealth.Api;
 
 /// <summary>
-/// Query-relative metadata. Present only when a search or near/zip
-/// location was supplied — never part of the entity shape itself.
+/// Query-relative metadata for resources with a concrete location.
 /// </summary>
 [Serializable]
 public record V3MatchContext : IJsonOnDeserialized

@@ -5,9 +5,9 @@ import typing
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 from .v3billing_code import V3BillingCode
-from .v3match_context import V3MatchContext
 from .v3package_object import V3PackageObject
 from .v3package_type import V3PackageType
+from .v3search_context import V3SearchContext
 
 
 class V3Package(UniversalBaseModel):
@@ -38,9 +38,9 @@ class V3Package(UniversalBaseModel):
     """
 
     disclosures: typing.Optional[typing.List[str]] = None
-    context: typing.Optional[V3MatchContext] = pydantic.Field(default=None)
+    context: typing.Optional[V3SearchContext] = pydantic.Field(default=None)
     """
-    Query-relative metadata (search/near only).
+    Query-relative metadata (search only).
     """
 
     if IS_PYDANTIC_V2:

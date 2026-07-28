@@ -12,10 +12,10 @@ public class V3QueryPricesTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "package_id": "RA007",
-              "provider_id": "2751",
+              "package_id": "OB002",
+              "provider_id": "5756",
               "pricing": {
-                "network_id": "network_id",
+                "network_id": "-3776001016975145508",
                 "type": "negotiated"
               }
             }
@@ -27,43 +27,48 @@ public class V3QueryPricesTest : BaseMockServerTest
               "items": [
                 {
                   "object": "price",
-                  "id": "prc_2751.RA007.2010265101",
+                  "id": "prc_5756.OB002.-3776001016975145508",
                   "provider": {
-                    "id": "2751",
-                    "name": "Provident Hospital of Cook County",
+                    "object": "provider",
+                    "id": "5756",
+                    "name": "Intermountain Health Saint Joseph Hospital",
+                    "type": "Short Term Acute Care Hospital",
+                    "npi": "1417946021",
                     "address": {
-                      "city": "city",
-                      "state": "state",
-                      "zip_code": "zip_code"
+                      "city": "Denver",
+                      "state": "CO",
+                      "zip_code": "80218",
+                      "latitude": 39.745961,
+                      "longitude": -104.971559
                     }
                   },
                   "package": {
-                    "id": "RA007",
-                    "name": "MRI with Contrast"
+                    "id": "OB002",
+                    "name": "Delivery - caesarean"
                   },
                   "pricing": {
                     "type": "negotiated",
                     "network": {
-                      "id": "2010265101",
-                      "name": "Example PPO"
+                      "id": "-3776001016975145508",
+                      "name": "National OAP"
                     },
                     "payer": {
-                      "id": "643",
-                      "name": "Example Payer"
+                      "id": "76",
+                      "name": "Cigna"
                     }
                   },
                   "total": {
-                    "amount": "1250.00",
-                    "minor_units": 125000,
+                    "amount": "34705.48",
+                    "minor_units": 3470548,
                     "currency": "USD"
                   },
                   "line_items": [
                     {
-                      "code": "45385",
-                      "code_type": "HCPCS",
+                      "code": "786",
+                      "code_type": "MS-DRG",
                       "fee_type": "base_code",
-                      "description": "Colonoscopy",
-                      "association_rate": 1
+                      "description": "CESAREAN SECTION WITHOUT STERILIZATION WITH MCC",
+                      "association_rate": 0.4491
                     }
                   ]
                 }
@@ -76,10 +81,7 @@ public class V3QueryPricesTest : BaseMockServerTest
               "no_data_reason": "no_data",
               "disclosures": [
                 "disclosures"
-              ],
-              "meta": {
-                "dataset_version": "dataset_version"
-              }
+              ]
             }
             """;
 
@@ -102,11 +104,11 @@ public class V3QueryPricesTest : BaseMockServerTest
         var response = await Client.ConsumerPricing.V3QueryPricesAsync(
             new V3PricesQueryRequest
             {
-                PackageId = "RA007",
-                ProviderId = "2751",
+                PackageId = "OB002",
+                ProviderId = "5756",
                 Pricing = new V3PricesQueryRequestPricing(
                     new V3PricesQueryRequestPricing.Negotiated(
-                        new V3PricingNegotiated { NetworkId = "network_id" }
+                        new V3PricingNegotiated { NetworkId = "-3776001016975145508" }
                     )
                 ),
             }
@@ -123,8 +125,8 @@ public class V3QueryPricesTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "package_id": "RA007",
-              "provider_id": "2751",
+              "package_id": "RA008",
+              "provider_id": "5756",
               "pricing": {
                 "type": "cash"
               }
@@ -137,43 +139,48 @@ public class V3QueryPricesTest : BaseMockServerTest
               "items": [
                 {
                   "object": "price",
-                  "id": "prc_2751.RA007.2010265101",
+                  "id": "prc_5756.OB002.-3776001016975145508",
                   "provider": {
-                    "id": "2751",
-                    "name": "Provident Hospital of Cook County",
+                    "object": "provider",
+                    "id": "5756",
+                    "name": "Intermountain Health Saint Joseph Hospital",
+                    "type": "Short Term Acute Care Hospital",
+                    "npi": "1417946021",
                     "address": {
-                      "city": "city",
-                      "state": "state",
-                      "zip_code": "zip_code"
+                      "city": "Denver",
+                      "state": "CO",
+                      "zip_code": "80218",
+                      "latitude": 39.745961,
+                      "longitude": -104.971559
                     }
                   },
                   "package": {
-                    "id": "RA007",
-                    "name": "MRI with Contrast"
+                    "id": "OB002",
+                    "name": "Delivery - caesarean"
                   },
                   "pricing": {
                     "type": "negotiated",
                     "network": {
-                      "id": "2010265101",
-                      "name": "Example PPO"
+                      "id": "-3776001016975145508",
+                      "name": "National OAP"
                     },
                     "payer": {
-                      "id": "643",
-                      "name": "Example Payer"
+                      "id": "76",
+                      "name": "Cigna"
                     }
                   },
                   "total": {
-                    "amount": "1250.00",
-                    "minor_units": 125000,
+                    "amount": "34705.48",
+                    "minor_units": 3470548,
                     "currency": "USD"
                   },
                   "line_items": [
                     {
-                      "code": "45385",
-                      "code_type": "HCPCS",
+                      "code": "786",
+                      "code_type": "MS-DRG",
                       "fee_type": "base_code",
-                      "description": "Colonoscopy",
-                      "association_rate": 1
+                      "description": "CESAREAN SECTION WITHOUT STERILIZATION WITH MCC",
+                      "association_rate": 0.4491
                     }
                   ]
                 }
@@ -186,10 +193,7 @@ public class V3QueryPricesTest : BaseMockServerTest
               "no_data_reason": "no_data",
               "disclosures": [
                 "disclosures"
-              ],
-              "meta": {
-                "dataset_version": "dataset_version"
-              }
+              ]
             }
             """;
 
@@ -212,8 +216,8 @@ public class V3QueryPricesTest : BaseMockServerTest
         var response = await Client.ConsumerPricing.V3QueryPricesAsync(
             new V3PricesQueryRequest
             {
-                PackageId = "RA007",
-                ProviderId = "2751",
+                PackageId = "RA008",
+                ProviderId = "5756",
                 Pricing = new V3PricesQueryRequestPricing(
                     new V3PricesQueryRequestPricing.Cash(new V3PricingCash())
                 ),
@@ -231,15 +235,15 @@ public class V3QueryPricesTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "package_id": "RA007",
+              "package_id": "RA008",
               "pricing": {
                 "type": "cash"
               },
               "location": {
                 "near": {
-                  "lat": 41.8781,
-                  "lng": -87.6298,
-                  "radius_m": 40000
+                  "lat": 39.745961,
+                  "lng": -104.971559,
+                  "radius_m": 25000
                 }
               },
               "sort": "distance"
@@ -252,43 +256,48 @@ public class V3QueryPricesTest : BaseMockServerTest
               "items": [
                 {
                   "object": "price",
-                  "id": "prc_2751.RA007.2010265101",
+                  "id": "prc_5756.OB002.-3776001016975145508",
                   "provider": {
-                    "id": "2751",
-                    "name": "Provident Hospital of Cook County",
+                    "object": "provider",
+                    "id": "5756",
+                    "name": "Intermountain Health Saint Joseph Hospital",
+                    "type": "Short Term Acute Care Hospital",
+                    "npi": "1417946021",
                     "address": {
-                      "city": "city",
-                      "state": "state",
-                      "zip_code": "zip_code"
+                      "city": "Denver",
+                      "state": "CO",
+                      "zip_code": "80218",
+                      "latitude": 39.745961,
+                      "longitude": -104.971559
                     }
                   },
                   "package": {
-                    "id": "RA007",
-                    "name": "MRI with Contrast"
+                    "id": "OB002",
+                    "name": "Delivery - caesarean"
                   },
                   "pricing": {
                     "type": "negotiated",
                     "network": {
-                      "id": "2010265101",
-                      "name": "Example PPO"
+                      "id": "-3776001016975145508",
+                      "name": "National OAP"
                     },
                     "payer": {
-                      "id": "643",
-                      "name": "Example Payer"
+                      "id": "76",
+                      "name": "Cigna"
                     }
                   },
                   "total": {
-                    "amount": "1250.00",
-                    "minor_units": 125000,
+                    "amount": "34705.48",
+                    "minor_units": 3470548,
                     "currency": "USD"
                   },
                   "line_items": [
                     {
-                      "code": "45385",
-                      "code_type": "HCPCS",
+                      "code": "786",
+                      "code_type": "MS-DRG",
                       "fee_type": "base_code",
-                      "description": "Colonoscopy",
-                      "association_rate": 1
+                      "description": "CESAREAN SECTION WITHOUT STERILIZATION WITH MCC",
+                      "association_rate": 0.4491
                     }
                   ]
                 }
@@ -301,10 +310,7 @@ public class V3QueryPricesTest : BaseMockServerTest
               "no_data_reason": "no_data",
               "disclosures": [
                 "disclosures"
-              ],
-              "meta": {
-                "dataset_version": "dataset_version"
-              }
+              ]
             }
             """;
 
@@ -327,7 +333,7 @@ public class V3QueryPricesTest : BaseMockServerTest
         var response = await Client.ConsumerPricing.V3QueryPricesAsync(
             new V3PricesQueryRequest
             {
-                PackageId = "RA007",
+                PackageId = "RA008",
                 Pricing = new V3PricesQueryRequestPricing(
                     new V3PricesQueryRequestPricing.Cash(new V3PricingCash())
                 ),
@@ -335,9 +341,9 @@ public class V3QueryPricesTest : BaseMockServerTest
                 {
                     Near = new V3LocationNear
                     {
-                        Lat = 41.8781,
-                        Lng = -87.6298,
-                        RadiusM = 40000,
+                        Lat = 39.745961,
+                        Lng = -104.971559,
+                        RadiusM = 25000,
                     },
                 },
                 Sort = V3PriceSort.Distance,
@@ -355,12 +361,12 @@ public class V3QueryPricesTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "package_id": "RA007",
+              "package_id": "RA008",
               "pricing": {
                 "type": "cash"
               },
               "location": {
-                "zip": "60644"
+                "zip": "80218"
               }
             }
             """;
@@ -371,43 +377,48 @@ public class V3QueryPricesTest : BaseMockServerTest
               "items": [
                 {
                   "object": "price",
-                  "id": "prc_2751.RA007.2010265101",
+                  "id": "prc_5756.OB002.-3776001016975145508",
                   "provider": {
-                    "id": "2751",
-                    "name": "Provident Hospital of Cook County",
+                    "object": "provider",
+                    "id": "5756",
+                    "name": "Intermountain Health Saint Joseph Hospital",
+                    "type": "Short Term Acute Care Hospital",
+                    "npi": "1417946021",
                     "address": {
-                      "city": "city",
-                      "state": "state",
-                      "zip_code": "zip_code"
+                      "city": "Denver",
+                      "state": "CO",
+                      "zip_code": "80218",
+                      "latitude": 39.745961,
+                      "longitude": -104.971559
                     }
                   },
                   "package": {
-                    "id": "RA007",
-                    "name": "MRI with Contrast"
+                    "id": "OB002",
+                    "name": "Delivery - caesarean"
                   },
                   "pricing": {
                     "type": "negotiated",
                     "network": {
-                      "id": "2010265101",
-                      "name": "Example PPO"
+                      "id": "-3776001016975145508",
+                      "name": "National OAP"
                     },
                     "payer": {
-                      "id": "643",
-                      "name": "Example Payer"
+                      "id": "76",
+                      "name": "Cigna"
                     }
                   },
                   "total": {
-                    "amount": "1250.00",
-                    "minor_units": 125000,
+                    "amount": "34705.48",
+                    "minor_units": 3470548,
                     "currency": "USD"
                   },
                   "line_items": [
                     {
-                      "code": "45385",
-                      "code_type": "HCPCS",
+                      "code": "786",
+                      "code_type": "MS-DRG",
                       "fee_type": "base_code",
-                      "description": "Colonoscopy",
-                      "association_rate": 1
+                      "description": "CESAREAN SECTION WITHOUT STERILIZATION WITH MCC",
+                      "association_rate": 0.4491
                     }
                   ]
                 }
@@ -420,10 +431,7 @@ public class V3QueryPricesTest : BaseMockServerTest
               "no_data_reason": "no_data",
               "disclosures": [
                 "disclosures"
-              ],
-              "meta": {
-                "dataset_version": "dataset_version"
-              }
+              ]
             }
             """;
 
@@ -446,11 +454,11 @@ public class V3QueryPricesTest : BaseMockServerTest
         var response = await Client.ConsumerPricing.V3QueryPricesAsync(
             new V3PricesQueryRequest
             {
-                PackageId = "RA007",
+                PackageId = "RA008",
                 Pricing = new V3PricesQueryRequestPricing(
                     new V3PricesQueryRequestPricing.Cash(new V3PricingCash())
                 ),
-                Location = new V3Location { Zip = "60644" },
+                Location = new V3Location { Zip = "80218" },
             }
         );
         Assert.That(
@@ -465,14 +473,17 @@ public class V3QueryPricesTest : BaseMockServerTest
     {
         const string requestJson = """
             {
-              "package_id": "RA007",
+              "package_id": "OB002",
               "pricing": {
-                "network_id": "network_id",
+                "network_id": "-3776001016975145508",
                 "type": "negotiated"
               },
               "location": {
                 "within": {
-                  "state": "IL"
+                  "zip_codes": [
+                    "80218",
+                    "80210"
+                  ]
                 }
               }
             }
@@ -484,43 +495,48 @@ public class V3QueryPricesTest : BaseMockServerTest
               "items": [
                 {
                   "object": "price",
-                  "id": "prc_2751.RA007.2010265101",
+                  "id": "prc_5756.OB002.-3776001016975145508",
                   "provider": {
-                    "id": "2751",
-                    "name": "Provident Hospital of Cook County",
+                    "object": "provider",
+                    "id": "5756",
+                    "name": "Intermountain Health Saint Joseph Hospital",
+                    "type": "Short Term Acute Care Hospital",
+                    "npi": "1417946021",
                     "address": {
-                      "city": "city",
-                      "state": "state",
-                      "zip_code": "zip_code"
+                      "city": "Denver",
+                      "state": "CO",
+                      "zip_code": "80218",
+                      "latitude": 39.745961,
+                      "longitude": -104.971559
                     }
                   },
                   "package": {
-                    "id": "RA007",
-                    "name": "MRI with Contrast"
+                    "id": "OB002",
+                    "name": "Delivery - caesarean"
                   },
                   "pricing": {
                     "type": "negotiated",
                     "network": {
-                      "id": "2010265101",
-                      "name": "Example PPO"
+                      "id": "-3776001016975145508",
+                      "name": "National OAP"
                     },
                     "payer": {
-                      "id": "643",
-                      "name": "Example Payer"
+                      "id": "76",
+                      "name": "Cigna"
                     }
                   },
                   "total": {
-                    "amount": "1250.00",
-                    "minor_units": 125000,
+                    "amount": "34705.48",
+                    "minor_units": 3470548,
                     "currency": "USD"
                   },
                   "line_items": [
                     {
-                      "code": "45385",
-                      "code_type": "HCPCS",
+                      "code": "786",
+                      "code_type": "MS-DRG",
                       "fee_type": "base_code",
-                      "description": "Colonoscopy",
-                      "association_rate": 1
+                      "description": "CESAREAN SECTION WITHOUT STERILIZATION WITH MCC",
+                      "association_rate": 0.4491
                     }
                   ]
                 }
@@ -533,10 +549,7 @@ public class V3QueryPricesTest : BaseMockServerTest
               "no_data_reason": "no_data",
               "disclosures": [
                 "disclosures"
-              ],
-              "meta": {
-                "dataset_version": "dataset_version"
-              }
+              ]
             }
             """;
 
@@ -559,13 +572,19 @@ public class V3QueryPricesTest : BaseMockServerTest
         var response = await Client.ConsumerPricing.V3QueryPricesAsync(
             new V3PricesQueryRequest
             {
-                PackageId = "RA007",
+                PackageId = "OB002",
                 Pricing = new V3PricesQueryRequestPricing(
                     new V3PricesQueryRequestPricing.Negotiated(
-                        new V3PricingNegotiated { NetworkId = "network_id" }
+                        new V3PricingNegotiated { NetworkId = "-3776001016975145508" }
                     )
                 ),
-                Location = new V3Location { Within = new V3LocationWithin { State = "IL" } },
+                Location = new V3Location
+                {
+                    Within = new V3LocationWithin
+                    {
+                        ZipCodes = new List<string>() { "80218", "80210" },
+                    },
+                },
             }
         );
         Assert.That(

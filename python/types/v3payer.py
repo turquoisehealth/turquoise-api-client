@@ -4,8 +4,8 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .v3match_context import V3MatchContext
 from .v3payer_object import V3PayerObject
+from .v3search_context import V3SearchContext
 
 
 class V3Payer(UniversalBaseModel):
@@ -20,7 +20,7 @@ class V3Payer(UniversalBaseModel):
     Display name; null when reference data is missing.
     """
 
-    context: typing.Optional[V3MatchContext] = pydantic.Field(default=None)
+    context: typing.Optional[V3SearchContext] = pydantic.Field(default=None)
     """
     Query-relative metadata (search only).
     """
