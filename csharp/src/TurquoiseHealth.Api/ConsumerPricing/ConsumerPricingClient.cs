@@ -115,7 +115,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -151,7 +151,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -191,7 +191,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -227,7 +227,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -271,7 +271,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -307,7 +307,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -398,7 +398,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -434,7 +434,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -478,7 +478,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -514,7 +514,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -617,7 +617,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -653,7 +653,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -699,7 +699,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -735,7 +735,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -814,7 +814,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -850,7 +850,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -894,7 +894,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -930,7 +930,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -976,7 +976,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -1012,7 +1012,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -1066,7 +1066,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -1102,7 +1102,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -1156,7 +1156,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -1192,7 +1192,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody
@@ -1244,7 +1244,7 @@ public partial class ConsumerPricingClient
             }
             catch (JsonException e)
             {
-                throw new TurquoisehealthApiException("Failed to deserialize response", e);
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
             }
         }
 
@@ -1280,7 +1280,7 @@ public partial class ConsumerPricingClient
             {
                 // unable to map error response, throwing generic error
             }
-            throw new TurquoisehealthApiApiException(
+            throw new TurquoiseHealthApiClientApiException(
                 $"Error with status code {response.StatusCode}",
                 response.StatusCode,
                 responseBody

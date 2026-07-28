@@ -2,10 +2,10 @@
 
 import type * as core from "../../core/index.js";
 import * as errors from "../../errors/index.js";
-import type * as TurquoisehealthApi from "../index.js";
+import type * as TurquoiseHealthApi from "../index.js";
 
-export class BadRequestError extends errors.TurquoisehealthApiError {
-    constructor(body: TurquoisehealthApi.V3ErrorResponse, rawResponse?: core.RawResponse) {
+export class BadRequestError extends errors.TurquoiseHealthApiError {
+    constructor(body: TurquoiseHealthApi.V3ErrorResponse, rawResponse?: core.RawResponse) {
         super({
             message: "BadRequestError",
             statusCode: 400,

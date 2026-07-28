@@ -5,7 +5,7 @@ namespace TurquoiseHealth.Api;
 /// </summary>
 [Serializable]
 public class UnprocessableEntityError(V3ErrorResponse body)
-    : TurquoisehealthApiApiException("UnprocessableEntityError", 422, body)
+    : TurquoiseHealthApiClientApiException("UnprocessableEntityError", 422, body)
 {
     /// <summary>
     /// The body of the response that triggered the exception.

@@ -8,3 +8,4 @@ src/TurquoiseHealth.Api/Lib/**
 # Protect integration tests
 tests/
 tests/**
+.github/

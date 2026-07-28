@@ -5,7 +5,7 @@ namespace TurquoiseHealth.Api;
 /// </summary>
 [Serializable]
 public class BadRequestError(V3ErrorResponse body)
-    : TurquoisehealthApiApiException("BadRequestError", 400, body)
+    : TurquoiseHealthApiClientApiException("BadRequestError", 400, body)
 {
     /// <summary>
     /// The body of the response that triggered the exception.

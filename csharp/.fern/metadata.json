@@ -4,7 +4,8 @@
   "generatorVersion": "2.11.4",
   "generatorConfig": {
     "namespace": "TurquoiseHealth.Api",
-    "packageName": "TurquoiseHealth.Api"
+    "packageName": "TurquoiseHealth.Api",
+    "client-class-name": "TurquoiseHealthApiClient"
   },
-  "originGitCommit": "81389b5bfa1d653469b16cfc1aa81bb0b7787b79"
+  "originGitCommit": "86eab771737ade8da6aca41a64f047b37b9ca08c"
 }

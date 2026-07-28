@@ -5,7 +5,7 @@ namespace TurquoiseHealth.Api;
 /// </summary>
 [Serializable]
 public class TooManyRequestsError(V3ErrorResponse body)
-    : TurquoisehealthApiApiException("TooManyRequestsError", 429, body)
+    : TurquoiseHealthApiClientApiException("TooManyRequestsError", 429, body)
 {
     /// <summary>
     /// The body of the response that triggered the exception.

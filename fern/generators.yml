@@ -22,8 +22,7 @@ groups:
           location: local-file-system
           path: ../typescript
         config:
-          naming:
-            client: TurquoiseHealthApiClient
+          namespaceExport: TurquoiseHealthApi
 
       - name: fernapi/fern-csharp-sdk
         version: 2.11.4
