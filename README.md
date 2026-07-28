@@ -48,7 +48,7 @@ export TURQUOISE_ORGANIZATION_ID="your-org-id"
 from turquoise_health import TurquoiseHealth, APIAuthHandler
 
 auth = APIAuthHandler.from_client_credentials()
-client = TurquoiseHealth(token=auth.as_callable())
+client = TurquoiseHealth(base_url="https://api.turquoise.health", token=auth.as_callable())
 ```
 
 **TypeScript:**
@@ -57,7 +57,10 @@ client = TurquoiseHealth(token=auth.as_callable())
 import { TurquoiseHealthApiClient, lib } from "@turquoisehealth/api";
 
 const auth = lib.APIAuthHandler.fromClientCredentials();
-const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
+const client = new TurquoiseHealthApiClient({
+  environment: "https://api.turquoise.health",
+  token: auth.asSupplier(),
+});
 ```
 
 **C#:**
@@ -66,7 +69,10 @@ const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
 using TurquoiseHealth.Api.Lib;
 
 var auth = APIAuthHandler.FromClientCredentials();
-var client = new TurquoiseHealthApiClient(token: auth.GetToken());
+var client = new TurquoiseHealthApiClient(auth.GetToken(), new ClientOptions
+{
+    BaseUrl = "https://api.turquoise.health"
+});
 ```
 
 > **⚠️ Important**: Create the `APIAuthHandler` instance **once** and reuse it across your application (e.g., as a singleton or module-level variable). Each auth handler maintains an in-memory token cache with automatic refresh. Creating new instances for every request will bypass the cache and unnecessarily refetch tokens from the OAuth server, leading to performance degradation and rate limiting errors.
@@ -80,48 +86,59 @@ Once you have initialized the client with an auth handler, you can begin calling
 ### Python
 
 ```python
-# Search for shoppable service packages
-ssps = client.consumer_pricing.ssps.list(query="MRI Brain")
-for ssp in ssps:
-    print(ssp.name, ssp.id)
+# Search for shoppable service packages (SSPs)
+packages = client.consumer_pricing.v3list_packages(search="MRI Brain")
+for package in packages.items:
+    print(package.name, package.id)
 
-# Get prices for a service at a location
-prices = client.consumer_pricing.prices.list(
-    ssp_id=ssps[0].id,
-    zip_code="90210",
-    network_id="your-network-id",
+# Get negotiated prices for a package near a zip code / network
+prices = client.consumer_pricing.v3query_prices(
+    package_id=packages.items[0].id,
+    pricing={"type": "negotiated", "network_id": "your-network-id"},
+    location={"zip": "90210"},
 )
-for price in prices:
-    print(price.provider_name, price.cash_pay_price, price.negotiated_price)
+for price in prices.items:
+    print(price.provider.name, price.total.amount)
 ```
 
 ### TypeScript / JavaScript
 
 ```typescript
-// Search for shoppable service packages
-const ssps = await client.consumerPricing.ssps.list({ query: "MRI Brain" });
+// Search for shoppable service packages (SSPs)
+const packages = await client.consumerPricing.v3ListPackages({ search: "MRI Brain" });
 
-// Get prices for a service at a location
-const prices = await client.consumerPricing.prices.list({
-  sspId: ssps.items[0].id,
-  zipCode: "90210",
-  networkId: "your-network-id",
+// Get negotiated prices for a package near a zip code / network
+const prices = await client.consumerPricing.v3QueryPrices({
+  package_id: packages.items[0].id,
+  pricing: { type: "negotiated", network_id: "your-network-id" },
+  location: { zip: "90210" },
 });
+
+for (const price of prices.items) {
+  console.log(price.provider.name, price.total.amount);
+}
 ```
 
 ### C\#
 
 ```csharp
-// Search for shoppable service packages
-var ssps = await client.ConsumerPricing.Ssps.ListAsync(new SspsListRequest { Query = "MRI Brain" });
+// Search for shoppable service packages (SSPs)
+var packages = await client.ConsumerPricing.V3ListPackagesAsync(new V3ListPackagesRequest { Search = "MRI Brain" });
 
-// Get prices
-var prices = await client.ConsumerPricing.Prices.ListAsync(new PricesListRequest
+// Get negotiated prices for a package near a zip code / network
+var prices = await client.ConsumerPricing.V3QueryPricesAsync(new V3PricesQueryRequest
 {
-    SspId = ssps.Items[0].Id,
-    ZipCode = "90210",
-    NetworkId = "your-network-id",
+    PackageId = packages.Items.First().Id,
+    Pricing = new V3PricesQueryRequestPricing(
+        new V3PricesQueryRequestPricing.Negotiated(new V3PricingNegotiated { NetworkId = "your-network-id" })
+    ),
+    Location = new V3Location { Zip = "90210" },
 });
+
+foreach (var price in prices.Items)
+{
+    Console.WriteLine($"{price.Provider.Name} {price.Total.Amount}");
+}
 ```
 
 ---

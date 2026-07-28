@@ -19,7 +19,7 @@ namespace TurquoiseHealth.Api.IntegrationTests;
 public class IntegrationTests
 {
     private const string BaseUrl = "https://api.turquoise.health";
-    private TurquoisehealthApiClient? _client;
+    private TurquoiseHealthApiClient? _client;
     private readonly string? _apiToken = Environment.GetEnvironmentVariable("TURQUOISE_API_TOKEN");
 
     [SetUp]
@@ -30,24 +30,19 @@ public class IntegrationTests
             Assert.Ignore("TURQUOISE_API_TOKEN environment variable not set");
         }
 
-        _client = new TurquoisehealthApiClient(_apiToken, new ClientOptions
+        _client = new TurquoiseHealthApiClient(_apiToken, new ClientOptions
         {
             BaseUrl = BaseUrl
         });
     }
 
-    #region V1 Endpoints
-    // V1 endpoints have been removed. Only V2 and V3 endpoints are available.
-    // See V2 Endpoints section below for updated tests.
-    #endregion
-
-    #region V2 Endpoints
+    #region V3 Endpoints
 
     [Test]
-    public async Task V2ListSsps_ShouldReturnResults()
+    public async Task V3ListPackages_ShouldReturnResults()
     {
         // Arrange & Act
-        var response = await _client!.ConsumerPricing.V2ListSspsAsync(new V2ListSspsRequest
+        var response = await _client!.ConsumerPricing.V3ListPackagesAsync(new V3ListPackagesRequest
         {
             PageSize = 5
         });
@@ -58,19 +53,19 @@ public class IntegrationTests
         Assert.That(response.Items, Is.Not.Empty);
         Assert.That(response.Page, Is.Not.Null);
 
-        // Verify SSP structure
-        var ssp = response.Items.First();
-        Assert.That(ssp.Id, Is.Not.Null);
-        Assert.That(ssp.Name, Is.Not.Null);
+        // Verify package structure
+        var package = response.Items.First();
+        Assert.That(package.Id, Is.Not.Null);
+        Assert.That(package.Name, Is.Not.Null);
 
-        Console.WriteLine($"✓ V2: Retrieved {response.Items.Count()} SSPs");
+        Console.WriteLine($"✓ V3: Retrieved {response.Items.Count()} packages");
     }
 
     [Test]
-    public async Task V2ListNetworks_ShouldReturnResults()
+    public async Task V3ListNetworks_ShouldReturnResults()
     {
         // Arrange & Act
-        var response = await _client!.ConsumerPricing.V2ListNetworksAsync(new V2ListNetworksRequest
+        var response = await _client!.ConsumerPricing.V3ListNetworksAsync(new V3ListNetworksRequest
         {
             PageSize = 5
         });
@@ -85,16 +80,16 @@ public class IntegrationTests
         var network = response.Items.First();
         Assert.That(network.Id, Is.Not.Null);
 
-        Console.WriteLine($"✓ V2: Retrieved {response.Items.Count()} networks");
+        Console.WriteLine($"✓ V3: Retrieved {response.Items.Count()} networks");
     }
 
     [Test]
-    public async Task V2ListProviders_ShouldReturnResults()
+    public async Task V3ListProviders_ShouldReturnResults()
     {
         // Arrange & Act
-        var response = await _client!.ConsumerPricing.V2ListProvidersAsync(new V2ListProvidersRequest
+        var response = await _client!.ConsumerPricing.V3ListProvidersAsync(new V3ListProvidersRequest
         {
-            WithinState = "CA",
+            LocationWithinState = "CA",
             PageSize = 5
         });
 
@@ -108,7 +103,7 @@ public class IntegrationTests
         var provider = response.Items.First();
         Assert.That(provider.Id, Is.Not.Null);
 
-        Console.WriteLine($"✓ V2: Retrieved {response.Items.Count()} providers");
+        Console.WriteLine($"✓ V3: Retrieved {response.Items.Count()} providers");
     }
 
     #endregion

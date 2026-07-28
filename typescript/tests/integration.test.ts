@@ -12,7 +12,7 @@
  *   npm test
  */
 
-import { TurquoisehealthApiClient } from "../index";
+import { TurquoiseHealthApiClient } from "../index";
 
 // Check if API token is available
 const API_TOKEN = process.env.TURQUOISE_API_TOKEN;
@@ -22,7 +22,7 @@ const BASE_URL = "https://api.turquoise.health";
 const describeIfToken = API_TOKEN ? describe : describe.skip;
 
 describe("Turquoise Health API TypeScript Client", () => {
-  let client: TurquoisehealthApiClient;
+  let client: TurquoiseHealthApiClient;
 
   beforeAll(() => {
     if (!API_TOKEN) {
@@ -30,15 +30,15 @@ describe("Turquoise Health API TypeScript Client", () => {
       return;
     }
 
-    client = new TurquoisehealthApiClient({
+    client = new TurquoiseHealthApiClient({
       environment: BASE_URL,
       token: API_TOKEN
     });
   });
 
-  describeIfToken("V2 Endpoints", () => {
-    test("v2ListSsps - list shoppable service packages", async () => {
-      const response = await client.consumerPricing.v2ListSsps({
+  describeIfToken("V3 Endpoints", () => {
+    test("v3ListPackages - list shoppable service packages", async () => {
+      const response = await client.consumerPricing.v3ListPackages({
         page_size: 5
       });
 
@@ -50,16 +50,16 @@ describe("Turquoise Health API TypeScript Client", () => {
       // Verify we got results
       expect(response.items.length).toBeGreaterThan(0);
 
-      // Verify SSP structure
-      const ssp = response.items[0];
-      expect(ssp.id).toBeDefined();
-      expect(ssp.name).toBeDefined();
+      // Verify package structure
+      const pkg = response.items[0];
+      expect(pkg.id).toBeDefined();
+      expect(pkg.name).toBeDefined();
 
-      console.log(`✓ Retrieved ${response.items.length} SSPs`);
+      console.log(`✓ Retrieved ${response.items.length} packages`);
     }, 30000);
 
-    test("v2ListSsps - search by keyword", async () => {
-      const response = await client.consumerPricing.v2ListSsps({
+    test("v3ListPackages - search by keyword", async () => {
+      const response = await client.consumerPricing.v3ListPackages({
         search: "MRI",
         page_size: 5
       });
@@ -67,11 +67,11 @@ describe("Turquoise Health API TypeScript Client", () => {
       expect(response).toBeDefined();
       expect(response.items).toBeInstanceOf(Array);
 
-      console.log(`✓ Search returned ${response.items.length} SSPs`);
+      console.log(`✓ Search returned ${response.items.length} packages`);
     }, 30000);
 
-    test("v2ListNetworks - list insurance networks", async () => {
-      const response = await client.consumerPricing.v2ListNetworks({
+    test("v3ListNetworks - list insurance networks", async () => {
+      const response = await client.consumerPricing.v3ListNetworks({
         page_size: 5
       });
 
@@ -90,9 +90,9 @@ describe("Turquoise Health API TypeScript Client", () => {
       console.log(`✓ Retrieved ${response.items.length} insurance networks`);
     }, 30000);
 
-    test("v2ListProviders - list healthcare providers", async () => {
-      const response = await client.consumerPricing.v2ListProviders({
-        "within.state": "CA",
+    test("v3ListProviders - list healthcare providers", async () => {
+      const response = await client.consumerPricing.v3ListProviders({
+        "location.within.state": "CA",
         page_size: 5
       });
 
