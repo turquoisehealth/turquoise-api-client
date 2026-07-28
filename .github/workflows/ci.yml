@@ -26,12 +26,15 @@ jobs:
 
       - name: Install tools
         run: dotnet tool restore
+        working-directory: csharp
 
       - name: Restore dependencies
         run: dotnet restore src/TurquoiseHealth.Api/TurquoiseHealth.Api.csproj
+        working-directory: csharp
 
       - name: Build Release
         run: dotnet build src/TurquoiseHealth.Api/TurquoiseHealth.Api.csproj -c Release --no-restore
+        working-directory: csharp
 
   unit-tests:
     runs-on: ubuntu-latest
@@ -51,14 +54,18 @@ jobs:
       - name: Install tools
         run: |
           dotnet tool restore
+        working-directory: csharp
 
       - name: Restore dependencies
         run: dotnet restore src/TurquoiseHealth.Api.Test/TurquoiseHealth.Api.Test.csproj
+        working-directory: csharp
 
       - name: Build Release
         run: dotnet build src/TurquoiseHealth.Api.Test/TurquoiseHealth.Api.Test.csproj -c Release --no-restore
+        working-directory: csharp
 
       - name: Run Tests
         run: dotnet test src/TurquoiseHealth.Api.Test/TurquoiseHealth.Api.Test.csproj -c Release --no-build --no-restore
+        working-directory: csharp
 
 
