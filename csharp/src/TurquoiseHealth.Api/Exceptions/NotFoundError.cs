@@ -5,7 +5,7 @@ namespace TurquoiseHealth.Api;
 /// </summary>
 [Serializable]
 public class NotFoundError(V3ErrorResponse body)
-    : TurquoisehealthApiApiException("NotFoundError", 404, body)
+    : TurquoiseHealthApiClientApiException("NotFoundError", 404, body)
 {
     /// <summary>
     /// The body of the response that triggered the exception.

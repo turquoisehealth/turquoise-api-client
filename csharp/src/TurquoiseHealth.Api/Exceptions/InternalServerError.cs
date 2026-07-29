@@ -5,7 +5,7 @@ namespace TurquoiseHealth.Api;
 /// </summary>
 [Serializable]
 public class InternalServerError(V3ErrorResponse body)
-    : TurquoisehealthApiApiException("InternalServerError", 500, body)
+    : TurquoiseHealthApiClientApiException("InternalServerError", 500, body)
 {
     /// <summary>
     /// The body of the response that triggered the exception.

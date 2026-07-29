@@ -1,2 +1,2 @@
-export { TurquoisehealthApiError } from "./TurquoisehealthApiError.js";
-export { TurquoisehealthApiTimeoutError } from "./TurquoisehealthApiTimeoutError.js";
+export { TurquoiseHealthApiError } from "./TurquoiseHealthApiError.js";
+export { TurquoiseHealthApiTimeoutError } from "./TurquoiseHealthApiTimeoutError.js";
