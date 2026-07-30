@@ -1,7 +1,6 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
     "moduleResolution": "bundler",
     "types": ["jest", "node"],
     "lib": ["ES2020", "DOM"]

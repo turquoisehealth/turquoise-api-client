@@ -21,15 +21,18 @@
     "moduleNameMapper": {
       "^(\\.{1,2}/.*)\\.js$": "$1"
     },
-    "globals": {
-      "ts-jest": {
-        "isolatedModules": true,
-        "tsconfig": {
-          "esModuleInterop": true,
-          "lib": ["ES2020", "DOM"],
-          "types": ["jest", "node"]
+    "transform": {
+      "^.+\\.tsx?$": [
+        "ts-jest",
+        {
+          "isolatedModules": true,
+          "tsconfig": {
+            "esModuleInterop": true,
+            "lib": ["ES2020", "DOM"],
+            "types": ["jest", "node"]
+          }
         }
-      }
+      ]
     }
   }
 }
