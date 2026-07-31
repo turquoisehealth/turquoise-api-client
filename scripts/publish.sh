@@ -2,14 +2,41 @@
 set -e
 
 # Script to tag and publish SDKs
-# Usage: ./scripts/publish.sh v3.2.0
+# Usage: ./scripts/publish.sh [version]
+# If version is not provided, reads from openapi.json
 
 VERSION=$1
 
 if [ -z "$VERSION" ]; then
-  echo "Usage: $0 <version>"
-  echo "Example: $0 v3.2.0"
-  exit 1
+  echo "No version provided, reading from openapi.json..."
+
+  # Extract version from openapi.json using grep and sed
+  if [ ! -f "openapi.json" ]; then
+    echo "Error: openapi.json not found"
+    exit 1
+  fi
+
+  # Extract version field (handles both jq-style and manual parsing)
+  if command -v jq >/dev/null 2>&1; then
+    VERSION=$(jq -r '.info.version' openapi.json)
+  else
+    # Fallback: use grep and sed if jq is not available
+    VERSION=$(grep -A 2 '"version"' openapi.json | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)
+  fi
+
+  if [ -z "$VERSION" ]; then
+    echo "Error: Could not extract version from openapi.json"
+    echo "Usage: $0 <version>"
+    echo "Example: $0 v3.2.0"
+    exit 1
+  fi
+
+  # Add 'v' prefix if not present
+  if [[ ! "$VERSION" =~ ^v ]]; then
+    VERSION="v$VERSION"
+  fi
+
+  echo "Using version from openapi.json: $VERSION"
 fi
 
 # Ensure version starts with 'v'
