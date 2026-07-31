@@ -52,17 +52,6 @@ jobs:
         with:
           dotnet-version: "8.x"
 
-      - name: Install Fern CLI
-        run: npm install -g fern-api
-
-      - name: Regenerate SDKs at this tag
-        run: fern generate
-        env:
-          FERN_TOKEN: ${{ secrets.FERN_TOKEN }}
-
-      - name: Update library exports
-        run: python3 scripts/update_lib_exports.py
-
       - name: Stamp package versions
         run: |
           VERSION="${{ steps.release_type.outputs.version }}"
