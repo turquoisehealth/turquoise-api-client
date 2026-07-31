@@ -18,7 +18,7 @@ help:
 	@echo "  make install-test-deps - Install test dependencies for all languages"
 	@echo "  make update-lib-exports - Update SDK exports after Fern generation"
 	@echo "  make generate          - Regenerate SDKs from openapi.json (requires FERN_TOKEN)"
-	@echo "  make publish VERSION=v1.0.0 - Tag and publish SDKs to registries"
+	@echo "  make publish [VERSION=v1.0.0] - Tag and publish SDKs (reads from openapi.json by default)"
 	@echo "  make clean            - Clean test artifacts"
 	@echo ""
 	@echo "Prerequisites:"
@@ -98,10 +98,6 @@ generate:
 	@./scripts/generate.sh
 
 # Publish SDKs by creating and pushing a version tag
+# Reads version from openapi.json by default, or use VERSION=v1.0.0 to override
 publish:
-	@if [ -z "$(VERSION)" ]; then \
-		echo "Error: VERSION is required"; \
-		echo "Usage: make publish VERSION=v3.2.0"; \
-		exit 1; \
-	fi
 	@./scripts/publish.sh $(VERSION)
