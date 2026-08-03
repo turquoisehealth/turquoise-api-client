@@ -160,12 +160,6 @@ This repository is meant to be read directly by coding agents, not just humans:
 
 ---
 
-## API Reference
-
-Full endpoint documentation: **[turquoise.health/api/docs/getting-started/](https://turquoise.health/api/docs/getting-started/)**
-
----
-
 ## Versioning
 
 This library follows [Semantic Versioning](https://semver.org). The SDK version tracks the API version; breaking API changes increment the major version.
