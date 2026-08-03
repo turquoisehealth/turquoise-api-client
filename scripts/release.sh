@@ -2,7 +2,7 @@
 set -e
 
 # Script to tag and publish SDKs
-# Usage: ./scripts/publish.sh [version]
+# Usage: ./scripts/release.sh [version]
 # If version is not provided, reads from openapi.json
 
 VERSION=$1
