@@ -143,6 +143,30 @@ foreach (var price in prices.Items)
 
 ---
 
+## Examples
+
+Runnable examples for every language live under [`examples/`](examples/):
+
+| File | Demonstrates |
+| --- | --- |
+| `examples/python/python_auth_examples.py`, `examples/typescript/typescript_auth_examples.ts`, `examples/csharp/csharp_auth_examples.cs` | Every `APIAuthHandler` pattern: static token, environment variable, dynamic/async token provider, and OAuth client-credentials auto-refresh. |
+| `examples/python/python_custom_libs.py`, `examples/typescript/typescript_custom_libs.ts`, `examples/csharp/csharp_custom_libs.cs` | The recommended setup end-to-end — one shared auth handler, then a package search followed by a price query. |
+
+Each file runs on its own (`python examples/python/python_custom_libs.py`, etc.) with placeholder credentials, so you can see the shape of a real run before wiring in your own.
+
+---
+
+## For AI coding assistants
+
+This repository is meant to be read directly by coding agents, not just humans:
+
+- **Copy from `examples/`, not from memory.** The auth-handler and request patterns above are duplicated there in complete, runnable files — prefer reading them over reconstructing a call from partial context.
+- **`openapi.json`** at the repository root is the full machine-readable API schema (every endpoint, request/response shape, and field description) if you need more than the SDK's typed methods surface.
+- **The hosted docs have an LLM-native mirror.** [turquoise.health/api/docs/llms.txt](https://turquoise.health/api/docs/llms.txt) indexes every docs section, and [llms-full.txt](https://turquoise.health/api/docs/llms-full.txt) inlines all of them as Markdown in one file — useful context to fetch before proposing an integration.
+- **Don't invent endpoints or fields.** The Fern-generated code (everything outside `lib/`) is the source of truth for what the API actually accepts; if a method or field isn't in the generated client or `openapi.json`, it doesn't exist yet.
+
+---
+
 ## API Reference
 
 Full endpoint documentation: **[turquoise.health/api/docs/getting-started/](https://turquoise.health/api/docs/getting-started/)**
