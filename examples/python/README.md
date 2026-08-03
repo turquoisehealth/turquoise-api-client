@@ -1,0 +1,19 @@
+# Python example api client project starter
+
+Example project using [`turquoise-health`](https://pypi.org/project/turquoise-health/).
+
+## Setup
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env
+# fill in TURQUOISE_CLIENT_ID / TURQUOISE_CLIENT_SECRET / TURQUOISE_ORGANIZATION_ID in .env
+```
+
+## Run
+
+```bash
+python main.py
+```
+
+Runs [main.py](main.py), which searches for a service package and lists prices for it.
