@@ -8,6 +8,9 @@ src/TurquoiseHealth.Api/Lib/**
 # Protect custom MSBuild properties
 src/TurquoiseHealth.Api/TurquoiseHealth.Api.Custom.props
 
+# Protect README symlink
+README.md
+
 # Protect integration tests
 tests/
 tests/**
