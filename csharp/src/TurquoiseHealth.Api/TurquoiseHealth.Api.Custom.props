@@ -15,5 +15,9 @@ Configure additional MSBuild properties for your project in this file:
     <RepositoryUrl>https://github.com/turquoisehealth/turquoise-api-client</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+  <ItemGroup>
+    <None Include="../../../README.md" Pack="true" PackagePath="" />
+  </ItemGroup>
 </Project>
