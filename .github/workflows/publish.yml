@@ -142,10 +142,18 @@ jobs:
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
 
+      - name: NuGet login (OIDC)
+        if: env.NUGET_API_KEY == ''
+        uses: NuGet/login@v1
+        id: nuget_login
+        with:
+          user: devops-turquoise
+
       - name: Publish to NuGet with OIDC
         if: env.NUGET_API_KEY == ''
         working-directory: csharp
         run: |
           dotnet nuget push **/*.nupkg \
             --source https://api.nuget.org/v3/index.json \
+            --api-key ${{ steps.nuget_login.outputs.NUGET_API_KEY }} \
             --skip-duplicate
