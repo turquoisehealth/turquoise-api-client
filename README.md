@@ -145,14 +145,7 @@ foreach (var price in prices.Items)
 
 ## Examples
 
-Runnable examples for every language live under [`examples/`](examples/):
-
-| File | Demonstrates |
-| --- | --- |
-| `examples/python/python_auth_examples.py`, `examples/typescript/typescript_auth_examples.ts`, `examples/csharp/csharp_auth_examples.cs` | Every `APIAuthHandler` pattern: static token, environment variable, dynamic/async token provider, and OAuth client-credentials auto-refresh. |
-| `examples/python/python_custom_libs.py`, `examples/typescript/typescript_custom_libs.ts`, `examples/csharp/csharp_custom_libs.cs` | The recommended setup end-to-end — one shared auth handler, then a package search followed by a price query. |
-
-Each file runs on its own (`python examples/python/python_custom_libs.py`, etc.) with placeholder credentials, so you can see the shape of a real run before wiring in your own.
+Runnable, language specific, example projects live under [`examples/`](examples/):
 
 ---
 

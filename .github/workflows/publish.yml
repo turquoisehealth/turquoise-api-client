@@ -14,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write  # Required for NuGet OIDC trusted publishing
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -99,23 +100,19 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish C# SDK to NuGet (production)
-        if: env.NUGET_API_KEY != '' && steps.release_type.outputs.type == 'production'
+        if: steps.release_type.outputs.type == 'production'
         working-directory: csharp
         run: |
           dotnet build --configuration Release
           dotnet nuget push **/*.nupkg \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
-            --source https://api.nuget.org/v3/index.json
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
 
       - name: Publish C# SDK to NuGet (dev)
-        if: env.NUGET_API_KEY != '' && steps.release_type.outputs.type == 'dev'
+        if: steps.release_type.outputs.type == 'dev'
         working-directory: csharp
         run: |
           dotnet build --configuration Release
           dotnet nuget push **/*.nupkg \
-            --api-key ${{ secrets.NUGET_API_KEY }} \
-            --source https://api.nuget.org/v3/index.json
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+            --source https://api.nuget.org/v3/index.json \
+            --skip-duplicate
