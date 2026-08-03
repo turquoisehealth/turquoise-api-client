@@ -192,6 +192,10 @@ jobs:
         with:
           dotnet-version: "8.x"
 
+      - name: Copy README for NuGet package
+        run: |
+          cp README.md csharp/README.md
+
       - name: Pack NuGet package
         working-directory: csharp
         run: |
