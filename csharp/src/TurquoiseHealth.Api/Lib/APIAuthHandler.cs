@@ -165,7 +165,7 @@ public class APIAuthHandler
         // Static token takes precedence
         if (!string.IsNullOrEmpty(_token))
         {
-            return _token;
+            return _token!;
         }
 
         // Custom provider

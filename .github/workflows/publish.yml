@@ -103,7 +103,7 @@ jobs:
         if: steps.release_type.outputs.type == 'production'
         working-directory: csharp
         run: |
-          dotnet build --configuration Release
+          dotnet pack --configuration Release -p:Version=${{ steps.release_type.outputs.version }}
           dotnet nuget push **/*.nupkg \
             --source https://api.nuget.org/v3/index.json \
             --skip-duplicate
@@ -112,7 +112,7 @@ jobs:
         if: steps.release_type.outputs.type == 'dev'
         working-directory: csharp
         run: |
-          dotnet build --configuration Release
+          dotnet pack --configuration Release -p:Version=${{ steps.release_type.outputs.version }}
           dotnet nuget push **/*.nupkg \
             --source https://api.nuget.org/v3/index.json \
             --skip-duplicate
