@@ -126,10 +126,26 @@ jobs:
         with:
           dotnet-version: "8.x"
 
-      - name: Pack and publish to NuGet
+      - name: Pack NuGet package
         working-directory: csharp
         run: |
           dotnet pack --configuration Release -p:Version=${{ needs.prepare.outputs.version }}
+
+      - name: Publish to NuGet with API key
+        if: env.NUGET_API_KEY != ''
+        working-directory: csharp
+        run: |
+          dotnet nuget push **/*.nupkg \
+            --source https://api.nuget.org/v3/index.json \
+            --api-key "$NUGET_API_KEY" \
+            --skip-duplicate
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
+
+      - name: Publish to NuGet with OIDC
+        if: env.NUGET_API_KEY == ''
+        working-directory: csharp
+        run: |
           dotnet nuget push **/*.nupkg \
             --source https://api.nuget.org/v3/index.json \
             --skip-duplicate
