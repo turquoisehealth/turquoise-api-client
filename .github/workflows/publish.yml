@@ -7,6 +7,29 @@ on:
     branches:
       - main
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (e.g., 3.2.55 or 0.0.0-dev.abc123)'
+        required: true
+        type: string
+      release_type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - production
+          - dev
+        default: production
+      sdk:
+        description: 'SDK to publish'
+        required: true
+        type: choice
+        options:
+          - all
+          - python
+          - typescript
+          - csharp
+        default: all
 
 jobs:
   prepare:
@@ -16,16 +39,53 @@ jobs:
       version: ${{ steps.release_type.outputs.version }}
       release_type: ${{ steps.release_type.outputs.type }}
       npm_tag: ${{ steps.release_type.outputs.npm_tag }}
+      publish_python: ${{ steps.release_type.outputs.publish_python }}
+      publish_typescript: ${{ steps.release_type.outputs.publish_typescript }}
+      publish_csharp: ${{ steps.release_type.outputs.publish_csharp }}
     steps:
       - name: Determine release type
         id: release_type
         run: |
-          if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+          # Handle workflow_dispatch (manual trigger)
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+            echo "type=${{ inputs.release_type }}" >> $GITHUB_OUTPUT
+
+            if [[ "${{ inputs.release_type }}" == "production" ]]; then
+              echo "npm_tag=latest" >> $GITHUB_OUTPUT
+            else
+              echo "npm_tag=dev" >> $GITHUB_OUTPUT
+            fi
+
+            # Determine which SDKs to publish
+            if [[ "${{ inputs.sdk }}" == "all" || "${{ inputs.sdk }}" == "python" ]]; then
+              echo "publish_python=true" >> $GITHUB_OUTPUT
+            else
+              echo "publish_python=false" >> $GITHUB_OUTPUT
+            fi
+
+            if [[ "${{ inputs.sdk }}" == "all" || "${{ inputs.sdk }}" == "typescript" ]]; then
+              echo "publish_typescript=true" >> $GITHUB_OUTPUT
+            else
+              echo "publish_typescript=false" >> $GITHUB_OUTPUT
+            fi
+
+            if [[ "${{ inputs.sdk }}" == "all" || "${{ inputs.sdk }}" == "csharp" ]]; then
+              echo "publish_csharp=true" >> $GITHUB_OUTPUT
+            else
+              echo "publish_csharp=false" >> $GITHUB_OUTPUT
+            fi
+          # Handle tag push (automatic production release)
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
             echo "type=production" >> $GITHUB_OUTPUT
             echo "npm_tag=latest" >> $GITHUB_OUTPUT
             VERSION="${{ github.ref_name }}"
             VERSION="${VERSION#v}"  # Strip 'v' prefix
             echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "publish_python=true" >> $GITHUB_OUTPUT
+            echo "publish_typescript=true" >> $GITHUB_OUTPUT
+            echo "publish_csharp=true" >> $GITHUB_OUTPUT
+          # Handle branch push (automatic dev release)
           else
             echo "type=dev" >> $GITHUB_OUTPUT
             echo "npm_tag=dev" >> $GITHUB_OUTPUT
@@ -33,12 +93,16 @@ jobs:
             SHORT_SHA="${SHORT_SHA:0:7}"
             DEV_VERSION="0.0.0-dev.${SHORT_SHA}"
             echo "version=$DEV_VERSION" >> $GITHUB_OUTPUT
+            echo "publish_python=true" >> $GITHUB_OUTPUT
+            echo "publish_typescript=true" >> $GITHUB_OUTPUT
+            echo "publish_csharp=true" >> $GITHUB_OUTPUT
           fi
 
   publish-python:
     name: Publish Python SDK
     runs-on: ubuntu-latest
     needs: prepare
+    if: needs.prepare.outputs.publish_python == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,7 +122,7 @@ jobs:
         run: |
           pip install build twine
           python -m build
-          twine upload dist/*
+          twine upload dist/* --skip-existing
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
@@ -69,7 +133,7 @@ jobs:
         run: |
           pip install build twine
           python -m build
-          twine upload --repository testpypi dist/*
+          twine upload --repository testpypi dist/* --skip-existing
         env:
           TWINE_USERNAME: __token__
           TWINE_PASSWORD: ${{ secrets.TESTPYPI_TOKEN }}
@@ -78,6 +142,7 @@ jobs:
     name: Publish TypeScript SDK
     runs-on: ubuntu-latest
     needs: prepare
+    if: needs.prepare.outputs.publish_typescript == 'true'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -114,6 +179,7 @@ jobs:
     name: Publish C# SDK
     runs-on: ubuntu-latest
     needs: prepare
+    if: needs.prepare.outputs.publish_csharp == 'true'
     permissions:
       contents: read
       id-token: write  # Required for NuGet OIDC trusted publishing
@@ -126,31 +192,22 @@ jobs:
         with:
           dotnet-version: "8.x"
 
+      - name: Copy README for NuGet package
+        run: |
+          cp README.md csharp/README.md
+
       - name: Pack NuGet package
         working-directory: csharp
         run: |
           dotnet pack --configuration Release -p:Version=${{ needs.prepare.outputs.version }}
 
-      - name: Publish to NuGet with API key
-        if: env.NUGET_API_KEY != ''
-        working-directory: csharp
-        run: |
-          dotnet nuget push **/*.nupkg \
-            --source https://api.nuget.org/v3/index.json \
-            --api-key "$NUGET_API_KEY" \
-            --skip-duplicate
-        env:
-          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
-
       - name: NuGet login (OIDC)
-        if: env.NUGET_API_KEY == ''
         uses: NuGet/login@v1
         id: nuget_login
         with:
           user: devops-turquoise
 
       - name: Publish to NuGet with OIDC
-        if: env.NUGET_API_KEY == ''
         working-directory: csharp
         run: |
           dotnet nuget push **/*.nupkg \
