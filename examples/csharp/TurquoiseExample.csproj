@@ -2,13 +2,24 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- Set to true to use local SDK code, false to use published NuGet package -->
+    <UseLocalSdk>true</UseLocalSdk>
   </PropertyGroup>
 
+  <!-- Use local project reference when UseLocalSdk is true -->
+  <ItemGroup Condition="'$(UseLocalSdk)' == 'true'">
+    <ProjectReference Include="..\..\csharp\src\TurquoiseHealth.Api\TurquoiseHealth.Api.csproj" />
+  </ItemGroup>
+
+  <!-- Use published NuGet package when UseLocalSdk is not true -->
+  <ItemGroup Condition="'$(UseLocalSdk)' != 'true'">
+    <PackageReference Include="TurquoiseHealth.Api" Version="3.2.56" />
+  </ItemGroup>
+
   <ItemGroup>
-    <PackageReference Include="TurquoiseHealth.Api" Version="3.2.55" />
     <PackageReference Include="DotNetEnv" Version="3.1.1" />
   </ItemGroup>
 
