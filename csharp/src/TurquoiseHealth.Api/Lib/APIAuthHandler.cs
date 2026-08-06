@@ -5,6 +5,7 @@ using System;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace TurquoiseHealth.Api.Lib;
@@ -254,7 +255,10 @@ public class APIAuthHandler
 
     private class OAuthTokenResponse
     {
+        [JsonPropertyName("access_token")]
         public string? AccessToken { get; set; }
+
+        [JsonPropertyName("expires_in")]
         public int? ExpiresIn { get; set; }
     }
 }
