@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <!-- Set to true to use local SDK code, false to use published NuGet package -->
-    <UseLocalSdk>true</UseLocalSdk>
+    <UseLocalSdk>false</UseLocalSdk>
   </PropertyGroup>
 
   <!-- Use local project reference when UseLocalSdk is true -->
@@ -16,7 +16,7 @@
 
   <!-- Use published NuGet package when UseLocalSdk is not true -->
   <ItemGroup Condition="'$(UseLocalSdk)' != 'true'">
-    <PackageReference Include="TurquoiseHealth.Api" Version="3.2.56" />
+    <PackageReference Include="TurquoiseHealth.Api" Version="3.2.57" />
   </ItemGroup>
 
   <ItemGroup>
