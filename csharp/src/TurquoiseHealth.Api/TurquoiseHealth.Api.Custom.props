@@ -15,5 +15,7 @@ Configure additional MSBuild properties for your project in this file:
     <RepositoryUrl>https://github.com/turquoisehealth/turquoise-api-client</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+    <!-- Override target frameworks to include .NET 10 -->
+    <TargetFrameworks>net462;net10.0;net8.0;net7.0;net6.0;netstandard2.0</TargetFrameworks>
   </PropertyGroup>
 </Project>
