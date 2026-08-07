@@ -1,6 +1,6 @@
 # Turquoise Health API Client
 
-[![PyPI](https://img.shields.io/pypi/v/turquoisehealth-api)](https://pypi.org/project/turquoisehealth-api/)
+[![PyPI](https://img.shields.io/pypi/v/turquoisehealth_api)](https://pypi.org/project/turquoisehealth-api/)
 [![npm](https://img.shields.io/npm/v/@turquoisehealth/api)](https://www.npmjs.com/package/@turquoisehealth/api)
 [![NuGet](https://img.shields.io/nuget/v/TurquoiseHealth.Api)](https://www.nuget.org/packages/TurquoiseHealth.Api)
 
