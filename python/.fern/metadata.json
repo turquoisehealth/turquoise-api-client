@@ -3,7 +3,7 @@
   "generatorName": "fernapi/fern-python-sdk",
   "generatorVersion": "4.46.3",
   "generatorConfig": {
-    "package_name": "turquoise-health",
+    "package_name": "turquoisehealth-api",
     "client_class_name": "TurquoiseHealth"
   },
   "originGitCommit": "6a20f0560659bc9be5f149214855c1e7fc0e6574"

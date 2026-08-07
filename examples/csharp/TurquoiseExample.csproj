@@ -16,7 +16,7 @@
 
   <!-- Use published NuGet package when UseLocalSdk is not true -->
   <ItemGroup Condition="'$(UseLocalSdk)' != 'true'">
-    <PackageReference Include="TurquoiseHealth.Api" Version="3.2.57" />
+    <PackageReference Include="TurquoiseHealth.Api" Version="3.2.58" />
   </ItemGroup>
 
   <ItemGroup>

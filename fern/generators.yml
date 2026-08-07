@@ -13,7 +13,7 @@ groups:
           location: local-file-system
           path: ../python
         config:
-          package_name: turquoise-health
+          package_name: turquoisehealth-api
           client_class_name: TurquoiseHealth
 
       - name: fernapi/fern-typescript-node-sdk

@@ -1,2 +1,2 @@
-turquoise-health
+turquoisehealth-api
 python-dotenv
