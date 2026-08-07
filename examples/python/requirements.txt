@@ -1,2 +1,2 @@
-turquoisehealth-api
+turquoisehealth-api==3.2.58
 python-dotenv

@@ -125,7 +125,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3list_providers()
@@ -168,7 +168,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3get_provider_types()
@@ -197,7 +197,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3get_provider(provider_id='5756', )
@@ -267,7 +267,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3list_payers()
@@ -308,7 +308,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3get_payer(payer_id='76', )
@@ -390,7 +390,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3list_networks()
@@ -434,7 +434,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3get_network(network_id='-3776001016975145508', )
@@ -497,7 +497,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3list_packages()
@@ -535,7 +535,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3get_package(package_id='OB002', )
@@ -564,7 +564,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3list_package_line_items(package_id='OB002', )
@@ -604,8 +604,8 @@ class ConsumerPricingClient:
         
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
-        from turquoise-health.consumer_pricing import \
+        from turquoisehealth-api import TurquoiseHealth
+        from turquoisehealth-api.consumer_pricing import \
             V3PricesCompareRequestPricing_Negotiated
         
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
@@ -666,8 +666,8 @@ class ConsumerPricingClient:
         
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
-        from turquoise-health.consumer_pricing import \
+        from turquoisehealth-api import TurquoiseHealth
+        from turquoisehealth-api.consumer_pricing import \
             V3PricesQueryRequestPricing_Negotiated
         
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
@@ -714,7 +714,7 @@ class ConsumerPricingClient:
 
         Examples
         --------
-        from turquoise-health import TurquoiseHealth
+        from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         client.consumer_pricing.v3get_price(price_id='prc_5756.OB002.-3776001016975145508', )
@@ -822,7 +822,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
@@ -871,7 +871,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
@@ -904,7 +904,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
@@ -978,7 +978,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
@@ -1023,7 +1023,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
@@ -1109,7 +1109,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
@@ -1159,7 +1159,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
@@ -1226,7 +1226,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
@@ -1270,7 +1270,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
@@ -1303,7 +1303,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
@@ -1347,8 +1347,8 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
         
-        from turquoise-health import AsyncTurquoiseHealth
-        from turquoise-health.consumer_pricing import \
+        from turquoisehealth-api import AsyncTurquoiseHealth
+        from turquoisehealth-api.consumer_pricing import \
             V3PricesCompareRequestPricing_Negotiated
         
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
@@ -1413,8 +1413,8 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
         
-        from turquoise-health import AsyncTurquoiseHealth
-        from turquoise-health.consumer_pricing import \
+        from turquoisehealth-api import AsyncTurquoiseHealth
+        from turquoisehealth-api.consumer_pricing import \
             V3PricesQueryRequestPricing_Negotiated
         
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
@@ -1465,7 +1465,7 @@ class AsyncConsumerPricingClient:
         --------
         import asyncio
 
-        from turquoise-health import AsyncTurquoiseHealth
+        from turquoisehealth-api import AsyncTurquoiseHealth
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
         async def main() -> None:
