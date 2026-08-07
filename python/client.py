@@ -35,7 +35,7 @@ class TurquoiseHealth:
 
     Examples
     --------
-    from turquoise-health import TurquoiseHealth
+    from turquoisehealth-api import TurquoiseHealth
 
     client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
     """
@@ -99,7 +99,7 @@ class AsyncTurquoiseHealth:
 
     Examples
     --------
-    from turquoise-health import AsyncTurquoiseHealth
+    from turquoisehealth-api import AsyncTurquoiseHealth
 
     client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
     """
