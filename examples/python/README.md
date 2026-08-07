@@ -5,6 +5,8 @@ Example project using [`turquoisehealth-api`](https://pypi.org/project/turquoise
 ## Setup
 
 ```bash
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 # fill in TURQUOISE_CLIENT_ID / TURQUOISE_CLIENT_SECRET / TURQUOISE_ORGANIZATION_ID in .env
