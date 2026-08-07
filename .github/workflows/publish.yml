@@ -120,10 +120,9 @@ jobs:
           sed -i "s/^version = \".*\"/version = \"${{ needs.prepare.outputs.version }}\"/" python/pyproject.toml
 
       - name: Build package
-        working-directory: python
         run: |
           pip install build
-          python -m build
+          python -m build python
 
       - name: Publish to PyPI (production)
         if: needs.prepare.outputs.release_type == 'production'
