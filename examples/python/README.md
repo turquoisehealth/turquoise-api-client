@@ -1,6 +1,6 @@
 # Python example api client project starter
 
-Example project using [`turquoise-health`](https://pypi.org/project/turquoise-health/).
+Example project using [`turquoisehealth-api`](https://pypi.org/project/turquoisehealth-api/).
 
 ## Setup
 
