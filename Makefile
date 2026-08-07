@@ -109,9 +109,9 @@ update-lib-exports:
 generate:
 	@./scripts/generate.sh
 
-# Publish SDKs by creating and pushing a version tag
+# Release SDKs by creating and pushing a version tag
 # Reads version from openapi.json by default, or use VERSION=v1.0.0 to override
-publish:
+release:
 	@./scripts/release.sh $(VERSION)
 
 # Publish individual SDKs via workflow dispatch (requires GitHub CLI)

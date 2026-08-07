@@ -94,12 +94,50 @@ def update_typescript_index():
         print(f"✓ {index_file} already up to date")
 
 
+def fix_types_import_conflict():
+    """
+    Fix the import conflict between python/types/ and stdlib types module.
+
+    The generated code has a types/ directory that shadows Python's stdlib types module.
+    This causes import errors in jsonable_encoder.py which tries to import GeneratorType
+    from the stdlib types module.
+    """
+    jsonable_encoder_file = Path("python/core/jsonable_encoder.py")
+
+    if not jsonable_encoder_file.exists():
+        print(f"⚠️  {jsonable_encoder_file} not found, skipping types import fix")
+        return
+
+    content = jsonable_encoder_file.read_text()
+
+    # Check if the problematic import exists
+    if "from types import GeneratorType" in content:
+        # Replace the import to avoid shadowing
+        content = content.replace(
+            "from types import GeneratorType",
+            "import types as stdlib_types"
+        )
+
+        # Replace the usage
+        content = content.replace(
+            "if isinstance(obj, (list, set, frozenset, GeneratorType, tuple)):",
+            "if isinstance(obj, (list, set, frozenset, stdlib_types.GeneratorType, tuple)):"
+        )
+
+        jsonable_encoder_file.write_text(content)
+        print(f"✅ Fixed types import conflict in {jsonable_encoder_file}")
+    else:
+        print(f"✓ {jsonable_encoder_file} types import already fixed or not present")
+
+
 def main():
     print("🔧 Updating SDK exports to include manual libraries...\n")
 
     update_python_init()
     print()
     update_typescript_index()
+    print()
+    fix_types_import_conflict()
     print()
 
     print("✨ Done! Manual library exports have been updated.")
