@@ -37,6 +37,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.release_type.outputs.version }}
+      python_version: ${{ steps.release_type.outputs.python_version }}
+      npm_version: ${{ steps.release_type.outputs.npm_version }}
       release_type: ${{ steps.release_type.outputs.type }}
       npm_tag: ${{ steps.release_type.outputs.npm_tag }}
       publish_python: ${{ steps.release_type.outputs.publish_python }}
@@ -48,7 +50,22 @@ jobs:
         run: |
           # Handle workflow_dispatch (manual trigger)
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+            VERSION="${{ inputs.version }}"
+            echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+            # Set language-specific versions
+            # For production releases, all use the same version
+            # For dev releases with git SHA, format differs by language
+            if [[ "$VERSION" =~ ^0\.0\.0-dev\. ]]; then
+              # Convert npm format (0.0.0-dev.abc123) to Python format (0.0.0.dev0+abc123)
+              PYTHON_VERSION="${VERSION//-dev./.dev0+}"
+              echo "python_version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
+              echo "npm_version=$VERSION" >> $GITHUB_OUTPUT
+            else
+              echo "python_version=$VERSION" >> $GITHUB_OUTPUT
+              echo "npm_version=$VERSION" >> $GITHUB_OUTPUT
+            fi
+
             echo "type=${{ inputs.release_type }}" >> $GITHUB_OUTPUT
 
             if [[ "${{ inputs.release_type }}" == "production" ]]; then
@@ -82,6 +99,8 @@ jobs:
             VERSION="${{ github.ref_name }}"
             VERSION="${VERSION#v}"  # Strip 'v' prefix
             echo "version=$VERSION" >> $GITHUB_OUTPUT
+            echo "python_version=$VERSION" >> $GITHUB_OUTPUT
+            echo "npm_version=$VERSION" >> $GITHUB_OUTPUT
             echo "publish_python=true" >> $GITHUB_OUTPUT
             echo "publish_typescript=true" >> $GITHUB_OUTPUT
             echo "publish_csharp=true" >> $GITHUB_OUTPUT
@@ -91,8 +110,13 @@ jobs:
             echo "npm_tag=dev" >> $GITHUB_OUTPUT
             SHORT_SHA="${{ github.sha }}"
             SHORT_SHA="${SHORT_SHA:0:7}"
-            DEV_VERSION="0.0.0-dev.${SHORT_SHA}"
-            echo "version=$DEV_VERSION" >> $GITHUB_OUTPUT
+            # Python uses PEP 440 format: 0.0.0.dev0+abc123
+            PYTHON_VERSION="0.0.0.dev0+${SHORT_SHA}"
+            # npm uses semver format: 0.0.0-dev.abc123
+            NPM_VERSION="0.0.0-dev.${SHORT_SHA}"
+            echo "version=$NPM_VERSION" >> $GITHUB_OUTPUT
+            echo "python_version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
+            echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
             echo "publish_python=true" >> $GITHUB_OUTPUT
             echo "publish_typescript=true" >> $GITHUB_OUTPUT
             echo "publish_csharp=true" >> $GITHUB_OUTPUT
@@ -117,7 +141,7 @@ jobs:
 
       - name: Stamp package version
         run: |
-          sed -i "s/^version = \".*\"/version = \"${{ needs.prepare.outputs.version }}\"/" python/pyproject.toml
+          sed -i "s/^version = \".*\"/version = \"${{ needs.prepare.outputs.python_version }}\"/" python/pyproject.toml
 
       - name: Build package
         run: |
@@ -156,7 +180,7 @@ jobs:
 
       - name: Stamp package version
         run: |
-          npm --prefix typescript version "${{ needs.prepare.outputs.version }}" --no-git-tag-version --allow-same-version
+          npm --prefix typescript version "${{ needs.prepare.outputs.npm_version }}" --no-git-tag-version --allow-same-version
 
       - name: Publish to npm (production)
         if: env.NODE_AUTH_TOKEN != '' && needs.prepare.outputs.release_type == 'production'
