@@ -13,7 +13,7 @@ import dataclasses
 import datetime as dt
 from enum import Enum
 from pathlib import PurePath
-from types import GeneratorType
+import types as stdlib_types
 from typing import Any, Callable, Dict, List, Optional, Set, Union
 
 import pydantic
@@ -74,7 +74,7 @@ def jsonable_encoder(obj: Any, custom_encoder: Optional[Dict[Any, Callable[[Any]
                 encoded_value = jsonable_encoder(value, custom_encoder=custom_encoder)
                 encoded_dict[encoded_key] = encoded_value
         return encoded_dict
-    if isinstance(obj, (list, set, frozenset, GeneratorType, tuple)):
+    if isinstance(obj, (list, set, frozenset, stdlib_types.GeneratorType, tuple)):
         encoded_list = []
         for item in obj:
             encoded_list.append(jsonable_encoder(item, custom_encoder=custom_encoder))
