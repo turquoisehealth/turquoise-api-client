@@ -117,7 +117,8 @@ jobs:
             echo "version=$NPM_VERSION" >> $GITHUB_OUTPUT
             echo "python_version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
             echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
-            echo "publish_python=true" >> $GITHUB_OUTPUT
+            # Skip Python publishing on branch pushes (OIDC trusted publisher only works for tags)
+            echo "publish_python=false" >> $GITHUB_OUTPUT
             echo "publish_typescript=true" >> $GITHUB_OUTPUT
             echo "publish_csharp=true" >> $GITHUB_OUTPUT
           fi
