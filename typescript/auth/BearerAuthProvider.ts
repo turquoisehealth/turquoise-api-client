@@ -5,12 +5,12 @@ import * as errors from "../errors/index.js";
 
 export namespace BearerAuthProvider {
     export interface Options {
-        token: core.Supplier<core.BearerToken>;
+        token?: core.Supplier<core.BearerToken | undefined>;
     }
 }
 
 export class BearerAuthProvider implements core.AuthProvider {
-    private readonly token: core.Supplier<core.BearerToken>;
+    private readonly token: core.Supplier<core.BearerToken | undefined>;
 
     constructor(options: BearerAuthProvider.Options) {
         this.token = options.token;

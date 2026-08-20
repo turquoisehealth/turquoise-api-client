@@ -7,22 +7,28 @@ from importlib import import_module
 
 if typing.TYPE_CHECKING:
     from .types import (
-        V3PricesCompareRequestPricing,
-        V3PricesCompareRequestPricing_Cash,
-        V3PricesCompareRequestPricing_Negotiated,
-        V3PricesQueryRequestPricing,
-        V3PricesQueryRequestPricing_Cash,
-        V3PricesQueryRequestPricing_Negotiated,
-        V3PricesQueryRequestSortDirection,
+        ConsumerSitePersonalizedEstimatesQueryRequestSortDirection,
+        PricesCompareRequestPricing,
+        PricesCompareRequestPricing_Cash,
+        PricesCompareRequestPricing_Negotiated,
+        PricesQueryRequestPricing,
+        PricesQueryRequestPricing_Cash,
+        PricesQueryRequestPricing_Negotiated,
+        PricesQueryRequestSortDirection,
+        V3ListPersonalizedEstimatesRequestExpandItem,
+        V3ListPersonalizedEstimatesResponse,
     )
 _dynamic_imports: typing.Dict[str, str] = {
-    "V3PricesCompareRequestPricing": ".types",
-    "V3PricesCompareRequestPricing_Cash": ".types",
-    "V3PricesCompareRequestPricing_Negotiated": ".types",
-    "V3PricesQueryRequestPricing": ".types",
-    "V3PricesQueryRequestPricing_Cash": ".types",
-    "V3PricesQueryRequestPricing_Negotiated": ".types",
-    "V3PricesQueryRequestSortDirection": ".types",
+    "ConsumerSitePersonalizedEstimatesQueryRequestSortDirection": ".types",
+    "PricesCompareRequestPricing": ".types",
+    "PricesCompareRequestPricing_Cash": ".types",
+    "PricesCompareRequestPricing_Negotiated": ".types",
+    "PricesQueryRequestPricing": ".types",
+    "PricesQueryRequestPricing_Cash": ".types",
+    "PricesQueryRequestPricing_Negotiated": ".types",
+    "PricesQueryRequestSortDirection": ".types",
+    "V3ListPersonalizedEstimatesRequestExpandItem": ".types",
+    "V3ListPersonalizedEstimatesResponse": ".types",
 }
 
 
@@ -48,11 +54,14 @@ def __dir__():
 
 
 __all__ = [
-    "V3PricesCompareRequestPricing",
-    "V3PricesCompareRequestPricing_Cash",
-    "V3PricesCompareRequestPricing_Negotiated",
-    "V3PricesQueryRequestPricing",
-    "V3PricesQueryRequestPricing_Cash",
-    "V3PricesQueryRequestPricing_Negotiated",
-    "V3PricesQueryRequestSortDirection",
+    "ConsumerSitePersonalizedEstimatesQueryRequestSortDirection",
+    "PricesCompareRequestPricing",
+    "PricesCompareRequestPricing_Cash",
+    "PricesCompareRequestPricing_Negotiated",
+    "PricesQueryRequestPricing",
+    "PricesQueryRequestPricing_Cash",
+    "PricesQueryRequestPricing_Negotiated",
+    "PricesQueryRequestSortDirection",
+    "V3ListPersonalizedEstimatesRequestExpandItem",
+    "V3ListPersonalizedEstimatesResponse",
 ]

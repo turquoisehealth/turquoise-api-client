@@ -14,7 +14,7 @@ export class TurquoiseHealthApiClient {
     protected readonly _options: NormalizedClientOptionsWithAuth<TurquoiseHealthApiClient.Options>;
     protected _consumerPricing: ConsumerPricingClient | undefined;
 
-    constructor(options: TurquoiseHealthApiClient.Options) {
+    constructor(options: TurquoiseHealthApiClient.Options = {}) {
         this._options = normalizeClientOptionsWithAuth(options);
     }
 

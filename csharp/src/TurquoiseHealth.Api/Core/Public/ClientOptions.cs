@@ -19,7 +19,7 @@ public partial class ClientOptions
 #else
         set;
 #endif
-    } = "";
+    } = TurquoiseHealthApiClientEnvironment.Default;
 
     /// <summary>
     /// The http client used to make requests.

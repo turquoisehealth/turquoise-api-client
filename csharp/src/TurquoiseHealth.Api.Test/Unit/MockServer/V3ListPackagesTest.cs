@@ -69,7 +69,7 @@ public class V3ListPackagesTest : BaseMockServerTest
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3ListEnvelopePackage>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<ListEnvelopePackage>(mockResponse)).UsingDefaults()
         );
     }
 }

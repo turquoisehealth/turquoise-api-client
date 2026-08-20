@@ -3,12 +3,13 @@
 import { BearerAuthProvider } from "./auth/BearerAuthProvider.js";
 import { mergeHeaders } from "./core/headers.js";
 import * as core from "./core/index.js";
+import type * as environments from "./environments.js";
 
 export interface BaseClientOptions {
-    environment: core.Supplier<string>;
+    environment?: core.Supplier<environments.TurquoiseHealthApiEnvironment | string>;
     /** Specify a custom URL to connect the client to. */
     baseUrl?: core.Supplier<string>;
-    token: core.Supplier<core.BearerToken>;
+    token?: core.Supplier<core.BearerToken | undefined>;
     /** Additional headers to include in requests. */
     headers?: Record<string, string | core.Supplier<string | null | undefined> | null | undefined>;
     /** The default maximum time to wait for a response in seconds. */

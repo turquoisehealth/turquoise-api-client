@@ -87,7 +87,7 @@ public class V3GetPriceTest : BaseMockServerTest
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3ProviderPackagePrice>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<ProviderPackagePrice>(mockResponse)).UsingDefaults()
         );
     }
 }

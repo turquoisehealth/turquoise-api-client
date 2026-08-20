@@ -6,6 +6,7 @@ import typing
 
 import httpx
 from .core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
+from .environment import TurquoiseHealthEnvironment
 
 if typing.TYPE_CHECKING:
     from .consumer_pricing.client import AsyncConsumerPricingClient, ConsumerPricingClient
@@ -17,10 +18,19 @@ class TurquoiseHealth:
 
     Parameters
     ----------
-    base_url : str
+    base_url : typing.Optional[str]
         The base url to use for requests from the client.
 
-    token : typing.Union[str, typing.Callable[[], str]]
+    environment : TurquoiseHealthEnvironment
+        The environment to use for requests from the client. from .environment import TurquoiseHealthEnvironment
+
+
+
+        Defaults to TurquoiseHealthEnvironment.DEFAULT
+
+
+
+    token : typing.Optional[typing.Union[str, typing.Callable[[], str]]]
     headers : typing.Optional[typing.Dict[str, str]]
         Additional headers to send with every request.
 
@@ -37,14 +47,15 @@ class TurquoiseHealth:
     --------
     from turquoisehealth-api import TurquoiseHealth
 
-    client = TurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+    client = TurquoiseHealth(token="YOUR_TOKEN", )
     """
 
     def __init__(
         self,
         *,
-        base_url: str,
-        token: typing.Union[str, typing.Callable[[], str]],
+        base_url: typing.Optional[str] = None,
+        environment: TurquoiseHealthEnvironment = TurquoiseHealthEnvironment.DEFAULT,
+        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         headers: typing.Optional[typing.Dict[str, str]] = None,
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = True,
@@ -54,7 +65,7 @@ class TurquoiseHealth:
             timeout if timeout is not None else 60 if httpx_client is None else httpx_client.timeout.read
         )
         self._client_wrapper = SyncClientWrapper(
-            base_url=base_url,
+            base_url=_get_base_url(base_url=base_url, environment=environment),
             token=token,
             headers=headers,
             httpx_client=httpx_client
@@ -81,10 +92,19 @@ class AsyncTurquoiseHealth:
 
     Parameters
     ----------
-    base_url : str
+    base_url : typing.Optional[str]
         The base url to use for requests from the client.
 
-    token : typing.Union[str, typing.Callable[[], str]]
+    environment : TurquoiseHealthEnvironment
+        The environment to use for requests from the client. from .environment import TurquoiseHealthEnvironment
+
+
+
+        Defaults to TurquoiseHealthEnvironment.DEFAULT
+
+
+
+    token : typing.Optional[typing.Union[str, typing.Callable[[], str]]]
     headers : typing.Optional[typing.Dict[str, str]]
         Additional headers to send with every request.
 
@@ -101,14 +121,15 @@ class AsyncTurquoiseHealth:
     --------
     from turquoisehealth-api import AsyncTurquoiseHealth
 
-    client = AsyncTurquoiseHealth(token="YOUR_TOKEN", base_url="https://yourhost.com/path/to/api", )
+    client = AsyncTurquoiseHealth(token="YOUR_TOKEN", )
     """
 
     def __init__(
         self,
         *,
-        base_url: str,
-        token: typing.Union[str, typing.Callable[[], str]],
+        base_url: typing.Optional[str] = None,
+        environment: TurquoiseHealthEnvironment = TurquoiseHealthEnvironment.DEFAULT,
+        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
         headers: typing.Optional[typing.Dict[str, str]] = None,
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = True,
@@ -118,7 +139,7 @@ class AsyncTurquoiseHealth:
             timeout if timeout is not None else 60 if httpx_client is None else httpx_client.timeout.read
         )
         self._client_wrapper = AsyncClientWrapper(
-            base_url=base_url,
+            base_url=_get_base_url(base_url=base_url, environment=environment),
             token=token,
             headers=headers,
             httpx_client=httpx_client
@@ -137,3 +158,12 @@ class AsyncTurquoiseHealth:
 
             self._consumer_pricing = AsyncConsumerPricingClient(client_wrapper=self._client_wrapper)
         return self._consumer_pricing
+
+
+def _get_base_url(*, base_url: typing.Optional[str] = None, environment: TurquoiseHealthEnvironment) -> str:
+    if base_url is not None:
+        return base_url
+    elif environment is not None:
+        return environment.value
+    else:
+        raise Exception("Please pass in either base_url or environment to construct the client")

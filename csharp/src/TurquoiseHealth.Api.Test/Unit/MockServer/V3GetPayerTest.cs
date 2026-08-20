@@ -35,7 +35,7 @@ public class V3GetPayerTest : BaseMockServerTest
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3Payer>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<Payer>(mockResponse)).UsingDefaults()
         );
     }
 }

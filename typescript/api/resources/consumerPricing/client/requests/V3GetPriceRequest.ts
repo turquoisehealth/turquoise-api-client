@@ -12,5 +12,5 @@ export interface V3GetPriceRequest {
     /** Price identifier. */
     price_id: string;
     /** Relations to inline. Repeat the param to request several. */
-    expand?: TurquoiseHealthApi.V3PriceExpand[] | null;
+    expand?: TurquoiseHealthApi.PriceExpand[] | null;
 }

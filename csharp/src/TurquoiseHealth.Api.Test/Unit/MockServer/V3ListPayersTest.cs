@@ -44,7 +44,7 @@ public class V3ListPayersTest : BaseMockServerTest
         var response = await Client.ConsumerPricing.V3ListPayersAsync(new V3ListPayersRequest());
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3ListEnvelopePayer>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<ListEnvelopePayer>(mockResponse)).UsingDefaults()
         );
     }
 }

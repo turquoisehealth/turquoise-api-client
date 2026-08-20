@@ -6,25 +6,33 @@ import typing
 from importlib import import_module
 
 if typing.TYPE_CHECKING:
-    from .v3prices_compare_request_pricing import (
-        V3PricesCompareRequestPricing,
-        V3PricesCompareRequestPricing_Cash,
-        V3PricesCompareRequestPricing_Negotiated,
+    from .consumer_site_personalized_estimates_query_request_sort_direction import (
+        ConsumerSitePersonalizedEstimatesQueryRequestSortDirection,
     )
-    from .v3prices_query_request_pricing import (
-        V3PricesQueryRequestPricing,
-        V3PricesQueryRequestPricing_Cash,
-        V3PricesQueryRequestPricing_Negotiated,
+    from .prices_compare_request_pricing import (
+        PricesCompareRequestPricing,
+        PricesCompareRequestPricing_Cash,
+        PricesCompareRequestPricing_Negotiated,
     )
-    from .v3prices_query_request_sort_direction import V3PricesQueryRequestSortDirection
+    from .prices_query_request_pricing import (
+        PricesQueryRequestPricing,
+        PricesQueryRequestPricing_Cash,
+        PricesQueryRequestPricing_Negotiated,
+    )
+    from .prices_query_request_sort_direction import PricesQueryRequestSortDirection
+    from .v3list_personalized_estimates_request_expand_item import V3ListPersonalizedEstimatesRequestExpandItem
+    from .v3list_personalized_estimates_response import V3ListPersonalizedEstimatesResponse
 _dynamic_imports: typing.Dict[str, str] = {
-    "V3PricesCompareRequestPricing": ".v3prices_compare_request_pricing",
-    "V3PricesCompareRequestPricing_Cash": ".v3prices_compare_request_pricing",
-    "V3PricesCompareRequestPricing_Negotiated": ".v3prices_compare_request_pricing",
-    "V3PricesQueryRequestPricing": ".v3prices_query_request_pricing",
-    "V3PricesQueryRequestPricing_Cash": ".v3prices_query_request_pricing",
-    "V3PricesQueryRequestPricing_Negotiated": ".v3prices_query_request_pricing",
-    "V3PricesQueryRequestSortDirection": ".v3prices_query_request_sort_direction",
+    "ConsumerSitePersonalizedEstimatesQueryRequestSortDirection": ".consumer_site_personalized_estimates_query_request_sort_direction",
+    "PricesCompareRequestPricing": ".prices_compare_request_pricing",
+    "PricesCompareRequestPricing_Cash": ".prices_compare_request_pricing",
+    "PricesCompareRequestPricing_Negotiated": ".prices_compare_request_pricing",
+    "PricesQueryRequestPricing": ".prices_query_request_pricing",
+    "PricesQueryRequestPricing_Cash": ".prices_query_request_pricing",
+    "PricesQueryRequestPricing_Negotiated": ".prices_query_request_pricing",
+    "PricesQueryRequestSortDirection": ".prices_query_request_sort_direction",
+    "V3ListPersonalizedEstimatesRequestExpandItem": ".v3list_personalized_estimates_request_expand_item",
+    "V3ListPersonalizedEstimatesResponse": ".v3list_personalized_estimates_response",
 }
 
 
@@ -50,11 +58,14 @@ def __dir__():
 
 
 __all__ = [
-    "V3PricesCompareRequestPricing",
-    "V3PricesCompareRequestPricing_Cash",
-    "V3PricesCompareRequestPricing_Negotiated",
-    "V3PricesQueryRequestPricing",
-    "V3PricesQueryRequestPricing_Cash",
-    "V3PricesQueryRequestPricing_Negotiated",
-    "V3PricesQueryRequestSortDirection",
+    "ConsumerSitePersonalizedEstimatesQueryRequestSortDirection",
+    "PricesCompareRequestPricing",
+    "PricesCompareRequestPricing_Cash",
+    "PricesCompareRequestPricing_Negotiated",
+    "PricesQueryRequestPricing",
+    "PricesQueryRequestPricing_Cash",
+    "PricesQueryRequestPricing_Negotiated",
+    "PricesQueryRequestSortDirection",
+    "V3ListPersonalizedEstimatesRequestExpandItem",
+    "V3ListPersonalizedEstimatesResponse",
 ]

@@ -50,7 +50,7 @@ public class V3ListNetworksTest : BaseMockServerTest
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3ListEnvelopeNetwork>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<ListEnvelopeNetwork>(mockResponse)).UsingDefaults()
         );
     }
 }

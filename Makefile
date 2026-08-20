@@ -1,5 +1,19 @@
 .PHONY: help test test-python test-typescript test-csharp install-test-deps clean venv update-lib-exports generate publish publish-python publish-typescript publish-csharp publish-all
 
+# Optional OpenAPI URL for SDK generation:
+# - make generate OPENAPI_URL=https://...
+# - make generate https://...
+OPENAPI_URL ?=
+
+# Support positional URL as second goal (e.g. `make generate https://...`).
+ifneq ($(filter generate,$(MAKECMDGOALS)),)
+OPENAPI_URL := $(if $(OPENAPI_URL),$(OPENAPI_URL),$(word 2,$(MAKECMDGOALS)))
+
+# Swallow the extra positional argument goal so make does not treat it as a target.
+%:
+	@:
+endif
+
 # Python virtual environment directory
 VENV := venv
 PYTHON := $(VENV)/bin/python3
@@ -17,7 +31,7 @@ help:
 	@echo "  make test-csharp       - Run C# integration tests"
 	@echo "  make install-test-deps - Install test dependencies for all languages"
 	@echo "  make update-lib-exports - Update SDK exports after Fern generation"
-	@echo "  make generate          - Regenerate SDKs from openapi.json (requires FERN_TOKEN)"
+	@echo "  make generate [OPENAPI_URL=https://...] - Regenerate SDKs (requires FERN_TOKEN)"
 	@echo ""
 	@echo "Publishing (creates git tag and triggers automatic publish):"
 	@echo "  make publish [VERSION=v1.0.0] - Tag and publish all SDKs (reads from openapi.json by default)"
@@ -107,7 +121,7 @@ update-lib-exports:
 
 # Regenerate SDKs from OpenAPI spec
 generate:
-	@./scripts/generate.sh
+	@./scripts/generate.sh "$(OPENAPI_URL)"
 
 # Release SDKs by creating and pushing a version tag
 # Reads version from openapi.json by default, or use VERSION=v1.0.0 to override

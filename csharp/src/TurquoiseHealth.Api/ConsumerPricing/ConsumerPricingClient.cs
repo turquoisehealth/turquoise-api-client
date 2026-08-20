@@ -13,12 +13,80 @@ public partial class ConsumerPricingClient
     }
 
     /// <summary>
+    /// Fetch provider types. Results return valid inputs to filter by provider types across the API.
+    /// </summary>
+    /// <example><code>
+    /// await client.ConsumerPricing.V3GetProviderTypesAsync();
+    /// </code></example>
+    public async Task<IEnumerable<string>> V3GetProviderTypesAsync(
+        RequestOptions? options = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var response = await _client
+            .SendRequestAsync(
+                new JsonRequest
+                {
+                    BaseUrl = _client.Options.BaseUrl,
+                    Method = HttpMethod.Get,
+                    Path = "v3/providers/types",
+                    Options = options,
+                },
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+        if (response.StatusCode is >= 200 and < 400)
+        {
+            var responseBody = await response.Raw.Content.ReadAsStringAsync();
+            try
+            {
+                return JsonUtils.Deserialize<IEnumerable<string>>(responseBody)!;
+            }
+            catch (JsonException e)
+            {
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
+            }
+        }
+
+        {
+            var responseBody = await response.Raw.Content.ReadAsStringAsync();
+            try
+            {
+                switch (response.StatusCode)
+                {
+                    case 400:
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
+                    case 404:
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
+                    case 422:
+                        throw new UnprocessableEntityError(
+                            JsonUtils.Deserialize<object>(responseBody)
+                        );
+                    case 429:
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
+                    case 500:
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
+                }
+            }
+            catch (JsonException)
+            {
+                // unable to map error response, throwing generic error
+            }
+            throw new TurquoiseHealthApiClientApiException(
+                $"Error with status code {response.StatusCode}",
+                response.StatusCode,
+                responseBody
+            );
+        }
+    }
+
+    /// <summary>
     /// Retrieve a list of providers, filtered over a search by name, NPI, provider type, or location. Additionally, filter to a list of providers with Turquoise price estimates available by a selected payer, network, or package. Results reflect provider, payer, and package combinations that Turquoise has priced services for; the list may not be comprehensive of all contacted payer networks or services that are available.
     /// </summary>
     /// <example><code>
     /// await client.ConsumerPricing.V3ListProvidersAsync(new V3ListProvidersRequest());
     /// </code></example>
-    public async Task<V3ListEnvelopeProvider> V3ListProvidersAsync(
+    public async Task<ListEnvelopeProvider> V3ListProvidersAsync(
         V3ListProvidersRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -111,7 +179,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3ListEnvelopeProvider>(responseBody)!;
+                return JsonUtils.Deserialize<ListEnvelopeProvider>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -126,101 +194,17 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
-                }
-            }
-            catch (JsonException)
-            {
-                // unable to map error response, throwing generic error
-            }
-            throw new TurquoiseHealthApiClientApiException(
-                $"Error with status code {response.StatusCode}",
-                response.StatusCode,
-                responseBody
-            );
-        }
-    }
-
-    /// <summary>
-    /// Fetch provider types. Results return valid inputs to filter by provider types across the API.
-    /// </summary>
-    /// <example><code>
-    /// await client.ConsumerPricing.V3GetProviderTypesAsync();
-    /// </code></example>
-    public async Task<IEnumerable<string>> V3GetProviderTypesAsync(
-        RequestOptions? options = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var response = await _client
-            .SendRequestAsync(
-                new JsonRequest
-                {
-                    BaseUrl = _client.Options.BaseUrl,
-                    Method = HttpMethod.Get,
-                    Path = "v3/providers/types",
-                    Options = options,
-                },
-                cancellationToken
-            )
-            .ConfigureAwait(false);
-        if (response.StatusCode is >= 200 and < 400)
-        {
-            var responseBody = await response.Raw.Content.ReadAsStringAsync();
-            try
-            {
-                return JsonUtils.Deserialize<IEnumerable<string>>(responseBody)!;
-            }
-            catch (JsonException e)
-            {
-                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
-            }
-        }
-
-        {
-            var responseBody = await response.Raw.Content.ReadAsStringAsync();
-            try
-            {
-                switch (response.StatusCode)
-                {
-                    case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
-                    case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
-                    case 422:
-                        throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
-                    case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
-                    case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
                 }
             }
             catch (JsonException)
@@ -241,7 +225,7 @@ public partial class ConsumerPricingClient
     /// <example><code>
     /// await client.ConsumerPricing.V3GetProviderAsync(new V3GetProviderRequest { ProviderId = "5756" });
     /// </code></example>
-    public async Task<V3Provider> V3GetProviderAsync(
+    public async Task<Provider> V3GetProviderAsync(
         V3GetProviderRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -267,7 +251,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3Provider>(responseBody)!;
+                return JsonUtils.Deserialize<Provider>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -282,25 +266,17 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
                 }
             }
             catch (JsonException)
@@ -321,7 +297,7 @@ public partial class ConsumerPricingClient
     /// <example><code>
     /// await client.ConsumerPricing.V3ListPayersAsync(new V3ListPayersRequest());
     /// </code></example>
-    public async Task<V3ListEnvelopePayer> V3ListPayersAsync(
+    public async Task<ListEnvelopePayer> V3ListPayersAsync(
         V3ListPayersRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -394,7 +370,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3ListEnvelopePayer>(responseBody)!;
+                return JsonUtils.Deserialize<ListEnvelopePayer>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -409,25 +385,17 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
                 }
             }
             catch (JsonException)
@@ -448,7 +416,7 @@ public partial class ConsumerPricingClient
     /// <example><code>
     /// await client.ConsumerPricing.V3GetPayerAsync(new V3GetPayerRequest { PayerId = "76" });
     /// </code></example>
-    public async Task<V3Payer> V3GetPayerAsync(
+    public async Task<Payer> V3GetPayerAsync(
         V3GetPayerRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -474,7 +442,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3Payer>(responseBody)!;
+                return JsonUtils.Deserialize<Payer>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -489,25 +457,17 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
                 }
             }
             catch (JsonException)
@@ -528,7 +488,7 @@ public partial class ConsumerPricingClient
     /// <example><code>
     /// await client.ConsumerPricing.V3ListNetworksAsync(new V3ListNetworksRequest());
     /// </code></example>
-    public async Task<V3ListEnvelopeNetwork> V3ListNetworksAsync(
+    public async Task<ListEnvelopeNetwork> V3ListNetworksAsync(
         V3ListNetworksRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -613,7 +573,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3ListEnvelopeNetwork>(responseBody)!;
+                return JsonUtils.Deserialize<ListEnvelopeNetwork>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -628,25 +588,17 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
                 }
             }
             catch (JsonException)
@@ -669,7 +621,7 @@ public partial class ConsumerPricingClient
     ///     new V3GetNetworkRequest { NetworkId = "-3776001016975145508" }
     /// );
     /// </code></example>
-    public async Task<V3Network> V3GetNetworkAsync(
+    public async Task<Network> V3GetNetworkAsync(
         V3GetNetworkRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -695,7 +647,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3Network>(responseBody)!;
+                return JsonUtils.Deserialize<Network>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -710,25 +662,17 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
                 }
             }
             catch (JsonException)
@@ -749,7 +693,7 @@ public partial class ConsumerPricingClient
     /// <example><code>
     /// await client.ConsumerPricing.V3ListPackagesAsync(new V3ListPackagesRequest());
     /// </code></example>
-    public async Task<V3ListEnvelopePackage> V3ListPackagesAsync(
+    public async Task<ListEnvelopePackage> V3ListPackagesAsync(
         V3ListPackagesRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -810,7 +754,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3ListEnvelopePackage>(responseBody)!;
+                return JsonUtils.Deserialize<ListEnvelopePackage>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -825,25 +769,17 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
                 }
             }
             catch (JsonException)
@@ -864,7 +800,7 @@ public partial class ConsumerPricingClient
     /// <example><code>
     /// await client.ConsumerPricing.V3GetPackageAsync(new V3GetPackageRequest { PackageId = "OB002" });
     /// </code></example>
-    public async Task<V3Package> V3GetPackageAsync(
+    public async Task<Package> V3GetPackageAsync(
         V3GetPackageRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -890,7 +826,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3Package>(responseBody)!;
+                return JsonUtils.Deserialize<Package>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -905,25 +841,17 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
                 }
             }
             catch (JsonException)
@@ -946,7 +874,7 @@ public partial class ConsumerPricingClient
     ///     new V3ListPackageLineItemsRequest { PackageId = "OB002" }
     /// );
     /// </code></example>
-    public async Task<V3ListEnvelopeLineItem> V3ListPackageLineItemsAsync(
+    public async Task<ListEnvelopeLineItem> V3ListPackageLineItemsAsync(
         V3ListPackageLineItemsRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -972,7 +900,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3ListEnvelopeLineItem>(responseBody)!;
+                return JsonUtils.Deserialize<ListEnvelopeLineItem>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -987,115 +915,17 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
-                }
-            }
-            catch (JsonException)
-            {
-                // unable to map error response, throwing generic error
-            }
-            throw new TurquoiseHealthApiClientApiException(
-                $"Error with status code {response.StatusCode}",
-                response.StatusCode,
-                responseBody
-            );
-        }
-    }
-
-    /// <summary>
-    /// Return summary statistics (min, max, average, median, quartiles) over prices matching the same filters as /query, excluding sorting and pagination. Use this endpoint to compare prices across relevant criteria.
-    /// </summary>
-    /// <example><code>
-    /// await client.ConsumerPricing.V3ComparePricesAsync(
-    ///     new V3PricesCompareRequest
-    ///     {
-    ///         PackageId = "OB002",
-    ///         ProviderId = "5756",
-    ///         Pricing = new V3PricesCompareRequestPricing(
-    ///             new V3PricesCompareRequestPricing.Negotiated(
-    ///                 new V3PricingNegotiated { NetworkId = "-3776001016975145508" }
-    ///             )
-    ///         ),
-    ///     }
-    /// );
-    /// </code></example>
-    public async Task<V3PriceComparison> V3ComparePricesAsync(
-        V3PricesCompareRequest request,
-        RequestOptions? options = null,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var response = await _client
-            .SendRequestAsync(
-                new JsonRequest
-                {
-                    BaseUrl = _client.Options.BaseUrl,
-                    Method = HttpMethod.Post,
-                    Path = "v3/prices/compare",
-                    Body = request,
-                    ContentType = "application/json",
-                    Options = options,
-                },
-                cancellationToken
-            )
-            .ConfigureAwait(false);
-        if (response.StatusCode is >= 200 and < 400)
-        {
-            var responseBody = await response.Raw.Content.ReadAsStringAsync();
-            try
-            {
-                return JsonUtils.Deserialize<V3PriceComparison>(responseBody)!;
-            }
-            catch (JsonException e)
-            {
-                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
-            }
-        }
-
-        {
-            var responseBody = await response.Raw.Content.ReadAsStringAsync();
-            try
-            {
-                switch (response.StatusCode)
-                {
-                    case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
-                    case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
-                    case 422:
-                        throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
-                    case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
-                    case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
                 }
             }
             catch (JsonException)
@@ -1115,20 +945,20 @@ public partial class ConsumerPricingClient
     /// </summary>
     /// <example><code>
     /// await client.ConsumerPricing.V3QueryPricesAsync(
-    ///     new V3PricesQueryRequest
+    ///     new PricesQueryRequest
     ///     {
     ///         PackageId = "OB002",
     ///         ProviderId = "5756",
-    ///         Pricing = new V3PricesQueryRequestPricing(
-    ///             new V3PricesQueryRequestPricing.Negotiated(
-    ///                 new V3PricingNegotiated { NetworkId = "-3776001016975145508" }
+    ///         Pricing = new PricesQueryRequestPricing(
+    ///             new PricesQueryRequestPricing.Negotiated(
+    ///                 new PricingNegotiated { NetworkId = "-3776001016975145508" }
     ///             )
     ///         ),
     ///     }
     /// );
     /// </code></example>
-    public async Task<V3ListEnvelopeProviderPackagePrice> V3QueryPricesAsync(
-        V3PricesQueryRequest request,
+    public async Task<ListEnvelopeProviderPackagePrice> V3QueryPricesAsync(
+        PricesQueryRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
     )
@@ -1152,7 +982,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3ListEnvelopeProviderPackagePrice>(responseBody)!;
+                return JsonUtils.Deserialize<ListEnvelopeProviderPackagePrice>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -1167,25 +997,99 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
+                }
+            }
+            catch (JsonException)
+            {
+                // unable to map error response, throwing generic error
+            }
+            throw new TurquoiseHealthApiClientApiException(
+                $"Error with status code {response.StatusCode}",
+                response.StatusCode,
+                responseBody
+            );
+        }
+    }
+
+    /// <summary>
+    /// Return summary statistics (min, max, average, median, quartiles) over prices matching the same filters as /query, excluding sorting and pagination. Use this endpoint to compare prices across relevant criteria.
+    /// </summary>
+    /// <example><code>
+    /// await client.ConsumerPricing.V3ComparePricesAsync(
+    ///     new PricesCompareRequest
+    ///     {
+    ///         PackageId = "OB002",
+    ///         ProviderId = "5756",
+    ///         Pricing = new PricesCompareRequestPricing(
+    ///             new PricesCompareRequestPricing.Negotiated(
+    ///                 new PricingNegotiated { NetworkId = "-3776001016975145508" }
+    ///             )
+    ///         ),
+    ///     }
+    /// );
+    /// </code></example>
+    public async Task<PriceComparison> V3ComparePricesAsync(
+        PricesCompareRequest request,
+        RequestOptions? options = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var response = await _client
+            .SendRequestAsync(
+                new JsonRequest
+                {
+                    BaseUrl = _client.Options.BaseUrl,
+                    Method = HttpMethod.Post,
+                    Path = "v3/prices/compare",
+                    Body = request,
+                    ContentType = "application/json",
+                    Options = options,
+                },
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+        if (response.StatusCode is >= 200 and < 400)
+        {
+            var responseBody = await response.Raw.Content.ReadAsStringAsync();
+            try
+            {
+                return JsonUtils.Deserialize<PriceComparison>(responseBody)!;
+            }
+            catch (JsonException e)
+            {
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
+            }
+        }
+
+        {
+            var responseBody = await response.Raw.Content.ReadAsStringAsync();
+            try
+            {
+                switch (response.StatusCode)
+                {
+                    case 400:
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
+                    case 404:
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
+                    case 422:
+                        throw new UnprocessableEntityError(
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
+                    case 429:
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
+                    case 500:
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
                 }
             }
             catch (JsonException)
@@ -1208,7 +1112,7 @@ public partial class ConsumerPricingClient
     ///     new V3GetPriceRequest { PriceId = "prc_5756.OB002.-3776001016975145508" }
     /// );
     /// </code></example>
-    public async Task<V3ProviderPackagePrice> V3GetPriceAsync(
+    public async Task<ProviderPackagePrice> V3GetPriceAsync(
         V3GetPriceRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -1240,7 +1144,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<V3ProviderPackagePrice>(responseBody)!;
+                return JsonUtils.Deserialize<ProviderPackagePrice>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -1255,24 +1159,249 @@ public partial class ConsumerPricingClient
                 switch (response.StatusCode)
                 {
                     case 400:
-                        throw new BadRequestError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
                     case 404:
-                        throw new NotFoundError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
                     case 422:
                         throw new UnprocessableEntityError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                            JsonUtils.Deserialize<object>(responseBody)
                         );
                     case 429:
-                        throw new TooManyRequestsError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
-                        );
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
                     case 500:
-                        throw new InternalServerError(
-                            JsonUtils.Deserialize<V3ErrorResponse>(responseBody)
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
+                }
+            }
+            catch (JsonException)
+            {
+                // unable to map error response, throwing generic error
+            }
+            throw new TurquoiseHealthApiClientApiException(
+                $"Error with status code {response.StatusCode}",
+                response.StatusCode,
+                responseBody
+            );
+        }
+    }
+
+    /// <summary>
+    /// Get personalized cost estimates for this member. If we haven't checked their eligibility yet, you'll get a 202 back. Just retry in a bit. The member must have given consent (`consent_attested` must be true).
+    /// </summary>
+    /// <example><code>
+    /// await client.ConsumerPricing.V3ListPersonalizedEstimatesAsync(
+    ///     new ConsumerSitePersonalizedEstimatesQueryRequest
+    ///     {
+    ///         PackageId = "GA003",
+    ///         ProviderId = "5756",
+    ///         Pricing = new ConsumerSitePricingNegotiated
+    ///         {
+    ///             Type = "negotiated",
+    ///             NetworkId = "-3776001016975145508",
+    ///         },
+    ///         MemberEligibility = new ConsumerSiteMemberEligibilityInput
+    ///         {
+    ///             FirstName = "test123",
+    ///             LastName = "test123",
+    ///             DateOfBirth = new DateOnly(2001, 1, 1),
+    ///             MemberId = "test123",
+    ///             ConsentAttested = "consent_attested",
+    ///         },
+    ///         SortDirection = ConsumerSitePersonalizedEstimatesQueryRequestSortDirection.Asc,
+    ///         PageSize = 25,
+    ///     }
+    /// );
+    /// </code></example>
+    public async Task<V3ListPersonalizedEstimatesResponse> V3ListPersonalizedEstimatesAsync(
+        ConsumerSitePersonalizedEstimatesQueryRequest request,
+        RequestOptions? options = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var _query = new Dictionary<string, object>();
+        _query["expand"] = request.Expand.Select(_value => _value.Stringify()).ToList();
+        var response = await _client
+            .SendRequestAsync(
+                new JsonRequest
+                {
+                    BaseUrl = _client.Options.BaseUrl,
+                    Method = HttpMethod.Post,
+                    Path = "v3/personalized-estimates",
+                    Body = request,
+                    Query = _query,
+                    ContentType = "application/json",
+                    Options = options,
+                },
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+        if (response.StatusCode is >= 200 and < 400)
+        {
+            var responseBody = await response.Raw.Content.ReadAsStringAsync();
+            try
+            {
+                return JsonUtils.Deserialize<V3ListPersonalizedEstimatesResponse>(responseBody)!;
+            }
+            catch (JsonException e)
+            {
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
+            }
+        }
+
+        {
+            var responseBody = await response.Raw.Content.ReadAsStringAsync();
+            try
+            {
+                switch (response.StatusCode)
+                {
+                    case 400:
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
+                    case 401:
+                        throw new UnauthorizedError(
+                            JsonUtils.Deserialize<ConsumerSitePersonalizedEstimateErrorResponse>(
+                                responseBody
+                            )
+                        );
+                    case 403:
+                        throw new ForbiddenError(
+                            JsonUtils.Deserialize<ConsumerSitePersonalizedEstimateErrorResponse>(
+                                responseBody
+                            )
+                        );
+                    case 404:
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
+                    case 422:
+                        throw new UnprocessableEntityError(
+                            JsonUtils.Deserialize<object>(responseBody)
+                        );
+                    case 429:
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
+                    case 500:
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
+                    case 502:
+                        throw new BadGatewayError(
+                            JsonUtils.Deserialize<ConsumerSitePersonalizedEstimateErrorResponse>(
+                                responseBody
+                            )
+                        );
+                    case 503:
+                        throw new ServiceUnavailableError(
+                            JsonUtils.Deserialize<ConsumerSitePersonalizedEstimateErrorResponse>(
+                                responseBody
+                            )
+                        );
+                }
+            }
+            catch (JsonException)
+            {
+                // unable to map error response, throwing generic error
+            }
+            throw new TurquoiseHealthApiClientApiException(
+                $"Error with status code {response.StatusCode}",
+                response.StatusCode,
+                responseBody
+            );
+        }
+    }
+
+    /// <summary>
+    /// Compare what this member would pay out-of-pocket across providers for the givenpackage. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
+    /// </summary>
+    /// <example><code>
+    /// await client.ConsumerPricing.V3ComparePersonalizedEstimatesAsync(
+    ///     new ConsumerSitePriceComparisonInput
+    ///     {
+    ///         PackageId = "GA003",
+    ///         Pricing = new ConsumerSitePricingNegotiated
+    ///         {
+    ///             Type = "negotiated",
+    ///             NetworkId = "-3776001016975145508",
+    ///         },
+    ///         MemberEligibility = new ConsumerSiteMemberEligibilityInput
+    ///         {
+    ///             FirstName = "test123",
+    ///             LastName = "test123",
+    ///             DateOfBirth = new DateOnly(2001, 1, 1),
+    ///             MemberId = "test123",
+    ///             ConsentAttested = "consent_attested",
+    ///         },
+    ///         Location = new ConsumerSiteLocation { Zip = "80218" },
+    ///     }
+    /// );
+    /// </code></example>
+    public async Task<ConsumerSitePriceComparison> V3ComparePersonalizedEstimatesAsync(
+        ConsumerSitePriceComparisonInput request,
+        RequestOptions? options = null,
+        CancellationToken cancellationToken = default
+    )
+    {
+        var response = await _client
+            .SendRequestAsync(
+                new JsonRequest
+                {
+                    BaseUrl = _client.Options.BaseUrl,
+                    Method = HttpMethod.Post,
+                    Path = "v3/personalized-estimates/compare",
+                    Body = request,
+                    ContentType = "application/json",
+                    Options = options,
+                },
+                cancellationToken
+            )
+            .ConfigureAwait(false);
+        if (response.StatusCode is >= 200 and < 400)
+        {
+            var responseBody = await response.Raw.Content.ReadAsStringAsync();
+            try
+            {
+                return JsonUtils.Deserialize<ConsumerSitePriceComparison>(responseBody)!;
+            }
+            catch (JsonException e)
+            {
+                throw new TurquoiseHealthApiClientException("Failed to deserialize response", e);
+            }
+        }
+
+        {
+            var responseBody = await response.Raw.Content.ReadAsStringAsync();
+            try
+            {
+                switch (response.StatusCode)
+                {
+                    case 400:
+                        throw new BadRequestError(JsonUtils.Deserialize<object>(responseBody));
+                    case 401:
+                        throw new UnauthorizedError(
+                            JsonUtils.Deserialize<ConsumerSitePersonalizedEstimateErrorResponse>(
+                                responseBody
+                            )
+                        );
+                    case 403:
+                        throw new ForbiddenError(
+                            JsonUtils.Deserialize<ConsumerSitePersonalizedEstimateErrorResponse>(
+                                responseBody
+                            )
+                        );
+                    case 404:
+                        throw new NotFoundError(JsonUtils.Deserialize<object>(responseBody));
+                    case 422:
+                        throw new UnprocessableEntityError(
+                            JsonUtils.Deserialize<object>(responseBody)
+                        );
+                    case 429:
+                        throw new TooManyRequestsError(JsonUtils.Deserialize<object>(responseBody));
+                    case 500:
+                        throw new InternalServerError(JsonUtils.Deserialize<object>(responseBody));
+                    case 502:
+                        throw new BadGatewayError(
+                            JsonUtils.Deserialize<ConsumerSitePersonalizedEstimateErrorResponse>(
+                                responseBody
+                            )
+                        );
+                    case 503:
+                        throw new ServiceUnavailableError(
+                            JsonUtils.Deserialize<ConsumerSitePersonalizedEstimateErrorResponse>(
+                                responseBody
+                            )
                         );
                 }
             }

@@ -58,7 +58,7 @@ public class V3ListProvidersTest : BaseMockServerTest
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3ListEnvelopeProvider>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<ListEnvelopeProvider>(mockResponse)).UsingDefaults()
         );
     }
 }

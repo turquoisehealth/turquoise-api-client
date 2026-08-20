@@ -16,7 +16,7 @@ public record V3GetPriceRequest
     /// Relations to inline. Repeat the param to request several.
     /// </summary>
     [JsonIgnore]
-    public IEnumerable<V3PriceExpand>? Expand { get; set; }
+    public IEnumerable<PriceExpand>? Expand { get; set; }
 
     /// <inheritdoc />
     public override string ToString()

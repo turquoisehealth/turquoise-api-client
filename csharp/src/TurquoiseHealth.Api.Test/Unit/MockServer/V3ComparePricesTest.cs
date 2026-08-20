@@ -83,20 +83,20 @@ public class V3ComparePricesTest : BaseMockServerTest
             );
 
         var response = await Client.ConsumerPricing.V3ComparePricesAsync(
-            new V3PricesCompareRequest
+            new PricesCompareRequest
             {
                 PackageId = "OB002",
                 ProviderId = "5756",
-                Pricing = new V3PricesCompareRequestPricing(
-                    new V3PricesCompareRequestPricing.Negotiated(
-                        new V3PricingNegotiated { NetworkId = "-3776001016975145508" }
+                Pricing = new PricesCompareRequestPricing(
+                    new PricesCompareRequestPricing.Negotiated(
+                        new PricingNegotiated { NetworkId = "-3776001016975145508" }
                     )
                 ),
             }
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3PriceComparison>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<PriceComparison>(mockResponse)).UsingDefaults()
         );
     }
 
@@ -182,15 +182,15 @@ public class V3ComparePricesTest : BaseMockServerTest
             );
 
         var response = await Client.ConsumerPricing.V3ComparePricesAsync(
-            new V3PricesCompareRequest
+            new PricesCompareRequest
             {
                 PackageId = "RA008",
-                Pricing = new V3PricesCompareRequestPricing(
-                    new V3PricesCompareRequestPricing.Cash(new V3PricingCash())
+                Pricing = new PricesCompareRequestPricing(
+                    new PricesCompareRequestPricing.Cash(new PricingCash())
                 ),
-                Location = new V3Location
+                Location = new Location
                 {
-                    Within = new V3LocationWithin
+                    Within = new LocationWithin
                     {
                         ZipCodes = new List<string>() { "80218", "80210" },
                     },
@@ -199,7 +199,7 @@ public class V3ComparePricesTest : BaseMockServerTest
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3PriceComparison>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<PriceComparison>(mockResponse)).UsingDefaults()
         );
     }
 
@@ -284,15 +284,15 @@ public class V3ComparePricesTest : BaseMockServerTest
             );
 
         var response = await Client.ConsumerPricing.V3ComparePricesAsync(
-            new V3PricesCompareRequest
+            new PricesCompareRequest
             {
                 PackageId = "RA008",
-                Pricing = new V3PricesCompareRequestPricing(
-                    new V3PricesCompareRequestPricing.Cash(new V3PricingCash())
+                Pricing = new PricesCompareRequestPricing(
+                    new PricesCompareRequestPricing.Cash(new PricingCash())
                 ),
-                Location = new V3Location
+                Location = new Location
                 {
-                    Near = new V3LocationNear
+                    Near = new LocationNear
                     {
                         Lat = 39.745961,
                         Lng = -104.971559,
@@ -303,7 +303,7 @@ public class V3ComparePricesTest : BaseMockServerTest
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3PriceComparison>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<PriceComparison>(mockResponse)).UsingDefaults()
         );
     }
 }

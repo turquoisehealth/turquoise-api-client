@@ -44,7 +44,7 @@ public class V3GetNetworkTest : BaseMockServerTest
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3Network>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<Network>(mockResponse)).UsingDefaults()
         );
     }
 }

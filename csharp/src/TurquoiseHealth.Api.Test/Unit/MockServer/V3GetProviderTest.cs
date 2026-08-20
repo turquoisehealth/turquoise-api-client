@@ -47,7 +47,7 @@ public class V3GetProviderTest : BaseMockServerTest
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<V3Provider>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<Provider>(mockResponse)).UsingDefaults()
         );
     }
 }

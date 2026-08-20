@@ -2,10 +2,9 @@
 
 import type * as core from "../../core/index.js";
 import * as errors from "../../errors/index.js";
-import type * as TurquoiseHealthApi from "../index.js";
 
 export class InternalServerError extends errors.TurquoiseHealthApiError {
-    constructor(body: TurquoiseHealthApi.V3ErrorResponse, rawResponse?: core.RawResponse) {
+    constructor(body?: unknown, rawResponse?: core.RawResponse) {
         super({
             message: "InternalServerError",
             statusCode: 500,
