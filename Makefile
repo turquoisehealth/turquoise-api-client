@@ -1,24 +1,10 @@
-.PHONY: help test test-python test-typescript test-csharp install-test-deps clean venv generate
+.PHONY: help tests test-python test-typescript test-csharp install-test-deps clean venv
 
 .DEFAULT_GOAL := help
 
-# Optional OpenAPI URL for SDK generation:
-# - make generate OPENAPI_URL=https://...
-# - make generate https://...
-OPENAPI_URL ?=
-
 ifneq ($(wildcard .env),)
 include .env
-export TURQUOISE_CLIENT_ID TURQUOISE_CLIENT_SECRET TURQUOISE_ORGANIZATION_ID TURQUOISE_AUTH_URL
-endif
-
-# Support positional URL as second goal (e.g. `make generate https://...`).
-ifneq ($(filter generate,$(MAKECMDGOALS)),)
-OPENAPI_URL := $(if $(OPENAPI_URL),$(OPENAPI_URL),$(word 2,$(MAKECMDGOALS)))
-
-# Swallow the extra positional argument goal so make does not treat it as a target.
-%:
-	@:
+export TURQUOISE_CLIENT_ID TURQUOISE_CLIENT_SECRET TURQUOISE_ORGANIZATION_ID
 endif
 
 # Python virtual environment directory
@@ -37,19 +23,17 @@ help:
 	@echo "  make test-typescript   - Run TypeScript integration tests"
 	@echo "  make test-csharp       - Run C# integration tests"
 	@echo "  make install-test-deps - Install test dependencies for all languages"
-	@echo "  make generate [OPENAPI_URL=https://...] - Regenerate SDKs (requires FERN_TOKEN)"
 	@echo ""
 	@echo "  make clean            - Clean test artifacts"
 	@echo ""
 	@echo "Prerequisites:"
 	@echo "  - Set TURQUOISE_CLIENT_ID, TURQUOISE_CLIENT_SECRET, and TURQUOISE_ORGANIZATION_ID in .env or the environment before running tests"
-	@echo "  - Set FERN_TOKEN environment variable before running 'make generate'"
 	@echo "  - Run 'make venv' to create Python virtual environment (recommended)"
 	@echo "  - Install dependencies: make install-test-deps"
 	@echo "  - Install Fern CLI: npm install -g fern-api"
 
 # Run all tests
-test: test-python test-typescript test-csharp
+tests: test-python test-typescript test-csharp
 	@echo ""
 	@echo "✓ All integration tests completed successfully!"
 
@@ -107,10 +91,6 @@ clean:
 	@find csharp -type d -name "obj" -exec rm -rf {} + 2>/dev/null || true
 	@find csharp -type d -name "TestResults" -exec rm -rf {} + 2>/dev/null || true
 	@echo "✓ Cleaned test artifacts"
-
-# Regenerate SDKs from OpenAPI spec
-generate:
-	@./scripts/generate.sh "$(OPENAPI_URL)"
 
 # End of Makefile
 

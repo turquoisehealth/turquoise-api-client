@@ -45,7 +45,7 @@ Before running the tests:
 ### Run All Tests
 
 ```bash
-make test
+make tests
 ```
 
 ### Run Tests by Language
@@ -162,4 +162,4 @@ When adding new endpoints to the API clients:
 
 1. Add corresponding test cases to each language's integration test file
 2. Ensure tests follow the existing pattern
-3. Run `make test` to verify all clients work correctly
+3. Run `make tests` to verify all clients work correctly

@@ -1,6 +1,6 @@
 {
   "name": "@turquoisehealth/api",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Official TypeScript client for the Turquoise Health Consumer Pricing API",
   "license": "MIT",
   "repository": {
