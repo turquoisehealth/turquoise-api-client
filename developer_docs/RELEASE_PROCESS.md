@@ -82,7 +82,7 @@ git switch --detach vX.X.XX
 From the clean, tagged release checkout, run:
 
 ```bash
-python3 scripts/trigger_publish_workflow.py --sdk all
+python scripts/trigger_publish_workflow.py --sdk all
 ```
 
 The script uses the version in the checked-out `openapi.json` and derives the tag from it. It validates that:
