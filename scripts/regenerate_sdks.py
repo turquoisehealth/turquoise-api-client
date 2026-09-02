@@ -16,6 +16,7 @@ OPENAPI_FILE = REPOSITORY_ROOT / "openapi.json"
 PYPROJECT_FILE = REPOSITORY_ROOT / "python" / "pyproject.toml"
 PACKAGE_FILE = REPOSITORY_ROOT / "typescript" / "package.json"
 LOCK_FILE = REPOSITORY_ROOT / "typescript" / "package-lock.json"
+CSHARP_VERSION_FILE = REPOSITORY_ROOT / "csharp" / "src" / "TurquoiseHealth.Api" / "Core" / "Public" / "Version.cs"
 
 
 def load_environment() -> None:
@@ -103,6 +104,12 @@ def update_package_versions() -> None:
     update_file(PACKAGE_FILE, r'^(  "version": ")[^"]+(",)$', rf'\g<1>{version}\g<2>', "typescript/package.json version")
     update_file(LOCK_FILE, r'^(  "version": ")[^"]+(",)$', rf'\g<1>{version}\g<2>', "typescript/package-lock.json version")
     update_file(LOCK_FILE, r'^(      "version": ")[^"]+(",)$', rf'\g<1>{version}\g<2>', "typescript lock package version")
+    update_file(
+        CSHARP_VERSION_FILE,
+        r'^(    public const string Current = ")[^"]+(";)$',
+        rf'\g<1>{version}\g<2>',
+        "csharp Version.cs version",
+    )
 
 
 def main() -> None:

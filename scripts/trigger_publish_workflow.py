@@ -15,6 +15,7 @@ OPENAPI_FILE = REPOSITORY_ROOT / "openapi.json"
 PYPROJECT_FILE = REPOSITORY_ROOT / "python" / "pyproject.toml"
 PACKAGE_FILE = REPOSITORY_ROOT / "typescript" / "package.json"
 LOCK_FILE = REPOSITORY_ROOT / "typescript" / "package-lock.json"
+CSHARP_VERSION_FILE = REPOSITORY_ROOT / "csharp" / "src" / "TurquoiseHealth.Api" / "Core" / "Public" / "Version.cs"
 
 
 def run(command: list[str]) -> str:
@@ -48,11 +49,20 @@ def read_versions() -> dict[str, str]:
 
     package_version = json.loads(PACKAGE_FILE.read_text())["version"]
     lock_version = json.loads(LOCK_FILE.read_text())["packages"][""]["version"]
+    csharp_version = re.search(
+        r'^    public const string Current = "([^"]+)";$',
+        CSHARP_VERSION_FILE.read_text(),
+        re.MULTILINE,
+    )
+    if csharp_version is None:
+        raise ValueError(f"Could not find the version in {CSHARP_VERSION_FILE}")
+
     return {
         "openapi.json": openapi_version,
         "python/pyproject.toml": pyproject_version.group(1),
         "typescript/package.json": package_version,
         "typescript/package-lock.json": lock_version,
+        "csharp/src/TurquoiseHealth.Api/Core/Public/Version.cs": csharp_version.group(1),
     }
 
 
@@ -91,13 +101,16 @@ def validate() -> tuple[str, str]:
         raise ValueError(f"Tag {tag} does not point to the current commit")
 
     remote_tag = subprocess.run(
-        ["git", "ls-remote", "--exit-code", "origin", f"refs/tags/{tag}"],
+        ["git", "ls-remote", "--exit-code", "origin", f"refs/tags/{tag}^{{}}"],
         cwd=REPOSITORY_ROOT,
         capture_output=True,
         text=True,
     )
     if remote_tag.returncode != 0:
-        raise ValueError(f"Tag {tag} is not available on origin")
+        raise ValueError(f"Annotated tag {tag} is not available on origin")
+    remote_commit = remote_tag.stdout.split(maxsplit=1)[0]
+    if remote_commit != current_commit:
+        raise ValueError(f"Remote tag {tag} does not point to the current commit")
 
     if run(["git", "status", "--porcelain"]):
         raise ValueError("Working tree is not clean; commit or remove local changes first")

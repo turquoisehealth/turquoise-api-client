@@ -33,9 +33,11 @@ jobs:
 
       - name: Validate version
         id: release
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
           set -euo pipefail
-          VERSION="${{ inputs.version }}"
+          VERSION="$INPUT_VERSION"
           TAG_VERSION="${GITHUB_REF_NAME#v}"
 
           [[ "$GITHUB_REF" == refs/tags/v* ]] || {
@@ -55,19 +57,23 @@ jobs:
           PYTHON_VERSION=$(sed -n 's/^version = "\([^"]*\)"/\1/p' python/pyproject.toml)
           NPM_VERSION=$(jq -r '.version' typescript/package.json)
           LOCK_VERSION=$(jq -r '.packages[""].version' typescript/package-lock.json)
+          CSHARP_VERSION=$(sed -n 's/^    public const string Current = "\([^"]*\)";$/\1/p' csharp/src/TurquoiseHealth.Api/Core/Public/Version.cs)
 
           [[ "$OPENAPI_VERSION" == "$VERSION" ]] || { echo "openapi.json is $OPENAPI_VERSION"; exit 1; }
           [[ "$PYTHON_VERSION" == "$VERSION" ]] || { echo "pyproject.toml is $PYTHON_VERSION"; exit 1; }
           [[ "$NPM_VERSION" == "$VERSION" ]] || { echo "package.json is $NPM_VERSION"; exit 1; }
           [[ "$LOCK_VERSION" == "$VERSION" ]] || { echo "package-lock.json is $LOCK_VERSION"; exit 1; }
+          [[ "$CSHARP_VERSION" == "$VERSION" ]] || { echo "Version.cs is $CSHARP_VERSION"; exit 1; }
 
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Select SDKs
         id: sdk
+        env:
+          INPUT_SDK: ${{ inputs.sdk }}
         run: |
           for sdk in python typescript csharp; do
-            if [[ "${{ inputs.sdk }}" == "all" || "${{ inputs.sdk }}" == "$sdk" ]]; then
+            if [[ "$INPUT_SDK" == "all" || "$INPUT_SDK" == "$sdk" ]]; then
               echo "publish_${sdk}=true" >> "$GITHUB_OUTPUT"
             else
               echo "publish_${sdk}=false" >> "$GITHUB_OUTPUT"
