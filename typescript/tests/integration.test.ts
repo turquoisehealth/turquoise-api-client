@@ -5,38 +5,41 @@
  * the client can successfully initialize, authenticate, make requests, and parse responses.
  *
  * Prerequisites:
- *   - Set TURQUOISE_API_TOKEN environment variable
+ *   - Set TURQUOISE_CLIENT_ID, TURQUOISE_CLIENT_SECRET, and TURQUOISE_ORGANIZATION_ID environment variables
  *   - Install test dependencies: npm install
  *
  * Run tests:
  *   npm test
  */
 
-import { TurquoiseHealthApiClient } from "../index";
+import { TurquoiseHealthApiClient, lib } from "../index";
 
-// Check if API token is available
-const API_TOKEN = process.env.TURQUOISE_API_TOKEN;
+const HAS_CLIENT_CREDENTIALS = [
+  process.env.TURQUOISE_CLIENT_ID,
+  process.env.TURQUOISE_CLIENT_SECRET,
+  process.env.TURQUOISE_ORGANIZATION_ID,
+].every(Boolean);
 const BASE_URL = "https://api.turquoise.health";
 
-// Helper to skip tests if no token
-const describeIfToken = API_TOKEN ? describe : describe.skip;
+const describeIfCredentials = HAS_CLIENT_CREDENTIALS ? describe : describe.skip;
 
 describe("Turquoise Health API TypeScript Client", () => {
   let client: TurquoiseHealthApiClient;
 
   beforeAll(() => {
-    if (!API_TOKEN) {
-      console.warn("⚠ TURQUOISE_API_TOKEN not set - tests will be skipped");
+    if (!HAS_CLIENT_CREDENTIALS) {
+      console.warn("⚠ OAuth client credentials not set - tests will be skipped");
       return;
     }
 
+    const auth = lib.APIAuthHandler.fromClientCredentials();
     client = new TurquoiseHealthApiClient({
       environment: BASE_URL,
-      token: API_TOKEN
+      token: auth.asSupplier()
     });
   });
 
-  describeIfToken("V3 Endpoints", () => {
+  describeIfCredentials("V3 Endpoints", () => {
     test("v3ListPackages - list shoppable service packages", async () => {
       const response = await client.consumerPricing.v3ListPackages({
         page_size: 5

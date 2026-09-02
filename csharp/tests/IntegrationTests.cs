@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using TurquoiseHealth.Api;
+using TurquoiseHealth.Api.Lib;
 
 namespace TurquoiseHealth.Api.IntegrationTests;
 
@@ -10,7 +11,7 @@ namespace TurquoiseHealth.Api.IntegrationTests;
 /// the client can successfully initialize, authenticate, make requests, and parse responses.
 ///
 /// Prerequisites:
-///   - Set TURQUOISE_API_TOKEN environment variable
+///   - Set TURQUOISE_CLIENT_ID, TURQUOISE_CLIENT_SECRET, and TURQUOISE_ORGANIZATION_ID environment variables
 ///   - Install dependencies: dotnet restore
 ///
 /// Run tests:
@@ -20,17 +21,21 @@ public class IntegrationTests
 {
     private const string BaseUrl = "https://api.turquoise.health";
     private TurquoiseHealthApiClient? _client;
-    private readonly string? _apiToken = Environment.GetEnvironmentVariable("TURQUOISE_API_TOKEN");
+    private readonly bool _hasClientCredentials =
+        !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TURQUOISE_CLIENT_ID")) &&
+        !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TURQUOISE_CLIENT_SECRET")) &&
+        !string.IsNullOrEmpty(Environment.GetEnvironmentVariable("TURQUOISE_ORGANIZATION_ID"));
 
     [SetUp]
     public void Setup()
     {
-        if (string.IsNullOrEmpty(_apiToken))
+        if (!_hasClientCredentials)
         {
-            Assert.Ignore("TURQUOISE_API_TOKEN environment variable not set");
+            Assert.Ignore("OAuth client credentials are not set");
         }
 
-        _client = new TurquoiseHealthApiClient(_apiToken, new ClientOptions
+        var auth = APIAuthHandler.FromClientCredentials();
+        _client = new TurquoiseHealthApiClient(auth.GetToken(), new ClientOptions
         {
             BaseUrl = BaseUrl
         });

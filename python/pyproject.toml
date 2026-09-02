@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "turquoisehealth-api"
-version = "0.0.0"
+version = "0.1.0"
 description = "Official Python client for the Turquoise Health Consumer Pricing API"
 license = "MIT"
 requires-python = ">=3.8"
