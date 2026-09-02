@@ -9,6 +9,6 @@ export interface ConsumerSiteMemberEligibilityInput {
     first_name: string;
     last_name: string;
     date_of_birth: string;
-    member_id: string;
+    member_id?: string | null;
     consent_attested: string;
 }

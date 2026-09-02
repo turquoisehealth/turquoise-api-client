@@ -123,7 +123,7 @@ class ConsumerPricingClient:
             Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match).
 
         search : typing.Optional[str]
-            Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.
+            Semantic search over provider names. Composes with the other filters and any location mode; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.
 
         min_score : typing.Optional[float]
             Minimum similarity score (0-1).
@@ -362,7 +362,7 @@ class ConsumerPricingClient:
             Networks with at least one price for this package.
 
         search : typing.Optional[str]
-            Semantic search over network and payer names. Composes with the other filters; returns a single relevance-ordered page (no cursor).
+            Semantic search over network and payer names. Composes with the other filters and location; returns a single relevance-ordered page (no cursor).
 
         min_score : typing.Optional[float]
             Minimum similarity score (0-1).
@@ -957,7 +957,7 @@ class AsyncConsumerPricingClient:
             Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match).
 
         search : typing.Optional[str]
-            Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.
+            Semantic search over provider names. Composes with the other filters and any location mode; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.
 
         min_score : typing.Optional[float]
             Minimum similarity score (0-1).
@@ -1214,7 +1214,7 @@ class AsyncConsumerPricingClient:
             Networks with at least one price for this package.
 
         search : typing.Optional[str]
-            Semantic search over network and payer names. Composes with the other filters; returns a single relevance-ordered page (no cursor).
+            Semantic search over network and payer names. Composes with the other filters and location; returns a single relevance-ordered page (no cursor).
 
         min_score : typing.Optional[float]
             Minimum similarity score (0-1).

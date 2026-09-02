@@ -31,6 +31,10 @@ public readonly record struct ConsumerSitePersonalizedEstimateErrorCode : IStrin
         Values.InvalidMemberId
     );
 
+    public static readonly ConsumerSitePersonalizedEstimateErrorCode MemberIdRequired = new(
+        Values.MemberIdRequired
+    );
+
     public static readonly ConsumerSitePersonalizedEstimateErrorCode InvalidMemberName = new(
         Values.InvalidMemberName
     );
@@ -175,6 +179,8 @@ public readonly record struct ConsumerSitePersonalizedEstimateErrorCode : IStrin
         public const string InvalidDob = "invalid_dob";
 
         public const string InvalidMemberId = "invalid_member_id";
+
+        public const string MemberIdRequired = "member_id_required";
 
         public const string InvalidMemberName = "invalid_member_name";
 

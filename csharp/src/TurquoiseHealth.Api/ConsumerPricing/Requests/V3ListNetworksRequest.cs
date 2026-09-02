@@ -31,7 +31,7 @@ public record V3ListNetworksRequest
     public string? PackageId { get; set; }
 
     /// <summary>
-    /// Semantic search over network and payer names. Composes with the other filters; returns a single relevance-ordered page (no cursor).
+    /// Semantic search over network and payer names. Composes with the other filters and location; returns a single relevance-ordered page (no cursor).
     /// </summary>
     [JsonIgnore]
     public string? Search { get; set; }

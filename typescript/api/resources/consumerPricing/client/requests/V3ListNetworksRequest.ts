@@ -13,7 +13,7 @@ export interface V3ListNetworksRequest {
     provider_id?: string | null;
     /** Networks with at least one price for this package. */
     package_id?: string | null;
-    /** Semantic search over network and payer names. Composes with the other filters; returns a single relevance-ordered page (no cursor). */
+    /** Semantic search over network and payer names. Composes with the other filters and location; returns a single relevance-ordered page (no cursor). */
     search?: string | null;
     /** Minimum similarity score (0-1). */
     min_score?: number | null;

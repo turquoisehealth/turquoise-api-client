@@ -17,7 +17,7 @@ export interface V3ListProvidersRequest {
     network_id?: string | null;
     /** Providers priced under any of this payer's networks (combined with other relationship filters, the same price row must match). */
     payer_id?: string | null;
-    /** Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated. */
+    /** Semantic search over provider names. Composes with the other filters and any location mode; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated. */
     search?: string | null;
     /** Minimum similarity score (0-1). */
     min_score?: number | null;

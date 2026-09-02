@@ -43,7 +43,7 @@ public record V3ListProvidersRequest
     public string? PayerId { get; set; }
 
     /// <summary>
-    /// Semantic search over provider names. Composes with the other filters and a near/zip location; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.
+    /// Semantic search over provider names. Composes with the other filters and any location mode; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.
     /// </summary>
     [JsonIgnore]
     public string? Search { get; set; }

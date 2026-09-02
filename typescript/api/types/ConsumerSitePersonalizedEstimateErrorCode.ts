@@ -13,6 +13,7 @@ export const ConsumerSitePersonalizedEstimateErrorCode = {
     UnavailablePayer: "unavailable_payer",
     InvalidDob: "invalid_dob",
     InvalidMemberId: "invalid_member_id",
+    MemberIdRequired: "member_id_required",
     InvalidMemberName: "invalid_member_name",
     MemberNotFound: "member_not_found",
     NoActiveCoverage: "no_active_coverage",
