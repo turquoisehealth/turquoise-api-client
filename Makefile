@@ -7,6 +7,11 @@
 # - make generate https://...
 OPENAPI_URL ?=
 
+ifneq ($(wildcard .env),)
+include .env
+export TURQUOISE_CLIENT_ID TURQUOISE_CLIENT_SECRET TURQUOISE_ORGANIZATION_ID TURQUOISE_AUTH_URL
+endif
+
 # Support positional URL as second goal (e.g. `make generate https://...`).
 ifneq ($(filter generate,$(MAKECMDGOALS)),)
 OPENAPI_URL := $(if $(OPENAPI_URL),$(OPENAPI_URL),$(word 2,$(MAKECMDGOALS)))
@@ -37,7 +42,7 @@ help:
 	@echo "  make clean            - Clean test artifacts"
 	@echo ""
 	@echo "Prerequisites:"
-	@echo "  - Set TURQUOISE_API_TOKEN environment variable before running tests"
+	@echo "  - Set TURQUOISE_CLIENT_ID, TURQUOISE_CLIENT_SECRET, and TURQUOISE_ORGANIZATION_ID in .env or the environment before running tests"
 	@echo "  - Set FERN_TOKEN environment variable before running 'make generate'"
 	@echo "  - Run 'make venv' to create Python virtual environment (recommended)"
 	@echo "  - Install dependencies: make install-test-deps"

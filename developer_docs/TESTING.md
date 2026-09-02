@@ -17,10 +17,12 @@ The tests connect to the production API at `https://api.turquoise.health`.
 
 Before running the tests, you must:
 
-1. **Set your API token** as an environment variable:
+1. **Set your OAuth client credentials** in `.env` or as environment variables:
 
    ```bash
-   export TURQUOISE_API_TOKEN="your_api_token_here"
+   export TURQUOISE_CLIENT_ID="your-client-id"
+   export TURQUOISE_CLIENT_SECRET="your-client-secret"
+   export TURQUOISE_ORGANIZATION_ID="your-org-id"
    ```
 
 2. **(Recommended) Create a Python virtual environment:**
@@ -136,7 +138,7 @@ make clean
 
 **Tests are skipped:**
 
-- Ensure `TURQUOISE_API_TOKEN` is set in your environment
+- Ensure `TURQUOISE_CLIENT_ID`, `TURQUOISE_CLIENT_SECRET`, and `TURQUOISE_ORGANIZATION_ID` are set in your environment or `.env`
 
 **Import errors (Python):**
 

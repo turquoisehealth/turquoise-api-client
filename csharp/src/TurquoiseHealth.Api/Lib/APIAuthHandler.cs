@@ -79,7 +79,7 @@ public class APIAuthHandler
         _clientId = clientId;
         _clientSecret = clientSecret;
         _organizationId = organizationId;
-        _authUrl = authUrl ?? "https://api.turquoise.health";
+        _authUrl = string.IsNullOrWhiteSpace(authUrl) ? "https://api.turquoise.health" : authUrl;
         _ttlBuffer = ttlBuffer;
         _httpClient = new HttpClient();
     }
@@ -129,7 +129,9 @@ public class APIAuthHandler
         clientId ??= Environment.GetEnvironmentVariable("TURQUOISE_CLIENT_ID");
         clientSecret ??= Environment.GetEnvironmentVariable("TURQUOISE_CLIENT_SECRET");
         organizationId ??= Environment.GetEnvironmentVariable("TURQUOISE_ORGANIZATION_ID");
-        authUrl ??= Environment.GetEnvironmentVariable("TURQUOISE_AUTH_URL");
+        authUrl = string.IsNullOrWhiteSpace(authUrl)
+            ? Environment.GetEnvironmentVariable("TURQUOISE_AUTH_URL")
+            : authUrl;
 
         if (string.IsNullOrEmpty(clientId) || string.IsNullOrEmpty(clientSecret) || string.IsNullOrEmpty(organizationId))
         {
