@@ -61,29 +61,22 @@ def parse_args() -> argparse.Namespace:
         description="Validate a release and trigger publish.yml on GitHub Actions."
     )
     parser.add_argument(
-        "--version",
-        help="Release version; defaults to openapi.json info.version",
-    )
-    parser.add_argument(
         "--sdk",
         choices=("all", "python", "typescript", "csharp"),
         default="all",
         help="SDK to publish (default: all)",
     )
     parser.add_argument(
-        "--yes",
-        action="store_true",
-        help="Skip the confirmation prompt",
-    )
-    parser.add_argument(
-        "--check-only",
+        "--dry",
         action="store_true",
         help="Validate readiness without triggering the workflow",
     )
     return parser.parse_args()
 
 
-def validate(version: str) -> str:
+def validate() -> tuple[str, str]:
+    versions = read_versions()
+    version = versions["openapi.json"]
     if not re.fullmatch(r"\d+\.\d+\.\d+", version):
         raise ValueError("Version must use production semver, for example 3.2.68")
 
@@ -109,7 +102,6 @@ def validate(version: str) -> str:
     if run(["git", "status", "--porcelain"]):
         raise ValueError("Working tree is not clean; commit or remove local changes first")
 
-    versions = read_versions()
     mismatches = {path: value for path, value in versions.items() if value != version}
     if mismatches:
         details = ", ".join(f"{path}={value}" for path, value in mismatches.items())
@@ -118,29 +110,26 @@ def validate(version: str) -> str:
     if shutil.which("gh") is None:
         raise ValueError("GitHub CLI (gh) is not installed")
     subprocess.run(["gh", "auth", "status"], cwd=REPOSITORY_ROOT, check=True)
-    return tag
+    return tag, version
 
 
 def main() -> int:
     args = parse_args()
     try:
-        openapi_version = json.loads(OPENAPI_FILE.read_text())["info"]["version"]
-        version = args.version or openapi_version
-        tag = validate(version)
+        tag, version = validate()
     except (OSError, json.JSONDecodeError, KeyError, subprocess.CalledProcessError, ValueError) as error:
         print(f"Release validation failed: {error}", file=sys.stderr)
         return 1
 
     print(f"Release validation passed for {tag}")
     print(f"SDK selection: {args.sdk}")
-    if args.check_only:
+    if args.dry:
         return 0
 
-    if not args.yes:
-        answer = input(f"Trigger publish.yml for {tag} ({args.sdk})? [y/N] ")
-        if answer.lower() != "y":
-            print("Publish workflow not triggered.")
-            return 0
+    answer = input(f"Trigger publish.yml for {tag} ({args.sdk})? [y/N] ")
+    if answer.lower() != "y":
+        print("Publish workflow not triggered.")
+        return 0
 
     command = [
         "gh",

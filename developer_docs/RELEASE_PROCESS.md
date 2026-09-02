@@ -5,7 +5,7 @@
 Make sure that the `/openapi.json` file in the project root reflects the version you want to release. You can run the following to pull the latest:
 
 ```bash
-python3 scripts/pull_openapi_json.py https://turquoise.health/api/docs/openapi.json
+python scripts/pull_openapi_json.py https://turquoise.health/api/docs/openapi.json
 ```
 
 ## 2. Create a release branch
@@ -23,7 +23,7 @@ Of course, replace `X.X.XX` with the value from the `info.version` field in `/op
 Set a `FERN_TOKEN` in `.env` if not already set, and then run the generation script from the repository root:
 
 ```bash
-python3 scripts/regenerate_sdks.py
+python scripts/regenerate_sdks.py
 ```
 
 This script will run Fern to build the SDKs from `/openapi.json`, update the manual library exports, and synchronize the package versions.
@@ -63,7 +63,7 @@ git commit -m "chore: release SDKs for X.X.XX"
 
 Open a pull request targeting `main`. Include the API version, validation results, and a summary of any breaking changes. Also verify that the semantic versioning correctly reflects the changes being published (major, minor, patch etc.)
 
-The release PR should be carefully reviewed before merging and publishing. The merged commit contains the exact SDK source and package metadata that will be published.
+The release PR should be carefully reviewed before merging. The merged commit contains the exact SDK source and package metadata that will be published.
 
 ## 6. Create and push the release tag
 
@@ -85,14 +85,14 @@ From the clean, tagged release checkout, run:
 python3 scripts/trigger_publish_workflow.py --sdk all
 ```
 
-The script defaults to the version in `openapi.json`. It validates that:
+The script uses the version in the checked-out `openapi.json` and derives the tag from it. It validates that:
 
 - The working tree is clean.
 - `HEAD` is detached at the matching `vX.X.XX` tag.
 - The package versions match `openapi.json`.
 - GitHub CLI is installed and authenticated.
 
-Use `--version X.X.XX` to provide the version explicitly, or `--sdk python`, `--sdk typescript`, or `--sdk csharp` to publish one SDK. Use `--check-only` to validate without triggering GitHub Actions. The script asks for confirmation unless `--yes` is supplied.
+Use `--sdk python`, `--sdk typescript`, or `--sdk csharp` to publish only that SDK. You can also use `--dry` to validate without triggering GitHub Actions, but even without the --dry option the script will still ask for confirmation after validation and before triggering the workflow in Github.
 
 The GitHub Actions workflow receives the tag ref, version, and SDK selection:
 
