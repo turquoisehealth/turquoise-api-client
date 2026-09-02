@@ -17,7 +17,7 @@ class ConsumerSiteMemberEligibilityInput(UniversalBaseModel):
     first_name: str
     last_name: str
     date_of_birth: dt.date
-    member_id: str
+    member_id: typing.Optional[str] = None
     consent_attested: str
 
     if IS_PYDANTIC_V2:

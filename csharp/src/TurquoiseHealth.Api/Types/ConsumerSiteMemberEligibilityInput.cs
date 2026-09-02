@@ -26,7 +26,7 @@ public record ConsumerSiteMemberEligibilityInput : IJsonOnDeserialized
     public required DateOnly DateOfBirth { get; set; }
 
     [JsonPropertyName("member_id")]
-    public required string MemberId { get; set; }
+    public string? MemberId { get; set; }
 
     [JsonPropertyName("consent_attested")]
     public required string ConsentAttested { get; set; }

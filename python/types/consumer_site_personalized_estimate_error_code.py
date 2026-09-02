@@ -10,6 +10,7 @@ ConsumerSitePersonalizedEstimateErrorCode = typing.Union[
         "unavailable_payer",
         "invalid_dob",
         "invalid_member_id",
+        "member_id_required",
         "invalid_member_name",
         "member_not_found",
         "no_active_coverage",
