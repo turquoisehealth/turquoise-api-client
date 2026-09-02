@@ -1,7 +1,17 @@
 #!/bin/bash
 set -e
 
-# Script to regenerate SDKs locally (same as generate.yml workflow)
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+if [ -z "${FERN_TOKEN:-}" ] && [ -f "$REPO_ROOT/.env" ]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$REPO_ROOT/.env"
+  set +a
+fi
+
+# Script to regenerate SDKs locally
 # Usage: ./scripts/generate.sh [openapi-url]
 
 OPENAPI_URL=$1
@@ -37,7 +47,7 @@ fern generate
 
 echo ""
 echo "Updating library exports..."
-python3 scripts/update_lib_exports.py
+python3 scripts/_lib_exports.py
 
 echo ""
 echo "✓ SDK regeneration complete!"

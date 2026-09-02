@@ -1,27 +1,14 @@
 name: Publish SDKs
 
 on:
-  push:
-    tags:
-      - "v*"
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish (e.g., 3.2.55 or 0.0.0-dev.abc123)'
+        description: "Production version to publish (for example, 3.2.68)"
         required: true
         type: string
-      release_type:
-        description: 'Release type'
-        required: true
-        type: choice
-        options:
-          - production
-          - dev
-        default: production
       sdk:
-        description: 'SDK to publish'
+        description: "SDK to publish"
         required: true
         type: choice
         options:
@@ -33,95 +20,59 @@ on:
 
 jobs:
   prepare:
-    name: Determine version and release type
+    name: Validate release
     runs-on: ubuntu-latest
     outputs:
-      version: ${{ steps.release_type.outputs.version }}
-      python_version: ${{ steps.release_type.outputs.python_version }}
-      npm_version: ${{ steps.release_type.outputs.npm_version }}
-      release_type: ${{ steps.release_type.outputs.type }}
-      npm_tag: ${{ steps.release_type.outputs.npm_tag }}
-      publish_python: ${{ steps.release_type.outputs.publish_python }}
-      publish_typescript: ${{ steps.release_type.outputs.publish_typescript }}
-      publish_csharp: ${{ steps.release_type.outputs.publish_csharp }}
+      version: ${{ steps.release.outputs.version }}
+      publish_python: ${{ steps.sdk.outputs.publish_python }}
+      publish_typescript: ${{ steps.sdk.outputs.publish_typescript }}
+      publish_csharp: ${{ steps.sdk.outputs.publish_csharp }}
     steps:
-      - name: Determine release type
-        id: release_type
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+
+      - name: Validate version
+        id: release
         run: |
-          # Handle workflow_dispatch (manual trigger)
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            VERSION="${{ inputs.version }}"
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
+          set -euo pipefail
+          VERSION="${{ inputs.version }}"
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
 
-            # Set language-specific versions
-            # For production releases, all use the same version
-            # For dev releases with git SHA, format differs by language
-            if [[ "$VERSION" =~ ^0\.0\.0-dev\. ]]; then
-              # Convert npm format (0.0.0-dev.abc123) to Python format (0.0.0.dev0+abc123)
-              PYTHON_VERSION="${VERSION//-dev./.dev0+}"
-              echo "python_version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
-              echo "npm_version=$VERSION" >> $GITHUB_OUTPUT
+          [[ "$GITHUB_REF" == refs/tags/v* ]] || {
+            echo "Publishing must be run against a v* release tag."
+            exit 1
+          }
+          [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+            echo "Version must use production semver, for example 3.2.68."
+            exit 1
+          }
+          [[ "$TAG_VERSION" == "$VERSION" ]] || {
+            echo "Workflow version $VERSION does not match tag version $TAG_VERSION."
+            exit 1
+          }
+
+          OPENAPI_VERSION=$(jq -r '.info.version' openapi.json)
+          PYTHON_VERSION=$(sed -n 's/^version = "\([^"]*\)"/\1/p' python/pyproject.toml)
+          NPM_VERSION=$(jq -r '.version' typescript/package.json)
+          LOCK_VERSION=$(jq -r '.packages[""].version' typescript/package-lock.json)
+
+          [[ "$OPENAPI_VERSION" == "$VERSION" ]] || { echo "openapi.json is $OPENAPI_VERSION"; exit 1; }
+          [[ "$PYTHON_VERSION" == "$VERSION" ]] || { echo "pyproject.toml is $PYTHON_VERSION"; exit 1; }
+          [[ "$NPM_VERSION" == "$VERSION" ]] || { echo "package.json is $NPM_VERSION"; exit 1; }
+          [[ "$LOCK_VERSION" == "$VERSION" ]] || { echo "package-lock.json is $LOCK_VERSION"; exit 1; }
+
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Select SDKs
+        id: sdk
+        run: |
+          for sdk in python typescript csharp; do
+            if [[ "${{ inputs.sdk }}" == "all" || "${{ inputs.sdk }}" == "$sdk" ]]; then
+              echo "publish_${sdk}=true" >> "$GITHUB_OUTPUT"
             else
-              echo "python_version=$VERSION" >> $GITHUB_OUTPUT
-              echo "npm_version=$VERSION" >> $GITHUB_OUTPUT
+              echo "publish_${sdk}=false" >> "$GITHUB_OUTPUT"
             fi
-
-            echo "type=${{ inputs.release_type }}" >> $GITHUB_OUTPUT
-
-            if [[ "${{ inputs.release_type }}" == "production" ]]; then
-              echo "npm_tag=latest" >> $GITHUB_OUTPUT
-            else
-              echo "npm_tag=dev" >> $GITHUB_OUTPUT
-            fi
-
-            # Determine which SDKs to publish
-            if [[ "${{ inputs.sdk }}" == "all" || "${{ inputs.sdk }}" == "python" ]]; then
-              echo "publish_python=true" >> $GITHUB_OUTPUT
-            else
-              echo "publish_python=false" >> $GITHUB_OUTPUT
-            fi
-
-            if [[ "${{ inputs.sdk }}" == "all" || "${{ inputs.sdk }}" == "typescript" ]]; then
-              echo "publish_typescript=true" >> $GITHUB_OUTPUT
-            else
-              echo "publish_typescript=false" >> $GITHUB_OUTPUT
-            fi
-
-            if [[ "${{ inputs.sdk }}" == "all" || "${{ inputs.sdk }}" == "csharp" ]]; then
-              echo "publish_csharp=true" >> $GITHUB_OUTPUT
-            else
-              echo "publish_csharp=false" >> $GITHUB_OUTPUT
-            fi
-          # Handle tag push (automatic production release)
-          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            echo "type=production" >> $GITHUB_OUTPUT
-            echo "npm_tag=latest" >> $GITHUB_OUTPUT
-            VERSION="${{ github.ref_name }}"
-            VERSION="${VERSION#v}"  # Strip 'v' prefix
-            echo "version=$VERSION" >> $GITHUB_OUTPUT
-            echo "python_version=$VERSION" >> $GITHUB_OUTPUT
-            echo "npm_version=$VERSION" >> $GITHUB_OUTPUT
-            echo "publish_python=true" >> $GITHUB_OUTPUT
-            echo "publish_typescript=true" >> $GITHUB_OUTPUT
-            echo "publish_csharp=true" >> $GITHUB_OUTPUT
-          # Handle branch push (automatic dev release)
-          else
-            echo "type=dev" >> $GITHUB_OUTPUT
-            echo "npm_tag=dev" >> $GITHUB_OUTPUT
-            SHORT_SHA="${{ github.sha }}"
-            SHORT_SHA="${SHORT_SHA:0:7}"
-            # Python uses PEP 440 format: 0.0.0.dev0+abc123
-            PYTHON_VERSION="0.0.0.dev0+${SHORT_SHA}"
-            # npm uses semver format: 0.0.0-dev.abc123
-            NPM_VERSION="0.0.0-dev.${SHORT_SHA}"
-            echo "version=$NPM_VERSION" >> $GITHUB_OUTPUT
-            echo "python_version=$PYTHON_VERSION" >> $GITHUB_OUTPUT
-            echo "npm_version=$NPM_VERSION" >> $GITHUB_OUTPUT
-            # Skip Python publishing on branch pushes (OIDC trusted publisher only works for tags)
-            echo "publish_python=false" >> $GITHUB_OUTPUT
-            echo "publish_typescript=true" >> $GITHUB_OUTPUT
-            echo "publish_csharp=true" >> $GITHUB_OUTPUT
-          fi
+          done
 
   publish-python:
     name: Publish Python SDK
@@ -130,7 +81,7 @@ jobs:
     if: needs.prepare.outputs.publish_python == 'true'
     permissions:
       contents: read
-      id-token: write  # Required for PyPI OIDC trusted publishing
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -140,27 +91,14 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Stamp package version
-        run: |
-          sed -i "s/^version = \".*\"/version = \"${{ needs.prepare.outputs.python_version }}\"/" python/pyproject.toml
-
       - name: Build package
         run: |
           pip install build
           python -m build python
 
-      - name: Publish to PyPI (production)
-        if: needs.prepare.outputs.release_type == 'production'
+      - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
-          packages-dir: python/dist/
-          skip-existing: true
-
-      - name: Publish to TestPyPI (dev)
-        if: needs.prepare.outputs.release_type == 'dev'
-        uses: pypa/gh-action-pypi-publish@release/v1
-        with:
-          repository-url: https://test.pypi.org/legacy/
           packages-dir: python/dist/
           skip-existing: true
 
@@ -179,25 +117,13 @@ jobs:
           node-version: "20"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Stamp package version
-        run: |
-          npm --prefix typescript version "${{ needs.prepare.outputs.npm_version }}" --no-git-tag-version --allow-same-version
-
-      - name: Publish to npm (production)
-        if: env.NODE_AUTH_TOKEN != '' && needs.prepare.outputs.release_type == 'production'
+      - name: Install dependencies
         working-directory: typescript
-        run: |
-          npm ci
-          npm publish --access public --tag latest
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm ci
 
-      - name: Publish to npm (dev)
-        if: env.NODE_AUTH_TOKEN != '' && needs.prepare.outputs.release_type == 'dev'
+      - name: Publish to npm
         working-directory: typescript
-        run: |
-          npm ci
-          npm publish --access public --tag dev
+        run: npm publish --access public --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -208,7 +134,7 @@ jobs:
     if: needs.prepare.outputs.publish_csharp == 'true'
     permissions:
       contents: read
-      id-token: write  # Required for NuGet OIDC trusted publishing
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -218,14 +144,9 @@ jobs:
         with:
           dotnet-version: "8.x"
 
-      - name: Copy README for NuGet package
-        run: |
-          cp README.md csharp/README.md
-
       - name: Pack NuGet package
         working-directory: csharp
-        run: |
-          dotnet pack --configuration Release -p:Version=${{ needs.prepare.outputs.version }}
+        run: dotnet pack --configuration Release -p:Version=${{ needs.prepare.outputs.version }}
 
       - name: NuGet login (OIDC)
         uses: NuGet/login@v1

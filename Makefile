@@ -1,4 +1,6 @@
-.PHONY: help test test-python test-typescript test-csharp install-test-deps clean venv update-lib-exports generate publish publish-python publish-typescript publish-csharp publish-all
+.PHONY: help test test-python test-typescript test-csharp install-test-deps clean venv generate
+
+.DEFAULT_GOAL := help
 
 # Optional OpenAPI URL for SDK generation:
 # - make generate OPENAPI_URL=https://...
@@ -30,26 +32,13 @@ help:
 	@echo "  make test-typescript   - Run TypeScript integration tests"
 	@echo "  make test-csharp       - Run C# integration tests"
 	@echo "  make install-test-deps - Install test dependencies for all languages"
-	@echo "  make update-lib-exports - Update SDK exports after Fern generation"
 	@echo "  make generate [OPENAPI_URL=https://...] - Regenerate SDKs (requires FERN_TOKEN)"
-	@echo ""
-	@echo "Publishing (creates git tag and triggers automatic publish):"
-	@echo "  make publish [VERSION=v1.0.0] - Tag and publish all SDKs (reads from openapi.json by default)"
-	@echo ""
-	@echo "Publishing (manual workflow dispatch, requires gh CLI):"
-	@echo "  make publish-python [VERSION=3.2.55] [TYPE=production]     - Publish Python SDK only"
-	@echo "  make publish-typescript [VERSION=3.2.55] [TYPE=production] - Publish TypeScript SDK only"
-	@echo "  make publish-csharp [VERSION=3.2.55] [TYPE=production]     - Publish C# SDK only"
-	@echo "  make publish-all [VERSION=3.2.55] [TYPE=production]        - Publish all SDKs"
-	@echo "    TYPE can be 'production' (default) or 'dev'"
-	@echo "    VERSION defaults to openapi.json version if not specified"
 	@echo ""
 	@echo "  make clean            - Clean test artifacts"
 	@echo ""
 	@echo "Prerequisites:"
 	@echo "  - Set TURQUOISE_API_TOKEN environment variable before running tests"
 	@echo "  - Set FERN_TOKEN environment variable before running 'make generate'"
-	@echo "  - Install GitHub CLI (gh) for manual publish commands"
 	@echo "  - Run 'make venv' to create Python virtual environment (recommended)"
 	@echo "  - Install dependencies: make install-test-deps"
 	@echo "  - Install Fern CLI: npm install -g fern-api"
@@ -114,33 +103,9 @@ clean:
 	@find csharp -type d -name "TestResults" -exec rm -rf {} + 2>/dev/null || true
 	@echo "✓ Cleaned test artifacts"
 
-# Update library exports after Fern generation
-update-lib-exports:
-	@echo "Updating SDK exports to include manual libraries..."
-	@python3 scripts/update_lib_exports.py
-
 # Regenerate SDKs from OpenAPI spec
 generate:
 	@./scripts/generate.sh "$(OPENAPI_URL)"
 
-# Release SDKs by creating and pushing a version tag
-# Reads version from openapi.json by default, or use VERSION=v1.0.0 to override
-release:
-	@./scripts/release.sh $(VERSION)
+# End of Makefile
 
-# Publish individual SDKs via workflow dispatch (requires GitHub CLI)
-# Usage: make publish-python VERSION=3.2.55 TYPE=production
-# TYPE defaults to production, VERSION defaults to openapi.json version
-TYPE ?= production
-
-publish-python:
-	@./scripts/publish-sdk.sh python $(VERSION) $(TYPE)
-
-publish-typescript:
-	@./scripts/publish-sdk.sh typescript $(VERSION) $(TYPE)
-
-publish-csharp:
-	@./scripts/publish-sdk.sh csharp $(VERSION) $(TYPE)
-
-publish-all:
-	@./scripts/publish-sdk.sh all $(VERSION) $(TYPE)
