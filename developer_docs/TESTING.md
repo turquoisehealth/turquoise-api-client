@@ -1,6 +1,6 @@
 # Integration Tests
 
-This directory contains integration tests for the Turquoise Health API clients across all supported languages: Python, TypeScript, and C#.
+This repository contains integration tests for the Turquoise Health API clients.
 
 ## Overview
 
@@ -15,9 +15,9 @@ The tests connect to the production API at `https://api.turquoise.health`.
 
 ## Prerequisites
 
-Before running the tests, you must:
+Before running the tests:
 
-1. **Set your OAuth client credentials** in `.env` or as environment variables:
+1. **Set OAuth client credentials** in `.env` or as environment variables:
 
    ```bash
    export TURQUOISE_CLIENT_ID="your-client-id"
@@ -25,7 +25,7 @@ Before running the tests, you must:
    export TURQUOISE_ORGANIZATION_ID="your-org-id"
    ```
 
-2. **(Recommended) Create a Python virtual environment:**
+2. **Create a Python virtual environment:**
 
    ```bash
    python3 -m venv venv
