@@ -161,7 +161,7 @@ def main() -> int:
         "run",
         "publish.yml",
         "--ref",
-        args.workflow_ref or tag,
+        args.workflow_ref or args.source_ref or tag,
         "-f",
         f"version={version}",
         "-f",

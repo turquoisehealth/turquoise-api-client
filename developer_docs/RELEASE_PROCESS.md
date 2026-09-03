@@ -105,7 +105,7 @@ python scripts/trigger_publish_workflow.py \
 	--source-ref chore/fix-csharp-package
 ```
 
-The script derives `X.X.XX` from the checked-out `openapi.json`, validates that the release tag `vX.X.XX` exists, and triggers the workflow from that tag. The workflow publishes version `X.X.XX` while building the selected SDK from `source_ref`. If the workflow definition must come from another ref, provide it with `--workflow-ref <ref>`. Use this only when the package version has not already been accepted by the registry. Published package versions cannot be overwritten.
+The script derives `X.X.XX` from the checked-out `openapi.json`, validates that the release tag `vX.X.XX` exists, and triggers the workflow from `source_ref` so the retry inputs are available. The workflow publishes version `X.X.XX` while building the selected SDK from `source_ref`. If the workflow definition must come from another ref, provide it with `--workflow-ref <ref>`. Use this only when the package version has not already been accepted by the registry. Published package versions cannot be overwritten.
 
 The GitHub Actions workflow receives the release tag, version, SDK selection, and optional build source:
 
