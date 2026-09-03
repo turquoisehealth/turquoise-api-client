@@ -94,6 +94,20 @@ The script uses the version in the checked-out `openapi.json` and derives the ta
 
 Use `--sdk python`, `--sdk typescript`, or `--sdk csharp` to publish only that SDK. You can also use `--dry` to validate without triggering GitHub Actions, but even without the --dry option the script will still ask for confirmation after validation and before triggering the workflow in Github.
 
+### Retrying a failed SDK publish
+
+Release tags are immutable, but a failed package publish can be retried from a corrective commit without creating a new version. Merge the retry support into `main`, push the fix to a branch, check out the original release tag locally, and provide both the corrective source and the newer workflow ref:
+
+```bash
+git switch --detach vX.X.XX
+python3 scripts/trigger_publish_workflow.py \
+	--sdk csharp \
+	--source-ref chore/fix-csharp-package \
+	--workflow-ref main
+```
+
+The workflow publishes given version from matching release tag while building the selected SDK from `source_ref`. Use this only when the package version has not already been accepted by the registry. Published package versions cannot be overwritten.
+
 The GitHub Actions workflow receives the tag ref, version, and SDK selection:
 
 - The `vX.X.XX` tag as the workflow ref

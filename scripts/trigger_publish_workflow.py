@@ -81,24 +81,33 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Validate readiness without triggering the workflow",
     )
+    parser.add_argument(
+        "--source-ref",
+        help="Branch, tag, or commit to build from for a retry (default: release tag)",
+    )
+    parser.add_argument(
+        "--workflow-ref",
+        help="Workflow ref to run (default: release tag; use main for a retry after the tag exists)",
+    )
     return parser.parse_args()
 
 
-def validate() -> tuple[str, str]:
+def validate(source_ref: str | None = None) -> tuple[str, str]:
     versions = read_versions()
     version = versions["openapi.json"]
     if not re.fullmatch(r"\d+\.\d+\.\d+", version):
         raise ValueError("Version must use production semver, for example 3.2.68")
 
     tag = f"v{version}"
-    current_ref = current_branch()
-    if current_ref:
-        raise ValueError(f"Checkout is on branch {current_ref}; check out {tag} first")
-
     current_commit = run(["git", "rev-parse", "HEAD"])
-    tag_commit = run(["git", "rev-list", "-n", "1", tag])
-    if tag_commit != current_commit:
-        raise ValueError(f"Tag {tag} does not point to the current commit")
+    if source_ref is None:
+        current_ref = current_branch()
+        if current_ref:
+            raise ValueError(f"Checkout is on branch {current_ref}; check out {tag} first")
+
+        tag_commit = run(["git", "rev-list", "-n", "1", tag])
+        if tag_commit != current_commit:
+            raise ValueError(f"Tag {tag} does not point to the current commit")
 
     remote_tag = subprocess.run(
         ["git", "ls-remote", "--exit-code", "origin", f"refs/tags/{tag}^{{}}"],
@@ -109,7 +118,7 @@ def validate() -> tuple[str, str]:
     if remote_tag.returncode != 0:
         raise ValueError(f"Annotated tag {tag} is not available on origin")
     remote_commit = remote_tag.stdout.split(maxsplit=1)[0]
-    if remote_commit != current_commit:
+    if source_ref is None and remote_commit != current_commit:
         raise ValueError(f"Remote tag {tag} does not point to the current commit")
 
     if run(["git", "status", "--porcelain"]):
@@ -129,13 +138,15 @@ def validate() -> tuple[str, str]:
 def main() -> int:
     args = parse_args()
     try:
-        tag, version = validate()
+        tag, version = validate(args.source_ref)
     except (OSError, json.JSONDecodeError, KeyError, subprocess.CalledProcessError, ValueError) as error:
         print(f"Release validation failed: {error}", file=sys.stderr)
         return 1
 
     print(f"Release validation passed for {tag}")
     print(f"SDK selection: {args.sdk}")
+    if args.source_ref:
+        print(f"Build source: {args.source_ref}")
     if args.dry:
         return 0
 
@@ -150,12 +161,16 @@ def main() -> int:
         "run",
         "publish.yml",
         "--ref",
-        tag,
+        args.workflow_ref or tag,
         "-f",
         f"version={version}",
         "-f",
         f"sdk={args.sdk}",
+        "-f",
+        f"release_tag={tag}",
     ]
+    if args.source_ref:
+        command.extend(["-f", f"source_ref={args.source_ref}"])
     subprocess.run(command, cwd=REPOSITORY_ROOT, check=True)
     print(f"Publish workflow triggered for {tag}")
     return 0

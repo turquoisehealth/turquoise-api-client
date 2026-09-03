@@ -17,6 +17,14 @@ on:
           - typescript
           - csharp
         default: all
+      source_ref:
+        description: "Optional corrective branch, tag, or commit to build from (defaults to the workflow ref)"
+        required: false
+        type: string
+      release_tag:
+        description: "Release tag to publish (defaults to the workflow ref tag)"
+        required: false
+        type: string
 
 jobs:
   prepare:
@@ -30,26 +38,34 @@ jobs:
     steps:
       - name: Checkout release tag
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref || github.ref }}
 
       - name: Validate version
         id: release
         env:
           INPUT_VERSION: ${{ inputs.version }}
+          INPUT_RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           set -euo pipefail
           VERSION="$INPUT_VERSION"
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          RELEASE_TAG="${INPUT_RELEASE_TAG:-$GITHUB_REF_NAME}"
 
-          [[ "$GITHUB_REF" == refs/tags/v* ]] || {
-            echo "Publishing must be run against a v* release tag."
+          [[ "$RELEASE_TAG" == v* ]] || {
+            echo "Release tag must use the v* format."
             exit 1
           }
+          TAG_VERSION="${RELEASE_TAG#v}"
           [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
             echo "Version must use production semver, for example 3.2.68."
             exit 1
           }
           [[ "$TAG_VERSION" == "$VERSION" ]] || {
-            echo "Workflow version $VERSION does not match tag version $TAG_VERSION."
+            echo "Workflow version $VERSION does not match release tag version $TAG_VERSION."
+            exit 1
+          }
+          git ls-remote --exit-code origin "refs/tags/${RELEASE_TAG}^{}" >/dev/null || {
+            echo "Annotated release tag $RELEASE_TAG is not available on origin."
             exit 1
           }
 
@@ -91,6 +107,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref || github.ref }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -116,6 +134,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref || github.ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -144,6 +164,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.source_ref || github.ref }}
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
