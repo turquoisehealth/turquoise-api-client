@@ -96,23 +96,23 @@ Use `--sdk python`, `--sdk typescript`, or `--sdk csharp` to publish only that S
 
 ### Retrying a failed SDK publish
 
-Release tags are immutable, but a failed package publish can be retried from a corrective commit without creating a new version. Merge the retry support into `main`, push the fix to a branch, check out the original release tag locally, and provide both the corrective source and the newer workflow ref:
+Release tags are immutable, but a failed package publish can be retried from a corrective commit without creating a new version. Push the fix to a branch or commit, check out the original release tag, and provide the corrective source with `--source-ref`:
 
 ```bash
 git switch --detach vX.X.XX
-python3 scripts/trigger_publish_workflow.py \
+python scripts/trigger_publish_workflow.py \
 	--sdk csharp \
-	--source-ref chore/fix-csharp-package \
-	--workflow-ref main
+	--source-ref chore/fix-csharp-package
 ```
 
-The workflow publishes given version from matching release tag while building the selected SDK from `source_ref`. Use this only when the package version has not already been accepted by the registry. Published package versions cannot be overwritten.
+The script derives `X.X.XX` from the checked-out `openapi.json`, validates that the release tag `vX.X.XX` exists, and triggers the workflow from that tag. The workflow publishes version `X.X.XX` while building the selected SDK from `source_ref`. If the workflow definition must come from another ref, provide it with `--workflow-ref <ref>`. Use this only when the package version has not already been accepted by the registry. Published package versions cannot be overwritten.
 
-The GitHub Actions workflow receives the tag ref, version, and SDK selection:
+The GitHub Actions workflow receives the release tag, version, SDK selection, and optional build source:
 
-- The `vX.X.XX` tag as the workflow ref
+- The `vX.X.XX` release tag as the release version reference
 - `X.X.XX` as the version
 - `all`, or one specific SDK
+- The optional `source_ref` for a corrective build
 
 If validation passes, it builds and publishes to:
 
