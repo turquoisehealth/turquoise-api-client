@@ -51,7 +51,7 @@ This requires the [oasdiff](https://github.com/oasdiff/oasdiff) CLI:
 curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | sh
 ```
 
-The script writes the raw oasdiff output to a temporary Markdown file and puts an explicit review placeholder in `CHANGELOG.md`. Open that raw report, identify the meaningful customer impact, and replace the placeholder with a concise summary organized by Added, Changed, Deprecated, and Breaking Changes as applicable. Do not copy the raw report into the changelog: it contains repeated low-level schema details and is not publish-ready. The summary in `CHANGELOG.md` is the same text that will be posted to the GitHub Release in step 8, and it's what customers see when deciding whether to upgrade. The PR opened in step 6 also gets an automated breaking-change check and changelog preview (see `.github/workflows/openapi-diff.yml`); use those to double check the semantic version bump below is correct.
+The script writes the raw oasdiff output to `oasdiffs/X.X.XX.md` and puts an explicit review placeholder in `CHANGELOG.md`. Open that report, identify the meaningful customer impact, and replace the placeholder with a concise summary organized by Added, Changed, Deprecated, and Breaking Changes as applicable. Keep the raw report in `oasdiffs/` for review history, but do not copy it into the changelog: it may contain repeated low-level schema details and is generally not publish-ready. The summary in `CHANGELOG.md` is the same text that will be posted to the GitHub Release in step 8, and it's what customers see when deciding whether to upgrade. The PR opened in step 6 also gets an automated breaking-change check and changelog preview (see `.github/workflows/openapi-diff.yml`); use those to double check the semantic version bump below is correct.
 
 The GitHub Release script refuses to publish while the review placeholder remains. Treat that failure as a reminder to finish and review the customer-facing summary before continuing.
 
@@ -80,7 +80,7 @@ Review the output and address as necessary.
 ## 6. Commit and open the release PR
 
 ```bash
-git add openapi.json python/ typescript/ csharp/ CHANGELOG.md
+git add openapi.json python/ typescript/ csharp/ CHANGELOG.md oasdiffs/
 git status
 git diff --cached --stat
 git commit -m "chore: release SDKs for X.X.XX"

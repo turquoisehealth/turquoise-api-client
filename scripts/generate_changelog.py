@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Prepend a CHANGELOG.md entry generated from the OpenAPI diff since the last release tag."""
+"""Prepend a CHANGELOG.md review draft and save raw oasdiff output.
+
+The --initial-release option writes an initial-release entry instead.
+"""
 
 import argparse
 import json
@@ -7,7 +10,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 from datetime import date
 from pathlib import Path
 
@@ -15,6 +17,7 @@ from pathlib import Path
 REPOSITORY_ROOT = Path(__file__).resolve().parent.parent
 OPENAPI_FILE = REPOSITORY_ROOT / "openapi.json"
 CHANGELOG_FILE = REPOSITORY_ROOT / "CHANGELOG.md"
+OASDIFF_DIRECTORY = REPOSITORY_ROOT / "oasdiffs"
 
 CHANGELOG_HEADER = """# Changelog
 
@@ -74,19 +77,13 @@ def build_entry(version: str, allow_initial_release: bool) -> str:
         if result.returncode != 0:
             raise RuntimeError(f"oasdiff changelog failed: {result.stderr.strip()}")
         raw_report = result.stdout.strip() or "No consumer-facing API changes."
-        report_file = tempfile.NamedTemporaryFile(
-            mode="w",
-            encoding="utf-8",
-            prefix=f"oasdiff-{version}-",
-            suffix=".md",
-            delete=False,
-        )
-        with report_file:
-            report_file.write(raw_report + "\n")
-        print(f"Raw oasdiff report written to {report_file.name}")
+        OASDIFF_DIRECTORY.mkdir(parents=True, exist_ok=True)
+        report_file = OASDIFF_DIRECTORY / f"{version}.md"
+        report_file.write_text(raw_report + "\n", encoding="utf-8")
+        print(f"Raw oasdiff report written to {report_file}")
         body = (
             "<!-- CHANGELOG REVIEW REQUIRED: replace this placeholder with a "
-            f"concise customer-facing summary after reviewing `{report_file.name}`. -->\n\n"
+            f"concise customer-facing summary after reviewing `{report_file.relative_to(REPOSITORY_ROOT)}`. -->\n\n"
             "Summary pending manual review."
         )
     return f"## [{version}] - {date.today().isoformat()}\n\n{body}\n"
@@ -94,11 +91,18 @@ def build_entry(version: str, allow_initial_release: bool) -> str:
 
 def update_changelog(version: str, allow_initial_release: bool) -> None:
     content = CHANGELOG_FILE.read_text() if CHANGELOG_FILE.exists() else CHANGELOG_HEADER
-    if f"## [{version}]" in content:
+    existing_section = re.search(rf"^## \[{re.escape(version)}\].*?(?=^## \[|\Z)", content, re.MULTILINE | re.DOTALL)
+    if existing_section and "CHANGELOG REVIEW REQUIRED" not in existing_section.group(0):
         print(f"CHANGELOG.md already has an entry for {version}, skipping")
         return
 
     entry = build_entry(version, allow_initial_release)
+    if existing_section:
+        updated = content[:existing_section.start()] + entry + content[existing_section.end():]
+        CHANGELOG_FILE.write_text(updated.strip() + "\n")
+        print(f"Refreshed the {version} review entry in CHANGELOG.md")
+        return
+
     marker = re.search(r"^## \[", content, re.MULTILINE)
     insert_at = marker.start() if marker else len(content)
     updated = content[:insert_at].rstrip() + "\n\n" + entry + "\n" + content[insert_at:]
