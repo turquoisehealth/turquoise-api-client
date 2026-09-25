@@ -41,6 +41,7 @@ Generated SDK source files are committed intentionally because the publish workf
 Generate the `CHANGELOG.md` entry for this release from the OpenAPI diff against the previous release tag:
 
 ```bash
+git fetch --tags origin
 python scripts/generate_changelog.py
 ```
 
@@ -51,6 +52,12 @@ curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | s
 ```
 
 Review the generated `## [X.X.XX]` section at the top of `CHANGELOG.md` and edit it for clarity before committing — this is the same summary that will be posted to the GitHub Release in step 8, and it's what customers see when deciding whether to upgrade. The PR opened in step 6 also gets an automated breaking-change check and changelog preview (see `.github/workflows/openapi-diff.yml`); use those to double check the semantic version bump below is correct.
+
+The script fails if the previous release tag is missing or cannot be resolved. Fetch the tags and retry rather than treating that condition as an initial release. Use `--initial-release` only when deliberately bootstrapping the repository's first release:
+
+```bash
+python scripts/generate_changelog.py --initial-release
+```
 
 ## 5. Run Tests
 

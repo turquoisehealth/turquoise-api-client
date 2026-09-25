@@ -19,11 +19,19 @@ jobs:
         with:
           fetch-depth: 0
 
-      - uses: oasdiff/oasdiff-action/breaking@v0
+      - id: breaking-report
+        continue-on-error: true
+        uses: oasdiff/oasdiff-action/breaking@v0
         with:
           base: "origin/${{ github.base_ref }}:openapi.json"
           revision: "HEAD:openapi.json"
           github-token: ${{ github.token }}
+
+      - name: Fail on breaking-action errors
+        if: ${{ steps.breaking-report.outcome == 'failure' && steps.breaking-report.outputs.breaking == '' }}
+        run: |
+          echo "The oasdiff breaking-change action failed without producing a breaking-change report."
+          exit 1
 
   changelog-preview:
     name: Preview changelog

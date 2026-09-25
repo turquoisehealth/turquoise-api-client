@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Prepend a CHANGELOG.md entry generated from the OpenAPI diff since the last release tag."""
 
+import argparse
 import json
 import re
 import shutil
@@ -32,18 +33,29 @@ def read_version() -> str:
     return version
 
 
-def previous_tag() -> str | None:
+def previous_tag(allow_initial_release: bool) -> str | None:
     result = subprocess.run(
         ["git", "describe", "--tags", "--abbrev=0", "--match", "v*"],
         cwd=REPOSITORY_ROOT,
         capture_output=True,
         text=True,
     )
-    return result.stdout.strip() if result.returncode == 0 else None
+    if result.returncode == 0:
+        return result.stdout.strip()
+    if allow_initial_release:
+        return None
+
+    detail = result.stderr.strip() or "no matching release tag was found"
+    raise RuntimeError(
+        "Could not find the previous release tag. Fetch tags with "
+        "'git fetch --tags origin' and retry. For a deliberate first release only, "
+        "rerun with '--initial-release'. Git error: "
+        f"{detail}"
+    )
 
 
-def build_entry(version: str) -> str:
-    tag = previous_tag()
+def build_entry(version: str, allow_initial_release: bool) -> str:
+    tag = previous_tag(allow_initial_release)
     if tag is None:
         body = "Initial release."
     else:
@@ -64,13 +76,13 @@ def build_entry(version: str) -> str:
     return f"## [{version}] - {date.today().isoformat()}\n\n{body}\n"
 
 
-def update_changelog(version: str) -> None:
+def update_changelog(version: str, allow_initial_release: bool) -> None:
     content = CHANGELOG_FILE.read_text() if CHANGELOG_FILE.exists() else CHANGELOG_HEADER
     if f"## [{version}]" in content:
         print(f"CHANGELOG.md already has an entry for {version}, skipping")
         return
 
-    entry = build_entry(version)
+    entry = build_entry(version, allow_initial_release)
     marker = re.search(r"^## \[", content, re.MULTILINE)
     insert_at = marker.start() if marker else len(content)
     updated = content[:insert_at].rstrip() + "\n\n" + entry + "\n" + content[insert_at:]
@@ -79,8 +91,16 @@ def update_changelog(version: str) -> None:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--initial-release",
+        action="store_true",
+        help="Allow an initial-release entry when no previous release tag exists",
+    )
+    arguments = parser.parse_args()
+
     try:
-        update_changelog(read_version())
+        update_changelog(read_version(), arguments.initial_release)
     except (OSError, json.JSONDecodeError, KeyError, RuntimeError, ValueError) as error:
         print(f"Failed to update CHANGELOG.md: {error}", file=sys.stderr)
         return 1
