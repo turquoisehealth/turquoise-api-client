@@ -41,7 +41,10 @@ def extract_changelog_section(version: str) -> str:
     match = re.search(rf"^## \[{re.escape(version)}\].*?(?=^## \[|\Z)", text, re.MULTILINE | re.DOTALL)
     if not match:
         raise ValueError(f"No CHANGELOG.md section found for {version}. Run scripts/generate_changelog.py first.")
-    return match.group(0).strip()
+    section = match.group(0).strip()
+    if "CHANGELOG REVIEW REQUIRED" in section or "Summary pending manual review." in section:
+        raise ValueError(f"CHANGELOG.md section for {version} still needs a customer-facing summary")
+    return section
 
 
 def validate(version: str, tag: str) -> None:

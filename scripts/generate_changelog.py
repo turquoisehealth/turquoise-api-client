@@ -7,6 +7,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from datetime import date
 from pathlib import Path
 
@@ -72,7 +73,22 @@ def build_entry(version: str, allow_initial_release: bool) -> str:
         )
         if result.returncode != 0:
             raise RuntimeError(f"oasdiff changelog failed: {result.stderr.strip()}")
-        body = result.stdout.strip() or "No consumer-facing API changes."
+        raw_report = result.stdout.strip() or "No consumer-facing API changes."
+        report_file = tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            prefix=f"oasdiff-{version}-",
+            suffix=".md",
+            delete=False,
+        )
+        with report_file:
+            report_file.write(raw_report + "\n")
+        print(f"Raw oasdiff report written to {report_file.name}")
+        body = (
+            "<!-- CHANGELOG REVIEW REQUIRED: replace this placeholder with a "
+            f"concise customer-facing summary after reviewing `{report_file.name}`. -->\n\n"
+            "Summary pending manual review."
+        )
     return f"## [{version}] - {date.today().isoformat()}\n\n{body}\n"
 
 

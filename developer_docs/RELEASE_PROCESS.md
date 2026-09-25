@@ -51,9 +51,11 @@ This requires the [oasdiff](https://github.com/oasdiff/oasdiff) CLI:
 curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | sh
 ```
 
-Review the generated `## [X.X.XX]` section at the top of `CHANGELOG.md` and edit it for clarity before committing — this is the same summary that will be posted to the GitHub Release in step 8, and it's what customers see when deciding whether to upgrade. The PR opened in step 6 also gets an automated breaking-change check and changelog preview (see `.github/workflows/openapi-diff.yml`); use those to double check the semantic version bump below is correct.
+The script writes the raw oasdiff output to a temporary Markdown file and puts an explicit review placeholder in `CHANGELOG.md`. Open that raw report, identify the meaningful customer impact, and replace the placeholder with a concise summary organized by Added, Changed, Deprecated, and Breaking Changes as applicable. Do not copy the raw report into the changelog: it contains repeated low-level schema details and is not publish-ready. The summary in `CHANGELOG.md` is the same text that will be posted to the GitHub Release in step 8, and it's what customers see when deciding whether to upgrade. The PR opened in step 6 also gets an automated breaking-change check and changelog preview (see `.github/workflows/openapi-diff.yml`); use those to double check the semantic version bump below is correct.
 
-The script fails if the previous release tag is missing or cannot be resolved. Fetch the tags and retry rather than treating that condition as an initial release. Use `--initial-release` only when deliberately bootstrapping the repository's first release:
+The GitHub Release script refuses to publish while the review placeholder remains. Treat that failure as a reminder to finish and review the customer-facing summary before continuing.
+
+For every release after the repository bootstrap, the script compares against the latest available `v*` release tag. It fails if that tag is missing or cannot be resolved; fetch the tags and retry rather than treating the condition as an initial release. Use `--initial-release` only when deliberately bootstrapping the repository's first release:
 
 ```bash
 python scripts/generate_changelog.py --initial-release
@@ -156,7 +158,7 @@ Only after the package versions are live should the repository notification be s
 - [ ] Confirmed `info.version` in the upstream OpenAPI document
 - [ ] Created a release branch from current `main`
 - [ ] Regenerated `openapi.json` and all SDKs locally
-- [ ] Generated and reviewed the `CHANGELOG.md` entry
+- [ ] Generated the `CHANGELOG.md` entry, reviewed the raw oasdiff report, and replaced the review placeholder with a customer-facing summary
 - [ ] Ran `make tests` successfully
 - [ ] Reviewed and committed the expected release files
 - [ ] Merged the release PR
