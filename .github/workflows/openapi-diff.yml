@@ -28,6 +28,9 @@ jobs:
   changelog-preview:
     name: Preview changelog
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,6 +41,7 @@ jobs:
           base: "origin/${{ github.base_ref }}:openapi.json"
           revision: "HEAD:openapi.json"
           format: markdown
+          github-token: ${{ github.token }}
 
   version-bump-gate:
     name: Enforce major version bump on breaking changes

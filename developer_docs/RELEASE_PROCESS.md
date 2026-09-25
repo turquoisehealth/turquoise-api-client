@@ -93,17 +93,7 @@ git push origin vX.X.XX
 git switch --detach vX.X.XX
 ```
 
-## 8. Create the GitHub Release
-
-From the same detached checkout, publish a GitHub Release for the tag. This combines the `CHANGELOG.md` entry from step 4 with GitHub's auto-generated list of merged PRs (categorized per `.github/release.yml`):
-
-```bash
-python scripts/create_github_release.py
-```
-
-Customers watching the repository or its releases feed are notified automatically; this is the primary place they should look to see what changed before upgrading.
-
-## 9. Validate and trigger the publish workflow
+## 8. Validate and trigger the publish workflow
 
 From the clean, tagged release checkout, run:
 
@@ -146,7 +136,13 @@ If validation passes, it builds and publishes to:
 - npm with the `latest` tag for TypeScript
 - NuGet for C#
 
-Note that the repositories can take up to a few hours to show the latest version even after a successful publish.
+After the packages are successfully published and verified, create the GitHub Release for the tag. This combines the `CHANGELOG.md` entry from step 4 with GitHub's auto-generated list of merged PRs (categorized per `.github/release.yml`):
+
+```bash
+python scripts/create_github_release.py
+```
+
+Only after the package versions are live should the repository notification be sent. Customers watching the repository or its releases feed are notified automatically; this is the primary place they should look to see what changed before upgrading.
 
 ## Release Checklist
 
@@ -158,6 +154,6 @@ Note that the repositories can take up to a few hours to show the latest version
 - [ ] Reviewed and committed the expected release files
 - [ ] Merged the release PR
 - [ ] Created and pushed the matching `v*` tag
-- [ ] Created the GitHub Release for that tag
 - [ ] Successfully ran the publish workflow against that tag
 - [ ] Verified the selected packages in their registries
+- [ ] Created the GitHub Release for that tag
