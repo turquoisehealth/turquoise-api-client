@@ -36,7 +36,23 @@ Review the changes in:
 
 Generated SDK source files are committed intentionally because the publish workflow in GitHub builds the files checked into the release tag.
 
-## 4. Run Tests
+## 4. Update the changelog
+
+Generate the `CHANGELOG.md` entry for this release from the OpenAPI diff against the previous release tag:
+
+```bash
+python scripts/generate_changelog.py
+```
+
+This requires the [oasdiff](https://github.com/oasdiff/oasdiff) CLI:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | sh
+```
+
+Review the generated `## [X.X.XX]` section at the top of `CHANGELOG.md` and edit it for clarity before committing — this is the same summary that will be posted to the GitHub Release in step 8, and it's what customers see when deciding whether to upgrade. The PR opened in step 6 also gets an automated breaking-change check and changelog preview (see `.github/workflows/openapi-diff.yml`); use those to double check the semantic version bump below is correct.
+
+## 5. Run Tests
 
 Set OAuth client credentials in `.env` if not already set to allow the tests to run fully.
 
@@ -52,10 +68,10 @@ make tests
 
 Review the output and address as necessary.
 
-## 5. Commit and open the release PR
+## 6. Commit and open the release PR
 
 ```bash
-git add openapi.json python/ typescript/ csharp/
+git add openapi.json python/ typescript/ csharp/ CHANGELOG.md
 git status
 git diff --cached --stat
 git commit -m "chore: release SDKs for X.X.XX"
@@ -65,7 +81,7 @@ Open a pull request targeting `main`. Include the API version, validation result
 
 The release PR should be carefully reviewed before merging. The merged commit contains the exact SDK source and package metadata that will be published.
 
-## 6. Create and push the release tag
+## 7. Create and push the release tag
 
 After the PR is merged, pull `main` and create an annotated tag:
 
@@ -77,7 +93,17 @@ git push origin vX.X.XX
 git switch --detach vX.X.XX
 ```
 
-## 7. Validate and trigger the publish workflow
+## 8. Create the GitHub Release
+
+From the same detached checkout, publish a GitHub Release for the tag. This combines the `CHANGELOG.md` entry from step 4 with GitHub's auto-generated list of merged PRs (categorized per `.github/release.yml`):
+
+```bash
+python scripts/create_github_release.py
+```
+
+Customers watching the repository or its releases feed are notified automatically; this is the primary place they should look to see what changed before upgrading.
+
+## 9. Validate and trigger the publish workflow
 
 From the clean, tagged release checkout, run:
 
@@ -127,9 +153,11 @@ Note that the repositories can take up to a few hours to show the latest version
 - [ ] Confirmed `info.version` in the upstream OpenAPI document
 - [ ] Created a release branch from current `main`
 - [ ] Regenerated `openapi.json` and all SDKs locally
+- [ ] Generated and reviewed the `CHANGELOG.md` entry
 - [ ] Ran `make tests` successfully
 - [ ] Reviewed and committed the expected release files
 - [ ] Merged the release PR
 - [ ] Created and pushed the matching `v*` tag
+- [ ] Created the GitHub Release for that tag
 - [ ] Successfully ran the publish workflow against that tag
 - [ ] Verified the selected packages in their registries
