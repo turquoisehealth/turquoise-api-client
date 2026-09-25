@@ -42,13 +42,33 @@ jobs:
   version-bump-gate:
     name: Enforce major version bump on breaking changes
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: Install oasdiff
-        run: curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | sh
+      - name: Install pinned oasdiff release
+        run: |
+          set -euo pipefail
+          OASDIFF_VERSION="v1.32.1"
+          ARCHIVE="oasdiff_${OASDIFF_VERSION#v}_linux_amd64.tar.gz"
+          CHECKSUMS_URL="https://github.com/oasdiff/oasdiff/releases/download/${OASDIFF_VERSION}/checksums.txt"
+          ARCHIVE_URL="https://github.com/oasdiff/oasdiff/releases/download/${OASDIFF_VERSION}/${ARCHIVE}"
+
+          curl -fsSL "$CHECKSUMS_URL" -o /tmp/oasdiff-checksums.txt
+          curl -fsSL "$ARCHIVE_URL" -o /tmp/oasdiff.tar.gz
+
+          expected=$(grep "$ARCHIVE" /tmp/oasdiff-checksums.txt | awk '{print $1}')
+          actual=$(sha256sum /tmp/oasdiff.tar.gz | awk '{print $1}')
+          [[ "$actual" == "$expected" ]] || {
+            echo "Checksum mismatch for $ARCHIVE"
+            exit 1
+          }
+
+          tar -xzf /tmp/oasdiff.tar.gz -C /tmp
+          install -m 0755 /tmp/oasdiff /usr/local/bin/oasdiff
 
       - name: Compare version bump against breaking changes
         run: |
