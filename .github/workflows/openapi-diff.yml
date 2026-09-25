@@ -78,5 +78,3 @@ jobs:
             echo "::error::Breaking API changes were detected but the version was not bumped to a new major ($base_version -> $revision_version). Bump the major version in openapi.json, or confirm with the API team that these changes are not actually breaking."
             exit 1
           fi
-
-          github-token: ${{ github.token }}
