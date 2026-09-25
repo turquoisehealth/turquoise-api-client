@@ -1,0 +1,82 @@
+name: OpenAPI diff
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - "openapi.json"
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  breaking-changes:
+    name: Check for breaking changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: oasdiff/oasdiff-action/breaking@v0
+        with:
+          base: "origin/${{ github.base_ref }}:openapi.json"
+          revision: "HEAD:openapi.json"
+          github-token: ${{ github.token }}
+
+  changelog-preview:
+    name: Preview changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: oasdiff/oasdiff-action/changelog@v0
+        with:
+          base: "origin/${{ github.base_ref }}:openapi.json"
+          revision: "HEAD:openapi.json"
+          format: markdown
+
+  version-bump-gate:
+    name: Enforce major version bump on breaking changes
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install oasdiff
+        run: curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | sh
+
+      - name: Compare version bump against breaking changes
+        run: |
+          set -euo pipefail
+
+          base_version=$(git show "origin/${{ github.base_ref }}:openapi.json" | jq -r '.info.version')
+          revision_version=$(jq -r '.info.version' openapi.json)
+
+          IFS='.' read -r base_major base_minor base_patch <<< "$base_version"
+          IFS='.' read -r rev_major rev_minor rev_patch <<< "$revision_version"
+
+          bump="none"
+          if [[ "$rev_major" -gt "$base_major" ]]; then
+            bump="major"
+          elif [[ "$rev_major" -eq "$base_major" && "$rev_minor" -gt "$base_minor" ]]; then
+            bump="minor"
+          elif [[ "$rev_major" -eq "$base_major" && "$rev_minor" -eq "$base_minor" && "$rev_patch" -gt "$base_patch" ]]; then
+            bump="patch"
+          fi
+          echo "Version: $base_version -> $revision_version (bump: $bump)"
+
+          breaking_count=$(oasdiff breaking "origin/${{ github.base_ref }}:openapi.json" "HEAD:openapi.json" -f json | jq 'length')
+          echo "Breaking changes detected: $breaking_count"
+
+          if [[ "$breaking_count" -gt 0 && "$bump" != "major" ]]; then
+            oasdiff breaking "origin/${{ github.base_ref }}:openapi.json" "HEAD:openapi.json"
+            echo "::error::Breaking API changes were detected but the version was not bumped to a new major ($base_version -> $revision_version). Bump the major version in openapi.json, or confirm with the API team that these changes are not actually breaking."
+            exit 1
+          fi
+
+          github-token: ${{ github.token }}
