@@ -57,6 +57,11 @@ def validate(version: str, tag: str) -> None:
     if remote_tag.returncode != 0:
         raise ValueError(f"Annotated tag {tag} is not available on origin")
 
+    remote_commit = remote_tag.stdout.split(maxsplit=1)[0]
+    current_commit = run(["git", "rev-parse", "HEAD"])
+    if remote_commit != current_commit:
+        raise ValueError(f"Remote tag {tag} does not point to the current commit")
+
     if shutil.which("gh") is None:
         raise ValueError("GitHub CLI (gh) is not installed")
     subprocess.run(["gh", "auth", "status"], cwd=REPOSITORY_ROOT, check=True)
@@ -81,10 +86,10 @@ def main() -> int:
         capture_output=True,
         text=True,
     )
-    if generate_notes.returncode == 0:
-        generated_notes = generate_notes.stdout.strip()
-    else:
-        print(f"Warning: could not generate PR notes ({generate_notes.stderr.strip()})", file=sys.stderr)
+    if generate_notes.returncode != 0:
+        print(f"Failed to generate PR notes: {generate_notes.stderr.strip()}", file=sys.stderr)
+        return 1
+    generated_notes = generate_notes.stdout.strip()
 
     body = changelog_section
     if generated_notes:

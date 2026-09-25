@@ -70,11 +70,21 @@ jobs:
           fi
           echo "Version: $base_version -> $revision_version (bump: $bump)"
 
-          breaking_count=$(oasdiff breaking "origin/${{ github.base_ref }}:openapi.json" "HEAD:openapi.json" -f json | jq 'length')
+          set +e
+          breaking_output=$(oasdiff breaking "origin/${{ github.base_ref }}:openapi.json" "HEAD:openapi.json" -f json 2>&1)
+          breaking_status=$?
+          set -e
+
+          if [[ "$breaking_status" -ne 0 && "$breaking_status" -ne 1 ]]; then
+            echo "$breaking_output"
+            exit "$breaking_status"
+          fi
+
+          breaking_count=$(jq 'length' <<< "$breaking_output")
           echo "Breaking changes detected: $breaking_count"
 
           if [[ "$breaking_count" -gt 0 && "$bump" != "major" ]]; then
-            oasdiff breaking "origin/${{ github.base_ref }}:openapi.json" "HEAD:openapi.json"
+            echo "$breaking_output"
             echo "::error::Breaking API changes were detected but the version was not bumped to a new major ($base_version -> $revision_version). Bump the major version in openapi.json, or confirm with the API team that these changes are not actually breaking."
             exit 1
           fi
