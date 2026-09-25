@@ -162,7 +162,7 @@ This repository is meant to be read directly by coding agents, not just humans:
 
 ## Versioning
 
-This library follows [Semantic Versioning](https://semver.org). The SDK version tracks the API version; breaking API changes increment the major version.
+This library follows [Semantic Versioning](https://semver.org). The SDK version tracks the API version; breaking API changes increment the major version. See [CHANGELOG.md](CHANGELOG.md) and the [GitHub Releases](https://github.com/turquoisehealth/turquoise-api-client/releases) for what changed in each version before upgrading.
 
 ---
 
