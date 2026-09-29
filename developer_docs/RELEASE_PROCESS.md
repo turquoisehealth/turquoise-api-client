@@ -36,7 +36,32 @@ Review the changes in:
 
 Generated SDK source files are committed intentionally because the publish workflow in GitHub builds the files checked into the release tag.
 
-## 4. Run Tests
+## 4. Update the changelog
+
+Generate the `CHANGELOG.md` entry for this release from the OpenAPI diff against the previous release tag:
+
+```bash
+git fetch --tags origin
+python scripts/generate_changelog.py
+```
+
+This requires the [oasdiff](https://github.com/oasdiff/oasdiff) CLI:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/oasdiff/oasdiff/main/install.sh | sh
+```
+
+The script writes the raw oasdiff output to `oasdiffs/X.X.XX.md` and puts an explicit review placeholder in `CHANGELOG.md`. Open that report, identify the meaningful customer impact, and replace the placeholder with a concise summary organized by Added, Changed, Deprecated, and Breaking Changes as applicable. Keep the raw report in `oasdiffs/` for review history, but do not copy it into the changelog: it may contain repeated low-level schema details and is generally not publish-ready. The summary in `CHANGELOG.md` is the same text that will be posted to the GitHub Release in step 8, and it's what customers see when deciding whether to upgrade. The PR opened in step 6 also gets an automated breaking-change check and changelog preview (see `.github/workflows/openapi-diff.yml`); use those to double check the semantic version bump below is correct.
+
+The GitHub Release script refuses to publish while the review placeholder remains. Treat that failure as a reminder to finish and review the customer-facing summary before continuing.
+
+For every release after the repository bootstrap, the script compares against the latest available `v*` release tag. It fails if that tag is missing or cannot be resolved; fetch the tags and retry rather than treating the condition as an initial release. Use `--initial-release` only when deliberately bootstrapping the repository's first release:
+
+```bash
+python scripts/generate_changelog.py --initial-release
+```
+
+## 5. Run Tests
 
 Set OAuth client credentials in `.env` if not already set to allow the tests to run fully.
 
@@ -52,10 +77,10 @@ make tests
 
 Review the output and address as necessary.
 
-## 5. Commit and open the release PR
+## 6. Commit and open the release PR
 
 ```bash
-git add openapi.json python/ typescript/ csharp/
+git add openapi.json python/ typescript/ csharp/ CHANGELOG.md oasdiffs/
 git status
 git diff --cached --stat
 git commit -m "chore: release SDKs for X.X.XX"
@@ -65,7 +90,7 @@ Open a pull request targeting `main`. Include the API version, validation result
 
 The release PR should be carefully reviewed before merging. The merged commit contains the exact SDK source and package metadata that will be published.
 
-## 6. Create and push the release tag
+## 7. Create and push the release tag
 
 After the PR is merged, pull `main` and create an annotated tag:
 
@@ -77,7 +102,7 @@ git push origin vX.X.XX
 git switch --detach vX.X.XX
 ```
 
-## 7. Validate and trigger the publish workflow
+## 8. Validate and trigger the publish workflow
 
 From the clean, tagged release checkout, run:
 
@@ -120,16 +145,24 @@ If validation passes, it builds and publishes to:
 - npm with the `latest` tag for TypeScript
 - NuGet for C#
 
-Note that the repositories can take up to a few hours to show the latest version even after a successful publish.
+After the packages are successfully published and verified, create the GitHub Release for the tag. This combines the `CHANGELOG.md` entry from step 4 with GitHub's auto-generated list of merged PRs (categorized per `.github/release.yml`):
+
+```bash
+python scripts/create_github_release.py
+```
+
+Only after the package versions are live should the repository notification be sent. Customers watching the repository or its releases feed are notified automatically; this is the primary place they should look to see what changed before upgrading.
 
 ## Release Checklist
 
 - [ ] Confirmed `info.version` in the upstream OpenAPI document
 - [ ] Created a release branch from current `main`
 - [ ] Regenerated `openapi.json` and all SDKs locally
+- [ ] Generated the `CHANGELOG.md` entry, reviewed the raw oasdiff report, and replaced the review placeholder with a customer-facing summary
 - [ ] Ran `make tests` successfully
 - [ ] Reviewed and committed the expected release files
 - [ ] Merged the release PR
 - [ ] Created and pushed the matching `v*` tag
 - [ ] Successfully ran the publish workflow against that tag
 - [ ] Verified the selected packages in their registries
+- [ ] Created the GitHub Release for that tag
