@@ -71,5 +71,25 @@ public class V3ListPackagesTest : BaseMockServerTest
             response,
             Is.EqualTo(JsonUtils.Deserialize<ListEnvelopePackage>(mockResponse)).UsingDefaults()
         );
+
+        var tokenCallCount = 0;
+        var dynamicTokenClient = new TurquoiseHealthApiClient(
+            () => $"TOKEN-{++tokenCallCount}",
+            clientOptions: new ClientOptions { BaseUrl = Server.Urls[0], MaxRetries = 0 }
+        );
+
+        await dynamicTokenClient.ConsumerPricing.V3ListPackagesAsync(
+            new V3ListPackagesRequest()
+        );
+        await dynamicTokenClient.ConsumerPricing.V3ListPackagesAsync(
+            new V3ListPackagesRequest()
+        );
+
+        var authorizationHeaders = Server.LogEntries
+            .TakeLast(2)
+            .Select(entry => entry.RequestMessage.Headers!["Authorization"][0])
+            .ToArray();
+        Assert.That(tokenCallCount, Is.EqualTo(2));
+        Assert.That(authorizationHeaders, Is.EqualTo(new[] { "Bearer TOKEN-1", "Bearer TOKEN-2" }));
     }
 }

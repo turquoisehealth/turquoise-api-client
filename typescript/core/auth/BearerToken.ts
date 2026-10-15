@@ -1,4 +1,5 @@
 export type BearerToken = string;
+export type BearerTokenSupplier = () => BearerToken | undefined | Promise<BearerToken | undefined>;
 
 const BEARER_AUTH_HEADER_PREFIX = /^Bearer /i;
 

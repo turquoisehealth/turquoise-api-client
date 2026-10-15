@@ -25,7 +25,7 @@ public class BaseMockServerTest
 
         // Initialize the Client
         Client = new TurquoiseHealthApiClient(
-            "TOKEN",
+            () => "TOKEN",
             clientOptions: new ClientOptions { BaseUrl = Server.Urls[0], MaxRetries = 0 }
         );
     }

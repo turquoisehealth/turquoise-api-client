@@ -81,7 +81,7 @@ After adding a custom library, verify that end users can import it correctly:
 from turquoise_health import TurquoiseHealth, APIAuthHandler
 
 auth = APIAuthHandler.from_env()
-client = TurquoiseHealth(token=auth.get_token())
+client = TurquoiseHealth(token=auth.as_callable())
 ```
 
 ```typescript
@@ -97,8 +97,10 @@ const client = new TurquoiseHealthApiClient({ token: auth.asSupplier() });
 using TurquoiseHealth.Api.Lib;
 
 var auth = APIAuthHandler.FromEnv();
-var client = new TurquoiseHealthApiClient(token: auth.GetToken());
+var client = new TurquoiseHealthApiClient(tokenSupplier: auth.AsSupplier());
 ```
+
+Pass a token supplier rather than calling the auth handler once during client construction. The supplier is evaluated for each request, so OAuth handlers can return a refreshed token after expiration. Reuse the same auth handler instance so its in-memory token cache remains effective.
 
 ## Adding New Libraries
 

@@ -28,15 +28,15 @@ namespace TurquoiseHealth.Api.Lib;
 ///
 /// // Static token from environment
 /// var auth = APIAuthHandler.FromEnv();
-/// var client = new TurquoiseHealthApiClient(token: auth.GetToken());
+/// var client = new TurquoiseHealthApiClient(tokenSupplier: auth.AsSupplier());
 ///
 /// // OAuth with client credentials (auto-refreshes when expired)
 /// var auth = APIAuthHandler.FromClientCredentials();
-/// var client = new TurquoiseHealthApiClient(token: auth.GetToken());
+/// var client = new TurquoiseHealthApiClient(tokenSupplier: auth.AsSupplier());
 ///
 /// // Custom token provider
 /// var auth = new APIAuthHandler(tokenProvider: () => GetTokenFromVault());
-/// var client = new TurquoiseHealthApiClient(token: auth.GetToken());
+/// var client = new TurquoiseHealthApiClient(tokenSupplier: auth.AsSupplier());
 /// </code>
 /// </example>
 public class APIAuthHandler
@@ -184,6 +184,15 @@ public class APIAuthHandler
         }
 
         throw new InvalidOperationException("No token source configured");
+    }
+
+    /// <summary>
+    /// Return a delegate that retrieves the current token when the client sends each request.
+    /// </summary>
+    /// <returns>A token supplier for the API client</returns>
+    public Func<string> AsSupplier()
+    {
+        return GetToken;
     }
 
     /// <summary>

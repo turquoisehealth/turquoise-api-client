@@ -35,7 +35,7 @@ public class IntegrationTests
         }
 
         var auth = APIAuthHandler.FromClientCredentials();
-        _client = new TurquoiseHealthApiClient(auth.GetToken(), new ClientOptions
+        _client = new TurquoiseHealthApiClient(auth.AsSupplier(), new ClientOptions
         {
             BaseUrl = BaseUrl
         });

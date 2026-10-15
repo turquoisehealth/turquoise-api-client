@@ -10,11 +10,13 @@ class BaseClientWrapper:
     def __init__(
         self,
         *,
-        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        token: typing.Optional[typing.Callable[[], str]] = None,
         headers: typing.Optional[typing.Dict[str, str]] = None,
         base_url: str,
         timeout: typing.Optional[float] = None,
     ):
+        if token is not None and not callable(token):
+            raise TypeError("token must be a callable that returns the current token")
         self._token = token
         self._headers = headers
         self._base_url = base_url
@@ -31,10 +33,9 @@ class BaseClientWrapper:
         return headers
 
     def _get_token(self) -> typing.Optional[str]:
-        if isinstance(self._token, str) or self._token is None:
+        if self._token is None:
             return self._token
-        else:
-            return self._token()
+        return self._token()
 
     def get_custom_headers(self) -> typing.Optional[typing.Dict[str, str]]:
         return self._headers
@@ -50,7 +51,7 @@ class SyncClientWrapper(BaseClientWrapper):
     def __init__(
         self,
         *,
-        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        token: typing.Optional[typing.Callable[[], str]] = None,
         headers: typing.Optional[typing.Dict[str, str]] = None,
         base_url: str,
         timeout: typing.Optional[float] = None,
@@ -69,7 +70,7 @@ class AsyncClientWrapper(BaseClientWrapper):
     def __init__(
         self,
         *,
-        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        token: typing.Optional[typing.Callable[[], str]] = None,
         headers: typing.Optional[typing.Dict[str, str]] = None,
         base_url: str,
         timeout: typing.Optional[float] = None,

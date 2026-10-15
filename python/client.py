@@ -30,7 +30,7 @@ class TurquoiseHealth:
 
 
 
-    token : typing.Optional[typing.Union[str, typing.Callable[[], str]]]
+    token : typing.Optional[typing.Callable[[], str]]
     headers : typing.Optional[typing.Dict[str, str]]
         Additional headers to send with every request.
 
@@ -47,7 +47,7 @@ class TurquoiseHealth:
     --------
     from turquoisehealth-api import TurquoiseHealth
 
-    client = TurquoiseHealth(token="YOUR_TOKEN", )
+    client = TurquoiseHealth(token=lambda: "YOUR_TOKEN", )
     """
 
     def __init__(
@@ -55,7 +55,7 @@ class TurquoiseHealth:
         *,
         base_url: typing.Optional[str] = None,
         environment: TurquoiseHealthEnvironment = TurquoiseHealthEnvironment.DEFAULT,
-        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        token: typing.Optional[typing.Callable[[], str]] = None,
         headers: typing.Optional[typing.Dict[str, str]] = None,
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = True,
@@ -104,7 +104,7 @@ class AsyncTurquoiseHealth:
 
 
 
-    token : typing.Optional[typing.Union[str, typing.Callable[[], str]]]
+    token : typing.Optional[typing.Callable[[], str]]
     headers : typing.Optional[typing.Dict[str, str]]
         Additional headers to send with every request.
 
@@ -121,7 +121,7 @@ class AsyncTurquoiseHealth:
     --------
     from turquoisehealth-api import AsyncTurquoiseHealth
 
-    client = AsyncTurquoiseHealth(token="YOUR_TOKEN", )
+    client = AsyncTurquoiseHealth(token=lambda: "YOUR_TOKEN", )
     """
 
     def __init__(
@@ -129,7 +129,7 @@ class AsyncTurquoiseHealth:
         *,
         base_url: typing.Optional[str] = None,
         environment: TurquoiseHealthEnvironment = TurquoiseHealthEnvironment.DEFAULT,
-        token: typing.Optional[typing.Union[str, typing.Callable[[], str]]] = None,
+        token: typing.Optional[typing.Callable[[], str]] = None,
         headers: typing.Optional[typing.Dict[str, str]] = None,
         timeout: typing.Optional[float] = None,
         follow_redirects: typing.Optional[bool] = True,

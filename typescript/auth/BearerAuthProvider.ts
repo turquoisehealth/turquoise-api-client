@@ -5,14 +5,17 @@ import * as errors from "../errors/index.js";
 
 export namespace BearerAuthProvider {
     export interface Options {
-        token?: core.Supplier<core.BearerToken | undefined>;
+        token?: core.BearerTokenSupplier;
     }
 }
 
 export class BearerAuthProvider implements core.AuthProvider {
-    private readonly token: core.Supplier<core.BearerToken | undefined>;
+    private readonly token?: core.BearerTokenSupplier;
 
     constructor(options: BearerAuthProvider.Options) {
+        if (options.token != null && typeof options.token !== "function") {
+            throw new TypeError("token must be a token supplier function");
+        }
         this.token = options.token;
     }
 
@@ -21,7 +24,7 @@ export class BearerAuthProvider implements core.AuthProvider {
     }
 
     public async getAuthRequest(_arg?: { endpointMetadata?: core.EndpointMetadata }): Promise<core.AuthRequest> {
-        const token = await core.Supplier.get(this.token);
+        const token = this.token == null ? undefined : await this.token();
         if (token == null) {
             throw new errors.TurquoiseHealthApiError({
                 message: "Please specify a token by passing it in to the constructor",

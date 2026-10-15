@@ -6,17 +6,17 @@ public partial class TurquoiseHealthApiClient
 {
     private readonly RawClient _client;
 
-    public TurquoiseHealthApiClient(string token, ClientOptions? clientOptions = null)
+    public TurquoiseHealthApiClient(Func<string> tokenSupplier, ClientOptions? clientOptions = null)
     {
         var defaultHeaders = new Headers(
             new Dictionary<string, string>()
             {
-                { "Authorization", $"Bearer {token}" },
                 { "X-Fern-Language", "C#" },
                 { "X-Fern-SDK-Name", "TurquoiseHealth.Api" },
                 { "X-Fern-SDK-Version", Version.Current },
             }
         );
+        defaultHeaders["Authorization"] = new Func<string>(() => $"Bearer {tokenSupplier()}");
         clientOptions ??= new ClientOptions();
         foreach (var header in defaultHeaders)
         {
