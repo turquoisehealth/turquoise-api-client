@@ -84,6 +84,8 @@ git commit -m "chore: release SDKs for X.X.XX"
 
 Open a pull request targeting `main`. Include the API version, validation results, and a summary of any breaking changes. Also verify that the semantic versioning correctly reflects the changes being published (major, minor, patch etc.)
 
+If the OpenAPI diff reports breaking changes that the API team confirms do not require a major version bump, apply the `override-major-version-bump` PR label. The **Enforce major version bump on breaking changes** check will still run and report the breaking changes, but will emit a warning instead of blocking the PR for the missing major bump. Adding or removing the label automatically reruns the workflow; removing it restores enforcement. Diff-tool errors still fail even with the label, and the breaking-change report and changelog preview remain enabled.
+
 The release PR should be carefully reviewed before merging. The merged commit contains the exact SDK source and package metadata that will be published.
 
 ## 7. Merge and create the release tag
