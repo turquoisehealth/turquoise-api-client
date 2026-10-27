@@ -19,35 +19,35 @@ from ..errors.service_unavailable_error import ServiceUnavailableError
 from ..errors.too_many_requests_error import TooManyRequestsError
 from ..errors.unauthorized_error import UnauthorizedError
 from ..errors.unprocessable_entity_error import UnprocessableEntityError
+from ..types.consumer_pricing_provider import ConsumerPricingProvider
 from ..types.consumer_site_location import ConsumerSiteLocation
 from ..types.consumer_site_member_eligibility_input import ConsumerSiteMemberEligibilityInput
 from ..types.consumer_site_personalized_estimate_error_response import ConsumerSitePersonalizedEstimateErrorResponse
-from ..types.consumer_site_price_comparison import ConsumerSitePriceComparison
 from ..types.consumer_site_price_sort import ConsumerSitePriceSort
 from ..types.consumer_site_pricing_negotiated import ConsumerSitePricingNegotiated
+from ..types.list_envelope_consumer_pricing_provider import ListEnvelopeConsumerPricingProvider
 from ..types.list_envelope_line_item import ListEnvelopeLineItem
 from ..types.list_envelope_network import ListEnvelopeNetwork
 from ..types.list_envelope_package import ListEnvelopePackage
 from ..types.list_envelope_payer import ListEnvelopePayer
-from ..types.list_envelope_provider import ListEnvelopeProvider
 from ..types.list_envelope_provider_package_price import ListEnvelopeProviderPackagePrice
 from ..types.location import Location
 from ..types.network import Network
 from ..types.package import Package
 from ..types.payer import Payer
-from ..types.price_comparison import PriceComparison
 from ..types.price_expand import PriceExpand
 from ..types.price_sort import PriceSort
-from ..types.provider import Provider
+from ..types.price_statistics import PriceStatistics
 from ..types.provider_package_price import ProviderPackagePrice
 from .types.consumer_site_personalized_estimates_query_request_sort_direction import (
     ConsumerSitePersonalizedEstimatesQueryRequestSortDirection,
 )
-from .types.prices_compare_request_pricing import PricesCompareRequestPricing
 from .types.prices_query_request_pricing import PricesQueryRequestPricing
 from .types.prices_query_request_sort_direction import PricesQueryRequestSortDirection
+from .types.prices_statistics_request_pricing import PricesStatisticsRequestPricing
 from .types.v3list_personalized_estimates_request_expand_item import V3ListPersonalizedEstimatesRequestExpandItem
 from .types.v3list_personalized_estimates_response import V3ListPersonalizedEstimatesResponse
+from .types.v3personalized_estimate_statistics_response import V3PersonalizedEstimateStatisticsResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -169,7 +169,7 @@ class RawConsumerPricingClient:
         location_within_zip_codes: typing.Optional[str] = None,
         location_zip: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ListEnvelopeProvider]:
+    ) -> HttpResponse[ListEnvelopeConsumerPricingProvider]:
         """
         Retrieve a list of providers, filtered over a search by name, NPI, provider type, or location. Additionally, filter to a list of providers with Turquoise price estimates available by a selected payer, network, or package. Results reflect provider, payer, and package combinations that Turquoise has priced services for; the list may not be comprehensive of all contacted payer networks or services that are available.
 
@@ -225,7 +225,7 @@ class RawConsumerPricingClient:
 
         Returns
         -------
-        HttpResponse[ListEnvelopeProvider]
+        HttpResponse[ListEnvelopeConsumerPricingProvider]
             Successful Response
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -255,9 +255,9 @@ class RawConsumerPricingClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ListEnvelopeProvider,
+                    ListEnvelopeConsumerPricingProvider,
                     parse_obj_as(
-                        type_=ListEnvelopeProvider,  # type: ignore
+                        type_=ListEnvelopeConsumerPricingProvider,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -324,7 +324,7 @@ class RawConsumerPricingClient:
 
     def v3get_provider(
         self, provider_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> HttpResponse[Provider]:
+    ) -> HttpResponse[ConsumerPricingProvider]:
         """
         Fetch details for a single provider by provider ID.
 
@@ -338,7 +338,7 @@ class RawConsumerPricingClient:
 
         Returns
         -------
-        HttpResponse[Provider]
+        HttpResponse[ConsumerPricingProvider]
             Successful Response
         """
         _response = self._client_wrapper.httpx_client.request(
@@ -349,9 +349,9 @@ class RawConsumerPricingClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    Provider,
+                    ConsumerPricingProvider,
                     parse_obj_as(
-                        type_=Provider,  # type: ignore
+                        type_=ConsumerPricingProvider,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1381,15 +1381,15 @@ class RawConsumerPricingClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def v3compare_prices(
+    def v3price_statistics(
         self,
         *,
         package_id: str,
-        pricing: PricesCompareRequestPricing,
+        pricing: PricesStatisticsRequestPricing,
         provider_id: typing.Optional[str] = OMIT,
         location: typing.Optional[Location] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[PriceComparison]:
+    ) -> HttpResponse[PriceStatistics]:
         """
         Return summary statistics (min, max, average, median, quartiles) over prices matching the same filters as /query, excluding sorting and pagination. Use this endpoint to compare prices across relevant criteria.
 
@@ -1397,7 +1397,7 @@ class RawConsumerPricingClient:
         ----------
         package_id : str
 
-        pricing : PricesCompareRequestPricing
+        pricing : PricesStatisticsRequestPricing
 
         provider_id : typing.Optional[str]
 
@@ -1408,17 +1408,17 @@ class RawConsumerPricingClient:
 
         Returns
         -------
-        HttpResponse[PriceComparison]
+        HttpResponse[PriceStatistics]
             Successful Response
         """
         _response = self._client_wrapper.httpx_client.request(
-            "v3/prices/compare",
+            "v3/prices/statistics",
             method="POST",
             json={
                 "package_id": package_id,
                 "provider_id": provider_id,
                 "pricing": convert_and_respect_annotation_metadata(
-                    object_=pricing, annotation=PricesCompareRequestPricing, direction="write"
+                    object_=pricing, annotation=PricesStatisticsRequestPricing, direction="write"
                 ),
                 "location": convert_and_respect_annotation_metadata(
                     object_=location, annotation=typing.Optional[Location], direction="write"
@@ -1433,9 +1433,9 @@ class RawConsumerPricingClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    PriceComparison,
+                    PriceStatistics,
                     parse_obj_as(
-                        type_=PriceComparison,  # type: ignore
+                        type_=PriceStatistics,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -1801,7 +1801,7 @@ class RawConsumerPricingClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    def v3compare_personalized_estimates(
+    def v3personalized_estimate_statistics(
         self,
         *,
         package_id: str,
@@ -1810,9 +1810,9 @@ class RawConsumerPricingClient:
         provider_id: typing.Optional[str] = OMIT,
         location: typing.Optional[ConsumerSiteLocation] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> HttpResponse[ConsumerSitePriceComparison]:
+    ) -> HttpResponse[V3PersonalizedEstimateStatisticsResponse]:
         """
-        Compare what this member would pay out-of-pocket across providers for the givenpackage. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
+        Compare what this member would pay out-of-pocket across providers for the given package. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
 
         Parameters
         ----------
@@ -1831,11 +1831,11 @@ class RawConsumerPricingClient:
 
         Returns
         -------
-        HttpResponse[ConsumerSitePriceComparison]
-            Price comparison statistics for the requested package.
+        HttpResponse[V3PersonalizedEstimateStatisticsResponse]
+            Estimate statistics for the requested package.
         """
         _response = self._client_wrapper.httpx_client.request(
-            "v3/personalized-estimates/compare",
+            "v3/personalized-estimates/statistics",
             method="POST",
             json={
                 "package_id": package_id,
@@ -1859,9 +1859,9 @@ class RawConsumerPricingClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ConsumerSitePriceComparison,
+                    V3PersonalizedEstimateStatisticsResponse,
                     parse_obj_as(
-                        type_=ConsumerSitePriceComparison,  # type: ignore
+                        type_=V3PersonalizedEstimateStatisticsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2087,7 +2087,7 @@ class AsyncRawConsumerPricingClient:
         location_within_zip_codes: typing.Optional[str] = None,
         location_zip: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ListEnvelopeProvider]:
+    ) -> AsyncHttpResponse[ListEnvelopeConsumerPricingProvider]:
         """
         Retrieve a list of providers, filtered over a search by name, NPI, provider type, or location. Additionally, filter to a list of providers with Turquoise price estimates available by a selected payer, network, or package. Results reflect provider, payer, and package combinations that Turquoise has priced services for; the list may not be comprehensive of all contacted payer networks or services that are available.
 
@@ -2143,7 +2143,7 @@ class AsyncRawConsumerPricingClient:
 
         Returns
         -------
-        AsyncHttpResponse[ListEnvelopeProvider]
+        AsyncHttpResponse[ListEnvelopeConsumerPricingProvider]
             Successful Response
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2173,9 +2173,9 @@ class AsyncRawConsumerPricingClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ListEnvelopeProvider,
+                    ListEnvelopeConsumerPricingProvider,
                     parse_obj_as(
-                        type_=ListEnvelopeProvider,  # type: ignore
+                        type_=ListEnvelopeConsumerPricingProvider,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -2242,7 +2242,7 @@ class AsyncRawConsumerPricingClient:
 
     async def v3get_provider(
         self, provider_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> AsyncHttpResponse[Provider]:
+    ) -> AsyncHttpResponse[ConsumerPricingProvider]:
         """
         Fetch details for a single provider by provider ID.
 
@@ -2256,7 +2256,7 @@ class AsyncRawConsumerPricingClient:
 
         Returns
         -------
-        AsyncHttpResponse[Provider]
+        AsyncHttpResponse[ConsumerPricingProvider]
             Successful Response
         """
         _response = await self._client_wrapper.httpx_client.request(
@@ -2267,9 +2267,9 @@ class AsyncRawConsumerPricingClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    Provider,
+                    ConsumerPricingProvider,
                     parse_obj_as(
-                        type_=Provider,  # type: ignore
+                        type_=ConsumerPricingProvider,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -3299,15 +3299,15 @@ class AsyncRawConsumerPricingClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def v3compare_prices(
+    async def v3price_statistics(
         self,
         *,
         package_id: str,
-        pricing: PricesCompareRequestPricing,
+        pricing: PricesStatisticsRequestPricing,
         provider_id: typing.Optional[str] = OMIT,
         location: typing.Optional[Location] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[PriceComparison]:
+    ) -> AsyncHttpResponse[PriceStatistics]:
         """
         Return summary statistics (min, max, average, median, quartiles) over prices matching the same filters as /query, excluding sorting and pagination. Use this endpoint to compare prices across relevant criteria.
 
@@ -3315,7 +3315,7 @@ class AsyncRawConsumerPricingClient:
         ----------
         package_id : str
 
-        pricing : PricesCompareRequestPricing
+        pricing : PricesStatisticsRequestPricing
 
         provider_id : typing.Optional[str]
 
@@ -3326,17 +3326,17 @@ class AsyncRawConsumerPricingClient:
 
         Returns
         -------
-        AsyncHttpResponse[PriceComparison]
+        AsyncHttpResponse[PriceStatistics]
             Successful Response
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "v3/prices/compare",
+            "v3/prices/statistics",
             method="POST",
             json={
                 "package_id": package_id,
                 "provider_id": provider_id,
                 "pricing": convert_and_respect_annotation_metadata(
-                    object_=pricing, annotation=PricesCompareRequestPricing, direction="write"
+                    object_=pricing, annotation=PricesStatisticsRequestPricing, direction="write"
                 ),
                 "location": convert_and_respect_annotation_metadata(
                     object_=location, annotation=typing.Optional[Location], direction="write"
@@ -3351,9 +3351,9 @@ class AsyncRawConsumerPricingClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    PriceComparison,
+                    PriceStatistics,
                     parse_obj_as(
-                        type_=PriceComparison,  # type: ignore
+                        type_=PriceStatistics,  # type: ignore
                         object_=_response.json(),
                     ),
                 )
@@ -3719,7 +3719,7 @@ class AsyncRawConsumerPricingClient:
             raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response.text)
         raise ApiError(status_code=_response.status_code, headers=dict(_response.headers), body=_response_json)
 
-    async def v3compare_personalized_estimates(
+    async def v3personalized_estimate_statistics(
         self,
         *,
         package_id: str,
@@ -3728,9 +3728,9 @@ class AsyncRawConsumerPricingClient:
         provider_id: typing.Optional[str] = OMIT,
         location: typing.Optional[ConsumerSiteLocation] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> AsyncHttpResponse[ConsumerSitePriceComparison]:
+    ) -> AsyncHttpResponse[V3PersonalizedEstimateStatisticsResponse]:
         """
-        Compare what this member would pay out-of-pocket across providers for the givenpackage. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
+        Compare what this member would pay out-of-pocket across providers for the given package. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
 
         Parameters
         ----------
@@ -3749,11 +3749,11 @@ class AsyncRawConsumerPricingClient:
 
         Returns
         -------
-        AsyncHttpResponse[ConsumerSitePriceComparison]
-            Price comparison statistics for the requested package.
+        AsyncHttpResponse[V3PersonalizedEstimateStatisticsResponse]
+            Estimate statistics for the requested package.
         """
         _response = await self._client_wrapper.httpx_client.request(
-            "v3/personalized-estimates/compare",
+            "v3/personalized-estimates/statistics",
             method="POST",
             json={
                 "package_id": package_id,
@@ -3777,9 +3777,9 @@ class AsyncRawConsumerPricingClient:
         try:
             if 200 <= _response.status_code < 300:
                 _data = typing.cast(
-                    ConsumerSitePriceComparison,
+                    V3PersonalizedEstimateStatisticsResponse,
                     parse_obj_as(
-                        type_=ConsumerSitePriceComparison,  # type: ignore
+                        type_=V3PersonalizedEstimateStatisticsResponse,  # type: ignore
                         object_=_response.json(),
                     ),
                 )

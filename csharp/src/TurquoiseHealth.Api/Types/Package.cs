@@ -15,13 +15,13 @@ public record Package : IJsonOnDeserialized
     public PackageObject? Object { get; set; }
 
     /// <summary>
-    /// Package identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+    /// Package identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term.
     /// </summary>
     [JsonPropertyName("id")]
     public required string Id { get; set; }
 
     /// <summary>
-    /// Package taxonomy. Only Standard Service Packages ('ssp') are served today; other package types (e.g. consumer bundles) may be added as they become servable.
+    /// Package taxonomy. The SSP Grouper is the main package type.  If searching via anchor code, a specific SSP will be returned.  Either package id works as the package_id in subsequent API requests.
     /// </summary>
     [JsonPropertyName("type")]
     public PackageType? Type { get; set; }
@@ -39,19 +39,19 @@ public record Package : IJsonOnDeserialized
     public string? Description { get; set; }
 
     /// <summary>
-    /// The package's comprehensive anchor (base) billing codes — the rows billed as the anchor itself, not its professional-fee counterparts. Every package is expected to carry at least one. In the current catalog every anchor code maps to exactly one package (measured 07/2026), so ?anchor_code= behaves as a unique lookup — but that is an observed property, not a guarantee: the lookup returns every package anchored by the code.
+    /// The package's comprehensive anchor (base) billing codes — the rows billed as the anchor itself, not its professional-fee counterparts.
     /// </summary>
     [JsonPropertyName("anchor_codes")]
     public IEnumerable<BillingCode>? AnchorCodes { get; set; }
-
-    [JsonPropertyName("disclosures")]
-    public IEnumerable<string>? Disclosures { get; set; }
 
     /// <summary>
     /// Query-relative metadata (search only).
     /// </summary>
     [JsonPropertyName("context")]
     public SearchContext? Context { get; set; }
+
+    [JsonPropertyName("disclosures")]
+    public IEnumerable<string>? Disclosures { get; set; }
 
     [JsonIgnore]
     public ReadOnlyAdditionalProperties AdditionalProperties { get; private set; } = new();

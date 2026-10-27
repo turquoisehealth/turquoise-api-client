@@ -29,7 +29,7 @@ public record ConsumerSiteMemberEligibilityInput : IJsonOnDeserialized
     public string? MemberId { get; set; }
 
     [JsonPropertyName("consent_attested")]
-    public required string ConsentAttested { get; set; }
+    public required bool ConsentAttested { get; set; }
 
     [JsonIgnore]
     public ReadOnlyAdditionalProperties AdditionalProperties { get; private set; } = new();

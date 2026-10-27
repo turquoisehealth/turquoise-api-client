@@ -14,12 +14,12 @@ class Package(UniversalBaseModel):
     object: typing.Optional[PackageObject] = None
     id: str = pydantic.Field()
     """
-    Package identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+    Package identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term.
     """
 
     type: typing.Optional[PackageType] = pydantic.Field(default=None)
     """
-    Package taxonomy. Only Standard Service Packages ('ssp') are served today; other package types (e.g. consumer bundles) may be added as they become servable.
+    Package taxonomy. The SSP Grouper is the main package type.  If searching via anchor code, a specific SSP will be returned.  Either package id works as the package_id in subsequent API requests.
     """
 
     name: str = pydantic.Field()
@@ -34,14 +34,15 @@ class Package(UniversalBaseModel):
 
     anchor_codes: typing.Optional[typing.List[BillingCode]] = pydantic.Field(default=None)
     """
-    The package's comprehensive anchor (base) billing codes — the rows billed as the anchor itself, not its professional-fee counterparts. Every package is expected to carry at least one. In the current catalog every anchor code maps to exactly one package (measured 07/2026), so ?anchor_code= behaves as a unique lookup — but that is an observed property, not a guarantee: the lookup returns every package anchored by the code.
+    The package's comprehensive anchor (base) billing codes — the rows billed as the anchor itself, not its professional-fee counterparts.
     """
 
-    disclosures: typing.Optional[typing.List[str]] = None
     context: typing.Optional[SearchContext] = pydantic.Field(default=None)
     """
     Query-relative metadata (search only).
     """
+
+    disclosures: typing.Optional[typing.List[str]] = None
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

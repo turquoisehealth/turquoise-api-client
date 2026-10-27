@@ -5,7 +5,7 @@ using TurquoiseHealth.Api.Core;
 namespace TurquoiseHealth.Api;
 
 /// <summary>
-/// ComparisonStats
+/// Summary statistics over a population of prices. Shared by every `/statistics` surface.
 /// </summary>
 [Serializable]
 public record ConsumerSiteComparisonStats : IJsonOnDeserialized

@@ -5,8 +5,8 @@ import type * as TurquoiseHealthApi from "../../../../index.js";
 /**
  * @example
  *     {
- *         package_id: "GA003",
- *         provider_id: "5756",
+ *         package_id: "GP03Z",
+ *         provider_id: "5754",
  *         pricing: {
  *             type: "negotiated",
  *             network_id: "-3776001016975145508"
@@ -16,8 +16,12 @@ import type * as TurquoiseHealthApi from "../../../../index.js";
  *             last_name: "test123",
  *             date_of_birth: "2001-01-01",
  *             member_id: "test123",
- *             consent_attested: "consent_attested"
+ *             consent_attested: true
  *         },
+ *         location: {
+ *             zip: "80218"
+ *         },
+ *         sort: "total",
  *         sort_direction: "asc",
  *         page_size: 25
  *     }

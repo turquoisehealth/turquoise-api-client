@@ -3,7 +3,7 @@
 /**
  * @example
  *     {
- *         package_id: "OB002"
+ *         package_id: "R017Z"
  *     }
  */
 export interface V3ListPackageLineItemsRequest {

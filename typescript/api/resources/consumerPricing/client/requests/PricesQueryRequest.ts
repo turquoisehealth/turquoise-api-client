@@ -5,8 +5,8 @@ import type * as TurquoiseHealthApi from "../../../../index.js";
 /**
  * @example
  *     {
- *         package_id: "OB002",
- *         provider_id: "5756",
+ *         package_id: "R017Z",
+ *         provider_id: "5754",
  *         pricing: {
  *             type: "negotiated",
  *             network_id: "-3776001016975145508"
@@ -15,8 +15,8 @@ import type * as TurquoiseHealthApi from "../../../../index.js";
  *
  * @example
  *     {
- *         package_id: "RA008",
- *         provider_id: "5756",
+ *         package_id: "R017Z",
+ *         provider_id: "5754",
  *         pricing: {
  *             type: "cash"
  *         }
@@ -24,14 +24,14 @@ import type * as TurquoiseHealthApi from "../../../../index.js";
  *
  * @example
  *     {
- *         package_id: "RA008",
+ *         package_id: "R017Z",
  *         pricing: {
  *             type: "cash"
  *         },
  *         location: {
  *             near: {
- *                 lat: 39.745961,
- *                 lng: -104.971559,
+ *                 lat: 39.746549,
+ *                 lng: -104.966925,
  *                 radius_m: 25000
  *             }
  *         },
@@ -40,7 +40,7 @@ import type * as TurquoiseHealthApi from "../../../../index.js";
  *
  * @example
  *     {
- *         package_id: "RA008",
+ *         package_id: "R017Z",
  *         pricing: {
  *             type: "cash"
  *         },
@@ -51,7 +51,7 @@ import type * as TurquoiseHealthApi from "../../../../index.js";
  *
  * @example
  *     {
- *         package_id: "OB002",
+ *         package_id: "R017Z",
  *         pricing: {
  *             type: "negotiated",
  *             network_id: "-3776001016975145508"

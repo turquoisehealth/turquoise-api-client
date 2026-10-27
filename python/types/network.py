@@ -13,7 +13,7 @@ class Network(UniversalBaseModel):
     object: typing.Optional[NetworkObject] = None
     id: str = pydantic.Field()
     """
-    Network identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+    Network identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term.
     """
 
     name: str = pydantic.Field()

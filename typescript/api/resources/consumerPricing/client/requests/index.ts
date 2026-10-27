@@ -1,7 +1,7 @@
+export type { ConsumerSiteEstimateStatisticsInput } from "./ConsumerSiteEstimateStatisticsInput.js";
 export type { ConsumerSitePersonalizedEstimatesQueryRequest } from "./ConsumerSitePersonalizedEstimatesQueryRequest.js";
-export type { ConsumerSitePriceComparisonInput } from "./ConsumerSitePriceComparisonInput.js";
-export type { PricesCompareRequest } from "./PricesCompareRequest.js";
 export type { PricesQueryRequest } from "./PricesQueryRequest.js";
+export type { PricesStatisticsRequest } from "./PricesStatisticsRequest.js";
 export type { V3GetNetworkRequest } from "./V3GetNetworkRequest.js";
 export type { V3GetPackageRequest } from "./V3GetPackageRequest.js";
 export type { V3GetPayerRequest } from "./V3GetPayerRequest.js";

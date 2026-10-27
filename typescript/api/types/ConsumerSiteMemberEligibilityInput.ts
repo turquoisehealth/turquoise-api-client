@@ -10,5 +10,5 @@ export interface ConsumerSiteMemberEligibilityInput {
     last_name: string;
     date_of_birth: string;
     member_id?: string | null;
-    consent_attested: string;
+    consent_attested: boolean;
 }

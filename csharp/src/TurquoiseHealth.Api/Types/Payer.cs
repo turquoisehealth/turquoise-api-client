@@ -15,7 +15,7 @@ public record Payer : IJsonOnDeserialized
     public PayerObject? Object { get; set; }
 
     /// <summary>
-    /// Payer identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+    /// Payer identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term.
     /// </summary>
     [JsonPropertyName("id")]
     public required string Id { get; set; }

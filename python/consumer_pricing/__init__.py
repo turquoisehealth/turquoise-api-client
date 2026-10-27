@@ -8,27 +8,29 @@ from importlib import import_module
 if typing.TYPE_CHECKING:
     from .types import (
         ConsumerSitePersonalizedEstimatesQueryRequestSortDirection,
-        PricesCompareRequestPricing,
-        PricesCompareRequestPricing_Cash,
-        PricesCompareRequestPricing_Negotiated,
         PricesQueryRequestPricing,
         PricesQueryRequestPricing_Cash,
         PricesQueryRequestPricing_Negotiated,
         PricesQueryRequestSortDirection,
+        PricesStatisticsRequestPricing,
+        PricesStatisticsRequestPricing_Cash,
+        PricesStatisticsRequestPricing_Negotiated,
         V3ListPersonalizedEstimatesRequestExpandItem,
         V3ListPersonalizedEstimatesResponse,
+        V3PersonalizedEstimateStatisticsResponse,
     )
 _dynamic_imports: typing.Dict[str, str] = {
     "ConsumerSitePersonalizedEstimatesQueryRequestSortDirection": ".types",
-    "PricesCompareRequestPricing": ".types",
-    "PricesCompareRequestPricing_Cash": ".types",
-    "PricesCompareRequestPricing_Negotiated": ".types",
     "PricesQueryRequestPricing": ".types",
     "PricesQueryRequestPricing_Cash": ".types",
     "PricesQueryRequestPricing_Negotiated": ".types",
     "PricesQueryRequestSortDirection": ".types",
+    "PricesStatisticsRequestPricing": ".types",
+    "PricesStatisticsRequestPricing_Cash": ".types",
+    "PricesStatisticsRequestPricing_Negotiated": ".types",
     "V3ListPersonalizedEstimatesRequestExpandItem": ".types",
     "V3ListPersonalizedEstimatesResponse": ".types",
+    "V3PersonalizedEstimateStatisticsResponse": ".types",
 }
 
 
@@ -55,13 +57,14 @@ def __dir__():
 
 __all__ = [
     "ConsumerSitePersonalizedEstimatesQueryRequestSortDirection",
-    "PricesCompareRequestPricing",
-    "PricesCompareRequestPricing_Cash",
-    "PricesCompareRequestPricing_Negotiated",
     "PricesQueryRequestPricing",
     "PricesQueryRequestPricing_Cash",
     "PricesQueryRequestPricing_Negotiated",
     "PricesQueryRequestSortDirection",
+    "PricesStatisticsRequestPricing",
+    "PricesStatisticsRequestPricing_Cash",
+    "PricesStatisticsRequestPricing_Negotiated",
     "V3ListPersonalizedEstimatesRequestExpandItem",
     "V3ListPersonalizedEstimatesResponse",
+    "V3PersonalizedEstimateStatisticsResponse",
 ]

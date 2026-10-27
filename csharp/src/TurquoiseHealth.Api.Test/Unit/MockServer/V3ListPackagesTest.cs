@@ -16,26 +16,18 @@ public class V3ListPackagesTest : BaseMockServerTest
               "items": [
                 {
                   "object": "package",
-                  "id": "OB002",
-                  "type": "ssp",
-                  "name": "Delivery - caesarean",
-                  "description": "Cesarean delivery (C-section) is a surgical procedure in which the baby is delivered through incisions made in the abdomen and uterus. It may be planned in advance due to specific medical conditions or performed as an emergency if complications arise during labor. The procedure is done under regional or general anesthesia, and most patients stay in the hospital for two to four days. Recovery from a C-section typically takes longer than from a vaginal delivery, and your care team will provide instructions for wound care and activity during healing.",
+                  "id": "R017Z",
+                  "type": "ssp_grouper",
+                  "name": "Ultrasound",
+                  "description": "An ultrasound uses high-frequency sound waves to create real-time images of internal organs, tissues, and blood flow. This painless outpatient test requires no radiation and no needles. A technician applies gel to your skin and moves a small probe, instantly showing images on a screen. The procedure takes 15-45 minutes depending on what's being evaluated. Ultrasound safely evaluates pregnancy, organs, blood vessels, joints, and soft tissues. Results guide diagnosis and treatment planning. You go home immediately and can resume all activities. This estimate is based on the most common variation of this service, a breast ultrasound. Your price may differ depending on the type of ultrasound you have.",
                   "anchor_codes": [
                     {
-                      "code": "59510",
+                      "code": "76641",
                       "code_type": "HCPCS"
                     },
                     {
-                      "code": "784",
-                      "code_type": "MS-DRG"
-                    },
-                    {
-                      "code": "785",
-                      "code_type": "MS-DRG"
-                    },
-                    {
-                      "code": "786",
-                      "code_type": "MS-DRG"
+                      "code": "76642",
+                      "code_type": "HCPCS"
                     }
                   ],
                   "disclosures": [

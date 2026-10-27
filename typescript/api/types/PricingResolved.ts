@@ -8,7 +8,9 @@ import type * as TurquoiseHealthApi from "../index.js";
  */
 export interface PricingResolved {
     type: PricingResolved.Type;
+    /** The insurance network the negotiated rate applies to. Null for cash prices. */
     network?: TurquoiseHealthApi.EntityRef | null;
+    /** The insurance payer that operates the network. Null for cash prices. */
     payer?: TurquoiseHealthApi.EntityRef | null;
 }
 

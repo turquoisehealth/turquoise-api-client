@@ -4,7 +4,7 @@ import type * as TurquoiseHealthApi from "../index.js";
 
 export interface Network {
     object?: Network.Object_;
-    /** Network identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term. */
+    /** Network identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term. */
     id: string;
     /** Display name of the network. */
     name: string;

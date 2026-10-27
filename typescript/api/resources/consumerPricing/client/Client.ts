@@ -146,14 +146,14 @@ export class ConsumerPricingClient {
     public v3ListProviders(
         request: TurquoiseHealthApi.V3ListProvidersRequest = {},
         requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): core.HttpResponsePromise<TurquoiseHealthApi.ListEnvelopeProvider> {
+    ): core.HttpResponsePromise<TurquoiseHealthApi.ListEnvelopeConsumerPricingProvider> {
         return core.HttpResponsePromise.fromPromise(this.__v3ListProviders(request, requestOptions));
     }
 
     private async __v3ListProviders(
         request: TurquoiseHealthApi.V3ListProvidersRequest = {},
         requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): Promise<core.WithRawResponse<TurquoiseHealthApi.ListEnvelopeProvider>> {
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.ListEnvelopeConsumerPricingProvider>> {
         const {
             name,
             npi,
@@ -266,7 +266,7 @@ export class ConsumerPricingClient {
         });
         if (_response.ok) {
             return {
-                data: _response.body as TurquoiseHealthApi.ListEnvelopeProvider,
+                data: _response.body as TurquoiseHealthApi.ListEnvelopeConsumerPricingProvider,
                 rawResponse: _response.rawResponse,
             };
         }
@@ -340,20 +340,20 @@ export class ConsumerPricingClient {
      *
      * @example
      *     await client.consumerPricing.v3GetProvider({
-     *         provider_id: "5756"
+     *         provider_id: "5754"
      *     })
      */
     public v3GetProvider(
         request: TurquoiseHealthApi.V3GetProviderRequest,
         requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): core.HttpResponsePromise<TurquoiseHealthApi.Provider> {
+    ): core.HttpResponsePromise<TurquoiseHealthApi.ConsumerPricingProvider> {
         return core.HttpResponsePromise.fromPromise(this.__v3GetProvider(request, requestOptions));
     }
 
     private async __v3GetProvider(
         request: TurquoiseHealthApi.V3GetProviderRequest,
         requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): Promise<core.WithRawResponse<TurquoiseHealthApi.Provider>> {
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.ConsumerPricingProvider>> {
         const { provider_id: providerId } = request;
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
@@ -378,7 +378,10 @@ export class ConsumerPricingClient {
             logging: this._options.logging,
         });
         if (_response.ok) {
-            return { data: _response.body as TurquoiseHealthApi.Provider, rawResponse: _response.rawResponse };
+            return {
+                data: _response.body as TurquoiseHealthApi.ConsumerPricingProvider,
+                rawResponse: _response.rawResponse,
+            };
         }
 
         if (_response.error.reason === "status-code") {
@@ -1192,7 +1195,7 @@ export class ConsumerPricingClient {
      *
      * @example
      *     await client.consumerPricing.v3GetPackage({
-     *         package_id: "OB002"
+     *         package_id: "R017Z"
      *     })
      */
     public v3GetPackage(
@@ -1304,7 +1307,7 @@ export class ConsumerPricingClient {
      *
      * @example
      *     await client.consumerPricing.v3ListPackageLineItems({
-     *         package_id: "OB002"
+     *         package_id: "R017Z"
      *     })
      */
     public v3ListPackageLineItems(
@@ -1419,8 +1422,8 @@ export class ConsumerPricingClient {
      *
      * @example
      *     await client.consumerPricing.v3QueryPrices({
-     *         package_id: "OB002",
-     *         provider_id: "5756",
+     *         package_id: "R017Z",
+     *         provider_id: "5754",
      *         pricing: {
      *             type: "negotiated",
      *             network_id: "-3776001016975145508"
@@ -1429,8 +1432,8 @@ export class ConsumerPricingClient {
      *
      * @example
      *     await client.consumerPricing.v3QueryPrices({
-     *         package_id: "RA008",
-     *         provider_id: "5756",
+     *         package_id: "R017Z",
+     *         provider_id: "5754",
      *         pricing: {
      *             type: "cash"
      *         }
@@ -1438,14 +1441,14 @@ export class ConsumerPricingClient {
      *
      * @example
      *     await client.consumerPricing.v3QueryPrices({
-     *         package_id: "RA008",
+     *         package_id: "R017Z",
      *         pricing: {
      *             type: "cash"
      *         },
      *         location: {
      *             near: {
-     *                 lat: 39.745961,
-     *                 lng: -104.971559,
+     *                 lat: 39.746549,
+     *                 lng: -104.966925,
      *                 radius_m: 25000
      *             }
      *         },
@@ -1454,7 +1457,7 @@ export class ConsumerPricingClient {
      *
      * @example
      *     await client.consumerPricing.v3QueryPrices({
-     *         package_id: "RA008",
+     *         package_id: "R017Z",
      *         pricing: {
      *             type: "cash"
      *         },
@@ -1465,7 +1468,7 @@ export class ConsumerPricingClient {
      *
      * @example
      *     await client.consumerPricing.v3QueryPrices({
-     *         package_id: "OB002",
+     *         package_id: "R017Z",
      *         pricing: {
      *             type: "negotiated",
      *             network_id: "-3776001016975145508"
@@ -1578,7 +1581,7 @@ export class ConsumerPricingClient {
     /**
      * Return summary statistics (min, max, average, median, quartiles) over prices matching the same filters as /query, excluding sorting and pagination. Use this endpoint to compare prices across relevant criteria.
      *
-     * @param {TurquoiseHealthApi.PricesCompareRequest} request
+     * @param {TurquoiseHealthApi.PricesStatisticsRequest} request
      * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link TurquoiseHealthApi.BadRequestError}
@@ -1588,9 +1591,9 @@ export class ConsumerPricingClient {
      * @throws {@link TurquoiseHealthApi.InternalServerError}
      *
      * @example
-     *     await client.consumerPricing.v3ComparePrices({
-     *         package_id: "OB002",
-     *         provider_id: "5756",
+     *     await client.consumerPricing.v3PriceStatistics({
+     *         package_id: "R017Z",
+     *         provider_id: "5754",
      *         pricing: {
      *             type: "negotiated",
      *             network_id: "-3776001016975145508"
@@ -1598,8 +1601,8 @@ export class ConsumerPricingClient {
      *     })
      *
      * @example
-     *     await client.consumerPricing.v3ComparePrices({
-     *         package_id: "RA008",
+     *     await client.consumerPricing.v3PriceStatistics({
+     *         package_id: "R017Z",
      *         pricing: {
      *             type: "cash"
      *         },
@@ -1611,31 +1614,31 @@ export class ConsumerPricingClient {
      *     })
      *
      * @example
-     *     await client.consumerPricing.v3ComparePrices({
-     *         package_id: "RA008",
+     *     await client.consumerPricing.v3PriceStatistics({
+     *         package_id: "R017Z",
      *         pricing: {
      *             type: "cash"
      *         },
      *         location: {
      *             near: {
-     *                 lat: 39.745961,
-     *                 lng: -104.971559,
+     *                 lat: 39.746549,
+     *                 lng: -104.966925,
      *                 radius_m: 25000
      *             }
      *         }
      *     })
      */
-    public v3ComparePrices(
-        request: TurquoiseHealthApi.PricesCompareRequest,
+    public v3PriceStatistics(
+        request: TurquoiseHealthApi.PricesStatisticsRequest,
         requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): core.HttpResponsePromise<TurquoiseHealthApi.PriceComparison> {
-        return core.HttpResponsePromise.fromPromise(this.__v3ComparePrices(request, requestOptions));
+    ): core.HttpResponsePromise<TurquoiseHealthApi.PriceStatistics> {
+        return core.HttpResponsePromise.fromPromise(this.__v3PriceStatistics(request, requestOptions));
     }
 
-    private async __v3ComparePrices(
-        request: TurquoiseHealthApi.PricesCompareRequest,
+    private async __v3PriceStatistics(
+        request: TurquoiseHealthApi.PricesStatisticsRequest,
         requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): Promise<core.WithRawResponse<TurquoiseHealthApi.PriceComparison>> {
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.PriceStatistics>> {
         const _authRequest: core.AuthRequest = await this._options.authProvider.getAuthRequest();
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(
             _authRequest.headers,
@@ -1647,7 +1650,7 @@ export class ConsumerPricingClient {
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
                     environments.TurquoiseHealthApiEnvironment.Default,
-                "v3/prices/compare",
+                "v3/prices/statistics",
             ),
             method: "POST",
             headers: _headers,
@@ -1662,7 +1665,7 @@ export class ConsumerPricingClient {
             logging: this._options.logging,
         });
         if (_response.ok) {
-            return { data: _response.body as TurquoiseHealthApi.PriceComparison, rawResponse: _response.rawResponse };
+            return { data: _response.body as TurquoiseHealthApi.PriceStatistics, rawResponse: _response.rawResponse };
         }
 
         if (_response.error.reason === "status-code") {
@@ -1712,7 +1715,7 @@ export class ConsumerPricingClient {
                 });
             case "timeout":
                 throw new errors.TurquoiseHealthApiTimeoutError(
-                    "Timeout exceeded when calling POST /v3/prices/compare.",
+                    "Timeout exceeded when calling POST /v3/prices/statistics.",
                 );
             case "unknown":
                 throw new errors.TurquoiseHealthApiError({
@@ -1736,7 +1739,7 @@ export class ConsumerPricingClient {
      *
      * @example
      *     await client.consumerPricing.v3GetPrice({
-     *         price_id: "prc_5756.OB002.-3776001016975145508"
+     *         price_id: "prc_5754.RA007.-3776001016975145508"
      *     })
      */
     public v3GetPrice(
@@ -1860,8 +1863,8 @@ export class ConsumerPricingClient {
      *
      * @example
      *     await client.consumerPricing.v3ListPersonalizedEstimates({
-     *         package_id: "GA003",
-     *         provider_id: "5756",
+     *         package_id: "GP03Z",
+     *         provider_id: "5754",
      *         pricing: {
      *             type: "negotiated",
      *             network_id: "-3776001016975145508"
@@ -1871,8 +1874,12 @@ export class ConsumerPricingClient {
      *             last_name: "test123",
      *             date_of_birth: "2001-01-01",
      *             member_id: "test123",
-     *             consent_attested: "consent_attested"
+     *             consent_attested: true
      *         },
+     *         location: {
+     *             zip: "80218"
+     *         },
+     *         sort: "total",
      *         sort_direction: "asc",
      *         page_size: 25
      *     })
@@ -2003,9 +2010,9 @@ export class ConsumerPricingClient {
     }
 
     /**
-     * Compare what this member would pay out-of-pocket across providers for the givenpackage. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
+     * Compare what this member would pay out-of-pocket across providers for the given package. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
      *
-     * @param {TurquoiseHealthApi.ConsumerSitePriceComparisonInput} request
+     * @param {TurquoiseHealthApi.ConsumerSiteEstimateStatisticsInput} request
      * @param {ConsumerPricingClient.RequestOptions} requestOptions - Request-specific configuration.
      *
      * @throws {@link TurquoiseHealthApi.BadRequestError}
@@ -2019,8 +2026,8 @@ export class ConsumerPricingClient {
      * @throws {@link TurquoiseHealthApi.ServiceUnavailableError}
      *
      * @example
-     *     await client.consumerPricing.v3ComparePersonalizedEstimates({
-     *         package_id: "GA003",
+     *     await client.consumerPricing.v3PersonalizedEstimateStatistics({
+     *         package_id: "GP03Z",
      *         pricing: {
      *             type: "negotiated",
      *             network_id: "-3776001016975145508"
@@ -2030,31 +2037,31 @@ export class ConsumerPricingClient {
      *             last_name: "test123",
      *             date_of_birth: "2001-01-01",
      *             member_id: "test123",
-     *             consent_attested: "consent_attested"
+     *             consent_attested: true
      *         },
      *         location: {
      *             zip: "80218"
      *         }
      *     })
      */
-    public v3ComparePersonalizedEstimates(
-        request: TurquoiseHealthApi.ConsumerSitePriceComparisonInput,
+    public v3PersonalizedEstimateStatistics(
+        request: TurquoiseHealthApi.ConsumerSiteEstimateStatisticsInput,
         requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): core.HttpResponsePromise<TurquoiseHealthApi.ConsumerSitePriceComparison> {
-        return core.HttpResponsePromise.fromPromise(this.__v3ComparePersonalizedEstimates(request, requestOptions));
+    ): core.HttpResponsePromise<TurquoiseHealthApi.V3PersonalizedEstimateStatisticsResponse> {
+        return core.HttpResponsePromise.fromPromise(this.__v3PersonalizedEstimateStatistics(request, requestOptions));
     }
 
-    private async __v3ComparePersonalizedEstimates(
-        request: TurquoiseHealthApi.ConsumerSitePriceComparisonInput,
+    private async __v3PersonalizedEstimateStatistics(
+        request: TurquoiseHealthApi.ConsumerSiteEstimateStatisticsInput,
         requestOptions?: ConsumerPricingClient.RequestOptions,
-    ): Promise<core.WithRawResponse<TurquoiseHealthApi.ConsumerSitePriceComparison>> {
+    ): Promise<core.WithRawResponse<TurquoiseHealthApi.V3PersonalizedEstimateStatisticsResponse>> {
         const _headers: core.Fetcher.Args["headers"] = mergeHeaders(this._options?.headers, requestOptions?.headers);
         const _response = await core.fetcher({
             url: core.url.join(
                 (await core.Supplier.get(this._options.baseUrl)) ??
                     (await core.Supplier.get(this._options.environment)) ??
                     environments.TurquoiseHealthApiEnvironment.Default,
-                "v3/personalized-estimates/compare",
+                "v3/personalized-estimates/statistics",
             ),
             method: "POST",
             headers: _headers,
@@ -2070,7 +2077,7 @@ export class ConsumerPricingClient {
         });
         if (_response.ok) {
             return {
-                data: _response.body as TurquoiseHealthApi.ConsumerSitePriceComparison,
+                data: _response.body as TurquoiseHealthApi.V3PersonalizedEstimateStatisticsResponse,
                 rawResponse: _response.rawResponse,
             };
         }
@@ -2142,7 +2149,7 @@ export class ConsumerPricingClient {
                 });
             case "timeout":
                 throw new errors.TurquoiseHealthApiTimeoutError(
-                    "Timeout exceeded when calling POST /v3/personalized-estimates/compare.",
+                    "Timeout exceeded when calling POST /v3/personalized-estimates/statistics.",
                 );
             case "unknown":
                 throw new errors.TurquoiseHealthApiError({

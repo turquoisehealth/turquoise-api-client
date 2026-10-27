@@ -5,7 +5,7 @@ using TurquoiseHealth.Api.Core;
 namespace TurquoiseHealth.Api;
 
 /// <summary>
-/// A component of a package's composition (from `api_ssp_contents`).
+/// A component of a package's composition.
 /// </summary>
 [Serializable]
 public record LineItem : IJsonOnDeserialized

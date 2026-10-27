@@ -8,6 +8,10 @@ from .money import Money
 
 
 class ComparisonStats(UniversalBaseModel):
+    """
+    Summary statistics over a population of prices. Shared by every `/statistics` surface.
+    """
+
     min: Money
     max: Money
     avg: Money

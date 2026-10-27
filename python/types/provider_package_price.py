@@ -4,12 +4,12 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
+from .consumer_pricing_provider import ConsumerPricingProvider
 from .entity_ref import EntityRef
 from .line_item import LineItem
 from .match_context import MatchContext
 from .money import Money
 from .pricing_resolved import PricingResolved
-from .provider import Provider
 from .provider_package_price_object import ProviderPackagePriceObject
 
 
@@ -17,17 +17,17 @@ class ProviderPackagePrice(UniversalBaseModel):
     object: typing.Optional[ProviderPackagePriceObject] = None
     id: str = pydantic.Field()
     """
-    Price identifier (encodes the provider × package × pricing grain). Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+    Price identifier (encodes the provider × package × pricing grain). Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term.
     """
 
-    provider: Provider = pydantic.Field()
+    provider: ConsumerPricingProvider = pydantic.Field()
     """
     Full provider entity (always inlined).
     """
 
     package: EntityRef = pydantic.Field()
     """
-    Reference stub.
+    The package this price is for.
     """
 
     pricing: PricingResolved

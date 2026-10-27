@@ -13,19 +13,19 @@ public class V3GetPriceTest : BaseMockServerTest
         const string mockResponse = """
             {
               "object": "price",
-              "id": "prc_5756.OB002.-3776001016975145508",
+              "id": "prc_5754.RA007.-3776001016975145508",
               "provider": {
                 "object": "provider",
-                "id": "5756",
-                "name": "Intermountain Health Saint Joseph Hospital",
+                "id": "5754",
+                "name": "HCA HealthONE Presbyterian St Lukes",
                 "type": "Short Term Acute Care Hospital",
-                "npi": "1417946021",
+                "npi": "1720038946",
                 "address": {
                   "city": "Denver",
                   "state": "CO",
                   "zip_code": "80218",
-                  "latitude": 39.745961,
-                  "longitude": -104.971559
+                  "latitude": 39.746549,
+                  "longitude": -104.966925
                 },
                 "context": {
                   "score": 1.1,
@@ -33,8 +33,8 @@ public class V3GetPriceTest : BaseMockServerTest
                 }
               },
               "package": {
-                "id": "OB002",
-                "name": "Delivery - caesarean"
+                "id": "R017Z",
+                "name": "Ultrasound"
               },
               "pricing": {
                 "type": "negotiated",
@@ -48,17 +48,17 @@ public class V3GetPriceTest : BaseMockServerTest
                 }
               },
               "total": {
-                "amount": "34705.48",
-                "minor_units": 3470548,
+                "amount": "526.10",
+                "minor_units": 52610,
                 "currency": "USD"
               },
               "line_items": [
                 {
-                  "code": "786",
-                  "code_type": "MS-DRG",
+                  "code": "76642",
+                  "code_type": "HCPCS",
                   "fee_type": "base_code",
-                  "description": "CESAREAN SECTION WITHOUT STERILIZATION WITH MCC",
-                  "association_rate": 0.4491
+                  "description": "Ultrasound imaging of one breast including axilla with image documentation",
+                  "association_rate": 0.7245
                 }
               ],
               "context": {
@@ -72,7 +72,7 @@ public class V3GetPriceTest : BaseMockServerTest
             .Given(
                 WireMock
                     .RequestBuilders.Request.Create()
-                    .WithPath("/v3/prices/prc_5756.OB002.-3776001016975145508")
+                    .WithPath("/v3/prices/prc_5754.RA007.-3776001016975145508")
                     .UsingGet()
             )
             .RespondWith(
@@ -83,7 +83,7 @@ public class V3GetPriceTest : BaseMockServerTest
             );
 
         var response = await Client.ConsumerPricing.V3GetPriceAsync(
-            new V3GetPriceRequest { PriceId = "prc_5756.OB002.-3776001016975145508" }
+            new V3GetPriceRequest { PriceId = "prc_5754.RA007.-3776001016975145508" }
         );
         Assert.That(
             response,

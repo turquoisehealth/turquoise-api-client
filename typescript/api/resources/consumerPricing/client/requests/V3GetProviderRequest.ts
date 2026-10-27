@@ -3,7 +3,7 @@
 /**
  * @example
  *     {
- *         provider_id: "5756"
+ *         provider_id: "5754"
  *     }
  */
 export interface V3GetProviderRequest {

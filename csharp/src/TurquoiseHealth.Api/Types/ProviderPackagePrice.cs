@@ -15,7 +15,7 @@ public record ProviderPackagePrice : IJsonOnDeserialized
     public ProviderPackagePriceObject? Object { get; set; }
 
     /// <summary>
-    /// Price identifier (encodes the provider × package × pricing grain). Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+    /// Price identifier (encodes the provider × package × pricing grain). Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term.
     /// </summary>
     [JsonPropertyName("id")]
     public required string Id { get; set; }
@@ -24,10 +24,10 @@ public record ProviderPackagePrice : IJsonOnDeserialized
     /// Full provider entity (always inlined).
     /// </summary>
     [JsonPropertyName("provider")]
-    public required Provider Provider { get; set; }
+    public required ConsumerPricingProvider Provider { get; set; }
 
     /// <summary>
-    /// Reference stub.
+    /// The package this price is for.
     /// </summary>
     [JsonPropertyName("package")]
     public required EntityRef Package { get; set; }

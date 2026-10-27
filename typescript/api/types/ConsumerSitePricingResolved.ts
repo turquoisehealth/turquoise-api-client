@@ -7,6 +7,8 @@ import type * as TurquoiseHealthApi from "../index.js";
  */
 export interface ConsumerSitePricingResolved {
     type: string;
+    /** The insurance network the negotiated rate applies to. Null for cash prices. */
     network?: TurquoiseHealthApi.ConsumerSiteEntityRef | null;
+    /** The insurance payer that operates the network. Null for cash prices. */
     payer?: TurquoiseHealthApi.ConsumerSiteEntityRef | null;
 }

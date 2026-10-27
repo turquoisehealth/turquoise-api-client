@@ -8,7 +8,7 @@ from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
 
 class LineItem(UniversalBaseModel):
     """
-    A component of a package's composition (from `api_ssp_contents`).
+    A component of a package's composition.
     """
 
     code: str = pydantic.Field()

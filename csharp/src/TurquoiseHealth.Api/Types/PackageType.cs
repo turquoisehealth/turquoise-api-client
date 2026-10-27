@@ -9,6 +9,8 @@ public readonly record struct PackageType : IStringEnum
 {
     public static readonly PackageType Ssp = new(Values.Ssp);
 
+    public static readonly PackageType SspGrouper = new(Values.SspGrouper);
+
     public PackageType(string value)
     {
         Value = value;
@@ -57,5 +59,7 @@ public readonly record struct PackageType : IStringEnum
     public static class Values
     {
         public const string Ssp = "ssp";
+
+        public const string SspGrouper = "ssp_grouper";
     }
 }
