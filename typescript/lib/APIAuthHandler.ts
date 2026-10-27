@@ -66,7 +66,7 @@ export class APIAuthHandler {
         this.clientSecret = options.clientSecret;
         this.organizationId = options.organizationId;
         this.authUrl = options.authUrl || "https://api.turquoise.health";
-        this.ttlBuffer = options.ttlBuffer ?? 60;
+        this.ttlBuffer = options.ttlBuffer ?? 60; // Default TTL buffer in seconds
     }
 
     /**
@@ -206,11 +206,13 @@ export class APIAuthHandler {
             if (!data.access_token) {
                 throw new Error("No access_token in OAuth response");
             }
+            if (!data.expires_in) {
+                throw new Error("No expires_in in OAuth response");
+            }
 
             // Cache the token
-            const expiresIn = data.expires_in ?? 3600;
             this.cachedToken = data.access_token;
-            this.tokenExpiration = requestTime + expiresIn;
+            this.tokenExpiration = requestTime + data.expires_in;
 
             return data.access_token;
         } catch (error) {
