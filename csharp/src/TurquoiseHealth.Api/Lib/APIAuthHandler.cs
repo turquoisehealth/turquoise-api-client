@@ -251,7 +251,7 @@ public class APIAuthHandler
                 var responseJson = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 var data = JsonSerializer.Deserialize<OAuthTokenResponse>(responseJson);
 
-                if (data?.AccessToken == null)
+                if (string.IsNullOrEmpty(data?.AccessToken))
                 {
                     throw new InvalidOperationException("No access_token in OAuth response");
                 }

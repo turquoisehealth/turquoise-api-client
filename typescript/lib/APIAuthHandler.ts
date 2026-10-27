@@ -66,7 +66,7 @@ export class APIAuthHandler {
         this.clientSecret = options.clientSecret;
         this.organizationId = options.organizationId;
         this.authUrl = options.authUrl || "https://api.turquoise.health";
-        this.ttlBuffer = options.ttlBuffer || 60;
+        this.ttlBuffer = options.ttlBuffer ?? 60;
     }
 
     /**
@@ -208,7 +208,7 @@ export class APIAuthHandler {
             }
 
             // Cache the token
-            const expiresIn = data.expires_in || 3600;
+            const expiresIn = data.expires_in ?? 3600;
             this.cachedToken = data.access_token;
             this.tokenExpiration = requestTime + expiresIn;
 

@@ -73,6 +73,12 @@ examples/
 
 ## Testing Custom Library Imports
 
+Run `make test-unit` for offline manual-library tests in all three languages.
+The command enforces at least 90% line and branch coverage of the manual
+libraries, excluding generated SDK code. Add unit tests when adding or changing
+a manual library. See [Testing](TESTING.md) for per-language commands, coverage
+reports, and the separate live API smoke tests.
+
 After adding a custom library, verify that end users can import it correctly:
 
 **Python:**

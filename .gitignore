@@ -12,6 +12,9 @@ build/
 .venv/
 venv/
 .env
+.coverage
+.pytest_cache/
+coverage/
 
 # TypeScript
 node_modules/
