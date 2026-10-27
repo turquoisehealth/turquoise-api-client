@@ -5,6 +5,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
+    "sdk:local": "npm --prefix ../../typescript run build && npm install --no-save --package-lock=false ../../typescript",
     "start": "node --env-file=.env --import tsx src/index.ts"
   },
   "keywords": [],
@@ -12,7 +13,7 @@
   "license": "ISC",
   "description": "Example project for @turquoisehealth/api",
   "dependencies": {
-    "@turquoisehealth/api": "3.2.59"
+    "@turquoisehealth/api": "3.2.114"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
