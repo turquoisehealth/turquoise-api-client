@@ -35,15 +35,15 @@ try
 
     // Get negotiated prices for that package near a given zip code / network.
     var prices = await client.ConsumerPricing.V3QueryPricesAsync(
-        new PricesQueryRequest
+        new V3PricesQueryRequest
         {
             PackageId = ssp.Id,
-            Pricing = new PricesQueryRequestPricing(
-                new PricesQueryRequestPricing.Negotiated(
-                    new PricingNegotiated { NetworkId = "-3776001016975145508" }
+            Pricing = new V3PricesQueryRequestPricing(
+                new V3PricesQueryRequestPricing.Negotiated(
+                    new V3PricingNegotiated { NetworkId = "-3776001016975145508" }
                 )
             ),
-            Location = new Location { Zip = "90210" }
+            Location = new V3Location { Zip = "90210" }
         }
     );
 

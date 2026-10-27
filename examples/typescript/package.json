@@ -13,7 +13,7 @@
   "license": "ISC",
   "description": "Example project for @turquoisehealth/api",
   "dependencies": {
-    "@turquoisehealth/api": "3.2.114"
+    "@turquoisehealth/api": "3.2.59"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",

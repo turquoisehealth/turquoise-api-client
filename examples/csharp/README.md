@@ -19,6 +19,10 @@ dotnet run
 
 Runs [Program.cs](Program.cs), which searches for a service package and lists prices for it.
 
+[APIAuthHandlerExtensions.cs](APIAuthHandlerExtensions.cs) temporarily provides
+`CreateRefreshTokenHandler`, which applies the current token to each request using
+the shared auth handler's token cache. This compatibility patch will no longer be needed in 3.2.114, which includes the method in the SDK.
+
 ### Use the local SDK
 
 By default, the example uses the published NuGet package. To build and run against
