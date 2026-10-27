@@ -53,15 +53,6 @@ def run_fern() -> None:
     subprocess.run(["fern", "generate"], cwd=REPOSITORY_ROOT, check=True)
 
 
-def update_file(path: Path, pattern: str, replacement: str, description: str) -> None:
-    content = path.read_text()
-    updated, replacements = re.subn(pattern, replacement, content, count=1, flags=re.MULTILINE)
-    if replacements != 1:
-        raise ValueError(f"Could not find exactly one expected field in {path}")
-    path.write_text(updated)
-    print(f"Updated {description}")
-
-
 def update_library_exports() -> None:
     init_file = REPOSITORY_ROOT / "python" / "__init__.py"
     if init_file.exists():
@@ -94,17 +85,26 @@ def update_library_exports() -> None:
             print("Fixed python/types import conflict")
 
 
+def _update_file(path: Path, pattern: str, replacement: str, description: str) -> None:
+    content = path.read_text()
+    updated, replacements = re.subn(pattern, replacement, content, count=1, flags=re.MULTILINE)
+    if replacements != 1:
+        raise ValueError(f"Could not find exactly one expected field in {path}")
+    path.write_text(updated)
+    print(f"Updated {description}")
+
+
 def update_package_versions() -> None:
     with OPENAPI_FILE.open() as file:
         version = json.load(file)["info"]["version"]
     if not re.fullmatch(r"\d+\.\d+\.\d+", version):
         raise ValueError(f"OpenAPI version must use production semver, got {version!r}")
 
-    update_file(PYPROJECT_FILE, r'^(version = ")[^"]+(")$', rf'\g<1>{version}\g<2>', "python/pyproject.toml version")
-    update_file(PACKAGE_FILE, r'^(  "version": ")[^"]+(",)$', rf'\g<1>{version}\g<2>', "typescript/package.json version")
-    update_file(LOCK_FILE, r'^(  "version": ")[^"]+(",)$', rf'\g<1>{version}\g<2>', "typescript/package-lock.json version")
-    update_file(LOCK_FILE, r'^(      "version": ")[^"]+(",)$', rf'\g<1>{version}\g<2>', "typescript lock package version")
-    update_file(
+    _update_file(PYPROJECT_FILE, r'^(version = ")[^"]+(")$', rf'\g<1>{version}\g<2>', "python/pyproject.toml version")
+    _update_file(PACKAGE_FILE, r'^(  "version": ")[^"]+(",)$', rf'\g<1>{version}\g<2>', "typescript/package.json version")
+    _update_file(LOCK_FILE, r'^(  "version": ")[^"]+(",)$', rf'\g<1>{version}\g<2>', "typescript/package-lock.json version")
+    _update_file(LOCK_FILE, r'^(      "version": ")[^"]+(",)$', rf'\g<1>{version}\g<2>', "typescript lock package version")
+    _update_file(
         CSHARP_VERSION_FILE,
         r'^(    public const string Current = ")[^"]+(";)$',
         rf'\g<1>{version}\g<2>',
@@ -113,9 +113,18 @@ def update_package_versions() -> None:
 
 
 def main() -> None:
+
+    # Load environment variables and run Fern to regenerate the SDKs.
     load_environment()
     run_fern()
+
+    # Unlike C#, Python and TypeScript need package-level export maps or entry points,
+    # so this restores those exports after Fern regenerates them.
+    # It also distinguishes Python's stdlib `types` module from the SDK's generated `types` module to prevent
+    # naming conflicts.
     update_library_exports()
+
+    # Update the package versions to match the OpenAPI version.
     update_package_versions()
     print("SDK regeneration complete!")
 

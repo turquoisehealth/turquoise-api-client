@@ -66,13 +66,17 @@ const client = new TurquoiseHealthApiClient({
 **C#:**
 
 ```csharp
+using TurquoiseHealth.Api;
 using TurquoiseHealth.Api.Lib;
 
 var auth = APIAuthHandler.FromClientCredentials();
-var client = new TurquoiseHealthApiClient(auth.GetToken(), new ClientOptions
-{
-    BaseUrl = "https://api.turquoise.health"
-});
+var client = new TurquoiseHealthApiClient(
+    auth.GetToken(),
+    new ClientOptions
+    {
+        BaseUrl = "https://api.turquoise.health",
+        HttpClient = new HttpClient(auth.CreateRefreshTokenHandler())
+    });
 ```
 
 > **⚠️ Important**: Create the `APIAuthHandler` instance **once** and reuse it across your application (e.g., as a singleton or module-level variable). Each auth handler maintains an in-memory token cache with automatic refresh. Creating new instances for every request will bypass the cache and unnecessarily refetch tokens from the OAuth server, leading to performance degradation and rate limiting errors.

@@ -9,10 +9,13 @@ DotNetEnv.Env.Load();
 // bypasses that cache and can trip rate limits.
 var auth = APIAuthHandler.FromClientCredentials();
 
-var client = new TurquoiseHealthApiClient(auth.GetToken(), new ClientOptions
-{
-    BaseUrl = "https://api.turquoise.health"
-});
+var client = new TurquoiseHealthApiClient(
+    auth.GetToken(),
+    new ClientOptions
+    {
+        BaseUrl = "https://api.turquoise.health",
+        HttpClient = new HttpClient(auth.CreateRefreshTokenHandler())
+    });
 
 try
 {

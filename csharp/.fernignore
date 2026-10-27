@@ -4,6 +4,7 @@
 # Protect manually-coded library directories
 src/TurquoiseHealth.Api/Lib/
 src/TurquoiseHealth.Api/Lib/**
+src/TurquoiseHealth.Api.Test/Unit/Lib/
 
 # Protect custom MSBuild properties
 src/TurquoiseHealth.Api/TurquoiseHealth.Api.Custom.props
@@ -14,4 +15,6 @@ README.md
 # Protect integration tests
 tests/
 tests/**
+
+# Other
 .github/

@@ -81,7 +81,7 @@ After adding a custom library, verify that end users can import it correctly:
 from turquoise_health import TurquoiseHealth, APIAuthHandler
 
 auth = APIAuthHandler.from_env()
-client = TurquoiseHealth(token=auth.get_token())
+client = TurquoiseHealth(token=auth.as_callable())
 ```
 
 ```typescript
