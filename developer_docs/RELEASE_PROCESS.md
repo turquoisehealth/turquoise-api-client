@@ -86,7 +86,7 @@ Open a pull request targeting `main`. Include the API version, validation result
 
 The release PR should be carefully reviewed before merging. The merged commit contains the exact SDK source and package metadata that will be published.
 
-## 7. Create and push the release tag
+## 7. Merge and create the release tag
 
 After the PR is merged, pull `main` and create an annotated tag:
 
