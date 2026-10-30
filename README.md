@@ -66,13 +66,17 @@ const client = new TurquoiseHealthApiClient({
 **C#:**
 
 ```csharp
+using TurquoiseHealth.Api;
 using TurquoiseHealth.Api.Lib;
 
 var auth = APIAuthHandler.FromClientCredentials();
-var client = new TurquoiseHealthApiClient(auth.GetToken(), new ClientOptions
-{
-    BaseUrl = "https://api.turquoise.health"
-});
+var client = new TurquoiseHealthApiClient(
+    auth.GetToken(),
+    new ClientOptions
+    {
+        BaseUrl = "https://api.turquoise.health",
+        HttpClient = new HttpClient(auth.CreateRefreshTokenHandler())
+    });
 ```
 
 > **⚠️ Important**: Create the `APIAuthHandler` instance **once** and reuse it across your application (e.g., as a singleton or module-level variable). Each auth handler maintains an in-memory token cache with automatic refresh. Creating new instances for every request will bypass the cache and unnecessarily refetch tokens from the OAuth server, leading to performance degradation and rate limiting errors.
@@ -126,13 +130,13 @@ for (const price of prices.items) {
 var packages = await client.ConsumerPricing.V3ListPackagesAsync(new V3ListPackagesRequest { Search = "MRI Brain" });
 
 // Get negotiated prices for a package near a zip code / network
-var prices = await client.ConsumerPricing.V3QueryPricesAsync(new V3PricesQueryRequest
+var prices = await client.ConsumerPricing.V3QueryPricesAsync(new PricesQueryRequest
 {
     PackageId = packages.Items.First().Id,
-    Pricing = new V3PricesQueryRequestPricing(
-        new V3PricesQueryRequestPricing.Negotiated(new V3PricingNegotiated { NetworkId = "your-network-id" })
+    Pricing = new PricesQueryRequestPricing(
+        new PricesQueryRequestPricing.Negotiated(new PricingNegotiated { NetworkId = "your-network-id" })
     ),
-    Location = new V3Location { Zip = "90210" },
+    Location = new Location { Zip = "90210" },
 });
 
 foreach (var price in prices.Items)

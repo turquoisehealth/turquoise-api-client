@@ -18,7 +18,7 @@ class ConsumerSiteMemberEligibilityInput(UniversalBaseModel):
     last_name: str
     date_of_birth: dt.date
     member_id: typing.Optional[str] = None
-    consent_attested: str
+    consent_attested: bool
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

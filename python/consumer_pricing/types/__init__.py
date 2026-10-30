@@ -9,30 +9,32 @@ if typing.TYPE_CHECKING:
     from .consumer_site_personalized_estimates_query_request_sort_direction import (
         ConsumerSitePersonalizedEstimatesQueryRequestSortDirection,
     )
-    from .prices_compare_request_pricing import (
-        PricesCompareRequestPricing,
-        PricesCompareRequestPricing_Cash,
-        PricesCompareRequestPricing_Negotiated,
-    )
     from .prices_query_request_pricing import (
         PricesQueryRequestPricing,
         PricesQueryRequestPricing_Cash,
         PricesQueryRequestPricing_Negotiated,
     )
     from .prices_query_request_sort_direction import PricesQueryRequestSortDirection
+    from .prices_statistics_request_pricing import (
+        PricesStatisticsRequestPricing,
+        PricesStatisticsRequestPricing_Cash,
+        PricesStatisticsRequestPricing_Negotiated,
+    )
     from .v3list_personalized_estimates_request_expand_item import V3ListPersonalizedEstimatesRequestExpandItem
     from .v3list_personalized_estimates_response import V3ListPersonalizedEstimatesResponse
+    from .v3personalized_estimate_statistics_response import V3PersonalizedEstimateStatisticsResponse
 _dynamic_imports: typing.Dict[str, str] = {
     "ConsumerSitePersonalizedEstimatesQueryRequestSortDirection": ".consumer_site_personalized_estimates_query_request_sort_direction",
-    "PricesCompareRequestPricing": ".prices_compare_request_pricing",
-    "PricesCompareRequestPricing_Cash": ".prices_compare_request_pricing",
-    "PricesCompareRequestPricing_Negotiated": ".prices_compare_request_pricing",
     "PricesQueryRequestPricing": ".prices_query_request_pricing",
     "PricesQueryRequestPricing_Cash": ".prices_query_request_pricing",
     "PricesQueryRequestPricing_Negotiated": ".prices_query_request_pricing",
     "PricesQueryRequestSortDirection": ".prices_query_request_sort_direction",
+    "PricesStatisticsRequestPricing": ".prices_statistics_request_pricing",
+    "PricesStatisticsRequestPricing_Cash": ".prices_statistics_request_pricing",
+    "PricesStatisticsRequestPricing_Negotiated": ".prices_statistics_request_pricing",
     "V3ListPersonalizedEstimatesRequestExpandItem": ".v3list_personalized_estimates_request_expand_item",
     "V3ListPersonalizedEstimatesResponse": ".v3list_personalized_estimates_response",
+    "V3PersonalizedEstimateStatisticsResponse": ".v3personalized_estimate_statistics_response",
 }
 
 
@@ -59,13 +61,14 @@ def __dir__():
 
 __all__ = [
     "ConsumerSitePersonalizedEstimatesQueryRequestSortDirection",
-    "PricesCompareRequestPricing",
-    "PricesCompareRequestPricing_Cash",
-    "PricesCompareRequestPricing_Negotiated",
     "PricesQueryRequestPricing",
     "PricesQueryRequestPricing_Cash",
     "PricesQueryRequestPricing_Negotiated",
     "PricesQueryRequestSortDirection",
+    "PricesStatisticsRequestPricing",
+    "PricesStatisticsRequestPricing_Cash",
+    "PricesStatisticsRequestPricing_Negotiated",
     "V3ListPersonalizedEstimatesRequestExpandItem",
     "V3ListPersonalizedEstimatesResponse",
+    "V3PersonalizedEstimateStatisticsResponse",
 ]

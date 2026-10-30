@@ -8,11 +8,14 @@ from importlib import import_module
 if typing.TYPE_CHECKING:
     from .billing_code import BillingCode
     from .comparison_stats import ComparisonStats
-    from .consumer_pricing_v2error_code import ConsumerPricingV2ErrorCode
+    from .consumer_pricing_provider import ConsumerPricingProvider
+    from .consumer_pricing_provider_object import ConsumerPricingProviderObject
     from .consumer_site_benefit_category import ConsumerSiteBenefitCategory
     from .consumer_site_benefits_summary import ConsumerSiteBenefitsSummary
     from .consumer_site_comparison_stats import ConsumerSiteComparisonStats
+    from .consumer_site_consumer_pricing_provider import ConsumerSiteConsumerPricingProvider
     from .consumer_site_entity_ref import ConsumerSiteEntityRef
+    from .consumer_site_estimate_statistics import ConsumerSiteEstimateStatistics
     from .consumer_site_line_item import ConsumerSiteLineItem
     from .consumer_site_line_item_association_rate import ConsumerSiteLineItemAssociationRate
     from .consumer_site_list_envelope_personalized_estimate import ConsumerSiteListEnvelopePersonalizedEstimate
@@ -21,29 +24,32 @@ if typing.TYPE_CHECKING:
     from .consumer_site_location_near_lat import ConsumerSiteLocationNearLat
     from .consumer_site_location_near_lng import ConsumerSiteLocationNearLng
     from .consumer_site_location_within import ConsumerSiteLocationWithin
+    from .consumer_site_match_context import ConsumerSiteMatchContext
+    from .consumer_site_match_context_distance_m import ConsumerSiteMatchContextDistanceM
+    from .consumer_site_match_context_score import ConsumerSiteMatchContextScore
     from .consumer_site_member_cost_share import ConsumerSiteMemberCostShare
     from .consumer_site_member_eligibility_input import ConsumerSiteMemberEligibilityInput
-    from .consumer_site_modules_consumer_pricing_v3dtos_common_page_meta import (
-        ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta,
-    )
-    from .consumer_site_modules_consumer_pricing_v3dtos_personalized_estimate_personalized_estimate import (
-        ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate,
-    )
     from .consumer_site_money import ConsumerSiteMoney
     from .consumer_site_no_data_reason import ConsumerSiteNoDataReason
+    from .consumer_site_page_meta import ConsumerSitePageMeta
+    from .consumer_site_personalized_estimate import ConsumerSitePersonalizedEstimate
     from .consumer_site_personalized_estimate_error_code import ConsumerSitePersonalizedEstimateErrorCode
     from .consumer_site_personalized_estimate_error_payload import ConsumerSitePersonalizedEstimateErrorPayload
     from .consumer_site_personalized_estimate_error_response import ConsumerSitePersonalizedEstimateErrorResponse
-    from .consumer_site_price_comparison import ConsumerSitePriceComparison
     from .consumer_site_price_sort import ConsumerSitePriceSort
     from .consumer_site_pricing_negotiated import ConsumerSitePricingNegotiated
     from .consumer_site_pricing_resolved import ConsumerSitePricingResolved
+    from .consumer_site_provider_address import ConsumerSiteProviderAddress
+    from .consumer_site_provider_address_latitude import ConsumerSiteProviderAddressLatitude
+    from .consumer_site_provider_address_longitude import ConsumerSiteProviderAddressLongitude
     from .consumer_site_response_meta import ConsumerSiteResponseMeta
     from .entity_ref import EntityRef
     from .error_code import ErrorCode
     from .error_payload import ErrorPayload
     from .error_response import ErrorResponse
     from .line_item import LineItem
+    from .list_envelope_consumer_pricing_provider import ListEnvelopeConsumerPricingProvider
+    from .list_envelope_consumer_pricing_provider_object import ListEnvelopeConsumerPricingProviderObject
     from .list_envelope_line_item import ListEnvelopeLineItem
     from .list_envelope_line_item_object import ListEnvelopeLineItemObject
     from .list_envelope_network import ListEnvelopeNetwork
@@ -52,8 +58,6 @@ if typing.TYPE_CHECKING:
     from .list_envelope_package_object import ListEnvelopePackageObject
     from .list_envelope_payer import ListEnvelopePayer
     from .list_envelope_payer_object import ListEnvelopePayerObject
-    from .list_envelope_provider import ListEnvelopeProvider
-    from .list_envelope_provider_object import ListEnvelopeProviderObject
     from .list_envelope_provider_package_price import ListEnvelopeProviderPackagePrice
     from .list_envelope_provider_package_price_object import ListEnvelopeProviderPackagePriceObject
     from .location import Location
@@ -70,17 +74,15 @@ if typing.TYPE_CHECKING:
     from .page_meta import PageMeta
     from .payer import Payer
     from .payer_object import PayerObject
-    from .price_comparison import PriceComparison
-    from .price_comparison_object import PriceComparisonObject
     from .price_expand import PriceExpand
     from .price_sort import PriceSort
+    from .price_statistics import PriceStatistics
+    from .price_statistics_object import PriceStatisticsObject
     from .pricing_cash import PricingCash
     from .pricing_negotiated import PricingNegotiated
     from .pricing_resolved import PricingResolved
     from .pricing_resolved_type import PricingResolvedType
-    from .provider import Provider
     from .provider_address import ProviderAddress
-    from .provider_object import ProviderObject
     from .provider_package_price import ProviderPackagePrice
     from .provider_package_price_object import ProviderPackagePriceObject
     from .response_meta import ResponseMeta
@@ -88,11 +90,14 @@ if typing.TYPE_CHECKING:
 _dynamic_imports: typing.Dict[str, str] = {
     "BillingCode": ".billing_code",
     "ComparisonStats": ".comparison_stats",
-    "ConsumerPricingV2ErrorCode": ".consumer_pricing_v2error_code",
+    "ConsumerPricingProvider": ".consumer_pricing_provider",
+    "ConsumerPricingProviderObject": ".consumer_pricing_provider_object",
     "ConsumerSiteBenefitCategory": ".consumer_site_benefit_category",
     "ConsumerSiteBenefitsSummary": ".consumer_site_benefits_summary",
     "ConsumerSiteComparisonStats": ".consumer_site_comparison_stats",
+    "ConsumerSiteConsumerPricingProvider": ".consumer_site_consumer_pricing_provider",
     "ConsumerSiteEntityRef": ".consumer_site_entity_ref",
+    "ConsumerSiteEstimateStatistics": ".consumer_site_estimate_statistics",
     "ConsumerSiteLineItem": ".consumer_site_line_item",
     "ConsumerSiteLineItemAssociationRate": ".consumer_site_line_item_association_rate",
     "ConsumerSiteListEnvelopePersonalizedEstimate": ".consumer_site_list_envelope_personalized_estimate",
@@ -101,25 +106,32 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ConsumerSiteLocationNearLat": ".consumer_site_location_near_lat",
     "ConsumerSiteLocationNearLng": ".consumer_site_location_near_lng",
     "ConsumerSiteLocationWithin": ".consumer_site_location_within",
+    "ConsumerSiteMatchContext": ".consumer_site_match_context",
+    "ConsumerSiteMatchContextDistanceM": ".consumer_site_match_context_distance_m",
+    "ConsumerSiteMatchContextScore": ".consumer_site_match_context_score",
     "ConsumerSiteMemberCostShare": ".consumer_site_member_cost_share",
     "ConsumerSiteMemberEligibilityInput": ".consumer_site_member_eligibility_input",
-    "ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta": ".consumer_site_modules_consumer_pricing_v3dtos_common_page_meta",
-    "ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate": ".consumer_site_modules_consumer_pricing_v3dtos_personalized_estimate_personalized_estimate",
     "ConsumerSiteMoney": ".consumer_site_money",
     "ConsumerSiteNoDataReason": ".consumer_site_no_data_reason",
+    "ConsumerSitePageMeta": ".consumer_site_page_meta",
+    "ConsumerSitePersonalizedEstimate": ".consumer_site_personalized_estimate",
     "ConsumerSitePersonalizedEstimateErrorCode": ".consumer_site_personalized_estimate_error_code",
     "ConsumerSitePersonalizedEstimateErrorPayload": ".consumer_site_personalized_estimate_error_payload",
     "ConsumerSitePersonalizedEstimateErrorResponse": ".consumer_site_personalized_estimate_error_response",
-    "ConsumerSitePriceComparison": ".consumer_site_price_comparison",
     "ConsumerSitePriceSort": ".consumer_site_price_sort",
     "ConsumerSitePricingNegotiated": ".consumer_site_pricing_negotiated",
     "ConsumerSitePricingResolved": ".consumer_site_pricing_resolved",
+    "ConsumerSiteProviderAddress": ".consumer_site_provider_address",
+    "ConsumerSiteProviderAddressLatitude": ".consumer_site_provider_address_latitude",
+    "ConsumerSiteProviderAddressLongitude": ".consumer_site_provider_address_longitude",
     "ConsumerSiteResponseMeta": ".consumer_site_response_meta",
     "EntityRef": ".entity_ref",
     "ErrorCode": ".error_code",
     "ErrorPayload": ".error_payload",
     "ErrorResponse": ".error_response",
     "LineItem": ".line_item",
+    "ListEnvelopeConsumerPricingProvider": ".list_envelope_consumer_pricing_provider",
+    "ListEnvelopeConsumerPricingProviderObject": ".list_envelope_consumer_pricing_provider_object",
     "ListEnvelopeLineItem": ".list_envelope_line_item",
     "ListEnvelopeLineItemObject": ".list_envelope_line_item_object",
     "ListEnvelopeNetwork": ".list_envelope_network",
@@ -128,8 +140,6 @@ _dynamic_imports: typing.Dict[str, str] = {
     "ListEnvelopePackageObject": ".list_envelope_package_object",
     "ListEnvelopePayer": ".list_envelope_payer",
     "ListEnvelopePayerObject": ".list_envelope_payer_object",
-    "ListEnvelopeProvider": ".list_envelope_provider",
-    "ListEnvelopeProviderObject": ".list_envelope_provider_object",
     "ListEnvelopeProviderPackagePrice": ".list_envelope_provider_package_price",
     "ListEnvelopeProviderPackagePriceObject": ".list_envelope_provider_package_price_object",
     "Location": ".location",
@@ -146,17 +156,15 @@ _dynamic_imports: typing.Dict[str, str] = {
     "PageMeta": ".page_meta",
     "Payer": ".payer",
     "PayerObject": ".payer_object",
-    "PriceComparison": ".price_comparison",
-    "PriceComparisonObject": ".price_comparison_object",
     "PriceExpand": ".price_expand",
     "PriceSort": ".price_sort",
+    "PriceStatistics": ".price_statistics",
+    "PriceStatisticsObject": ".price_statistics_object",
     "PricingCash": ".pricing_cash",
     "PricingNegotiated": ".pricing_negotiated",
     "PricingResolved": ".pricing_resolved",
     "PricingResolvedType": ".pricing_resolved_type",
-    "Provider": ".provider",
     "ProviderAddress": ".provider_address",
-    "ProviderObject": ".provider_object",
     "ProviderPackagePrice": ".provider_package_price",
     "ProviderPackagePriceObject": ".provider_package_price_object",
     "ResponseMeta": ".response_meta",
@@ -188,11 +196,14 @@ def __dir__():
 __all__ = [
     "BillingCode",
     "ComparisonStats",
-    "ConsumerPricingV2ErrorCode",
+    "ConsumerPricingProvider",
+    "ConsumerPricingProviderObject",
     "ConsumerSiteBenefitCategory",
     "ConsumerSiteBenefitsSummary",
     "ConsumerSiteComparisonStats",
+    "ConsumerSiteConsumerPricingProvider",
     "ConsumerSiteEntityRef",
+    "ConsumerSiteEstimateStatistics",
     "ConsumerSiteLineItem",
     "ConsumerSiteLineItemAssociationRate",
     "ConsumerSiteListEnvelopePersonalizedEstimate",
@@ -201,25 +212,32 @@ __all__ = [
     "ConsumerSiteLocationNearLat",
     "ConsumerSiteLocationNearLng",
     "ConsumerSiteLocationWithin",
+    "ConsumerSiteMatchContext",
+    "ConsumerSiteMatchContextDistanceM",
+    "ConsumerSiteMatchContextScore",
     "ConsumerSiteMemberCostShare",
     "ConsumerSiteMemberEligibilityInput",
-    "ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta",
-    "ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate",
     "ConsumerSiteMoney",
     "ConsumerSiteNoDataReason",
+    "ConsumerSitePageMeta",
+    "ConsumerSitePersonalizedEstimate",
     "ConsumerSitePersonalizedEstimateErrorCode",
     "ConsumerSitePersonalizedEstimateErrorPayload",
     "ConsumerSitePersonalizedEstimateErrorResponse",
-    "ConsumerSitePriceComparison",
     "ConsumerSitePriceSort",
     "ConsumerSitePricingNegotiated",
     "ConsumerSitePricingResolved",
+    "ConsumerSiteProviderAddress",
+    "ConsumerSiteProviderAddressLatitude",
+    "ConsumerSiteProviderAddressLongitude",
     "ConsumerSiteResponseMeta",
     "EntityRef",
     "ErrorCode",
     "ErrorPayload",
     "ErrorResponse",
     "LineItem",
+    "ListEnvelopeConsumerPricingProvider",
+    "ListEnvelopeConsumerPricingProviderObject",
     "ListEnvelopeLineItem",
     "ListEnvelopeLineItemObject",
     "ListEnvelopeNetwork",
@@ -228,8 +246,6 @@ __all__ = [
     "ListEnvelopePackageObject",
     "ListEnvelopePayer",
     "ListEnvelopePayerObject",
-    "ListEnvelopeProvider",
-    "ListEnvelopeProviderObject",
     "ListEnvelopeProviderPackagePrice",
     "ListEnvelopeProviderPackagePriceObject",
     "Location",
@@ -246,17 +262,15 @@ __all__ = [
     "PageMeta",
     "Payer",
     "PayerObject",
-    "PriceComparison",
-    "PriceComparisonObject",
     "PriceExpand",
     "PriceSort",
+    "PriceStatistics",
+    "PriceStatisticsObject",
     "PricingCash",
     "PricingNegotiated",
     "PricingResolved",
     "PricingResolvedType",
-    "Provider",
     "ProviderAddress",
-    "ProviderObject",
     "ProviderPackagePrice",
     "ProviderPackagePriceObject",
     "ResponseMeta",

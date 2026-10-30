@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Turquoise Health Consumer Pricing API v3",
-    "version": "3.2.68"
+    "version": "3.2.114"
   },
   "paths": {
     "/v3/providers/types": {
@@ -110,7 +110,7 @@
               ],
               "description": "Case-insensitive substring match on provider name.",
               "examples": [
-                "Intermountain Health Saint Joseph Hospital"
+                "HCA HealthONE Presbyterian St Lukes"
               ],
               "title": "Name"
             },
@@ -131,7 +131,7 @@
               ],
               "description": "Exact NPI match.",
               "examples": [
-                "1417946021"
+                "1720038946"
               ],
               "title": "Npi"
             },
@@ -173,7 +173,7 @@
               ],
               "description": "Providers with at least one price for this package.",
               "examples": [
-                "OB002"
+                "R017Z"
               ],
               "title": "Package Id"
             },
@@ -236,7 +236,7 @@
               ],
               "description": "Semantic search over provider names. Composes with the other filters and any location mode; returns a single relevance-ordered page. 503 search_unavailable until the provider embedding index is populated.",
               "examples": [
-                "Saint Joseph hospital in Denver"
+                "Presbyterian St Lukes hospital in Denver"
               ],
               "title": "Search"
             },
@@ -306,7 +306,7 @@
                 }
               ],
               "examples": [
-                39.745961
+                39.746549
               ],
               "title": "Location.Near.Lat"
             }
@@ -325,7 +325,7 @@
                 }
               ],
               "examples": [
-                -104.971559
+                -104.966925
               ],
               "title": "Location.Near.Lng"
             }
@@ -439,7 +439,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ListEnvelope_Provider_"
+                  "$ref": "#/components/schemas/ListEnvelope_ConsumerPricingProvider_"
                 }
               }
             }
@@ -519,7 +519,7 @@
               "type": "string",
               "description": "Provider identifier.",
               "examples": [
-                "5756"
+                "5754"
               ],
               "title": "Provider Id"
             },
@@ -532,7 +532,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Provider"
+                  "$ref": "#/components/schemas/ConsumerPricingProvider"
                 }
               }
             }
@@ -641,7 +641,7 @@
               ],
               "description": "Payers with at least one price at this provider.",
               "examples": [
-                "5756"
+                "5754"
               ],
               "title": "Provider Id"
             },
@@ -662,7 +662,7 @@
               ],
               "description": "Payers with at least one price for this package.",
               "examples": [
-                "OB002"
+                "R017Z"
               ],
               "title": "Package Id"
             },
@@ -712,7 +712,7 @@
                 }
               ],
               "examples": [
-                39.745961
+                39.746549
               ],
               "title": "Location.Near.Lat"
             }
@@ -731,7 +731,7 @@
                 }
               ],
               "examples": [
-                -104.971559
+                -104.966925
               ],
               "title": "Location.Near.Lng"
             }
@@ -1068,7 +1068,7 @@
               ],
               "description": "Networks with at least one price at this provider.",
               "examples": [
-                "5756"
+                "5754"
               ],
               "title": "Provider Id"
             },
@@ -1089,7 +1089,7 @@
               ],
               "description": "Networks with at least one price for this package.",
               "examples": [
-                "OB002"
+                "R017Z"
               ],
               "title": "Package Id"
             },
@@ -1180,7 +1180,7 @@
                 }
               ],
               "examples": [
-                39.745961
+                39.746549
               ],
               "title": "Location.Near.Lat"
             }
@@ -1199,7 +1199,7 @@
                 }
               ],
               "examples": [
-                -104.971559
+                -104.966925
               ],
               "title": "Location.Near.Lng"
             }
@@ -1493,7 +1493,7 @@
               ],
               "description": "Case-insensitive substring match on package name.",
               "examples": [
-                "delivery"
+                "ultrasound"
               ],
               "title": "Name"
             },
@@ -1514,7 +1514,7 @@
               ],
               "description": "Billing code lookup; matches against anchor_codes[].code (package base codes only). Returns every package anchored by the code \u2014 exactly one in the current catalog, but uniqueness is not contractual (an anchor's full upstream identity includes revenue code and billing class, which this API collapses).",
               "examples": [
-                "59510"
+                "76641"
               ],
               "title": "Anchor Code"
             },
@@ -1535,7 +1535,7 @@
               ],
               "description": "Packages priced at this provider.",
               "examples": [
-                "5756"
+                "5754"
               ],
               "title": "Provider Id"
             },
@@ -1598,7 +1598,7 @@
               ],
               "description": "Semantic search over package name and description. Composes with the other filters; returns a single relevance-ordered page (no cursor). 503 search_unavailable when the embedding index is not populated.",
               "examples": [
-                "cesarean delivery"
+                "breast ultrasound"
               ],
               "title": "Search"
             },
@@ -1741,8 +1741,9 @@
               "type": "string",
               "description": "Package identifier.",
               "examples": [
-                "OB002",
-                "RA005",
+                "R017Z",
+                "RA007",
+                "CA001",
                 "GA003"
               ],
               "title": "Package Id"
@@ -1836,8 +1837,9 @@
               "type": "string",
               "description": "Package identifier.",
               "examples": [
-                "OB002",
-                "RA005",
+                "R017Z",
+                "RA007",
+                "CA001",
                 "GA003"
               ],
               "title": "Package Id"
@@ -1932,8 +1934,8 @@
                 "by_provider_negotiated": {
                   "summary": "A provider's negotiated prices",
                   "value": {
-                    "package_id": "OB002",
-                    "provider_id": "5756",
+                    "package_id": "R017Z",
+                    "provider_id": "5754",
                     "pricing": {
                       "type": "negotiated",
                       "network_id": "-3776001016975145508"
@@ -1943,8 +1945,8 @@
                 "by_provider_cash": {
                   "summary": "A provider's cash (self-pay) price",
                   "value": {
-                    "package_id": "RA008",
-                    "provider_id": "5756",
+                    "package_id": "R017Z",
+                    "provider_id": "5754",
                     "pricing": {
                       "type": "cash"
                     }
@@ -1953,14 +1955,14 @@
                 "near_point": {
                   "summary": "Near a lat/lng, sorted by distance",
                   "value": {
-                    "package_id": "RA008",
+                    "package_id": "R017Z",
                     "pricing": {
                       "type": "cash"
                     },
                     "location": {
                       "near": {
-                        "lat": 39.745961,
-                        "lng": -104.971559,
+                        "lat": 39.746549,
+                        "lng": -104.966925,
                         "radius_m": 25000
                       }
                     },
@@ -1970,7 +1972,7 @@
                 "by_zip": {
                   "summary": "Around a ZIP code",
                   "value": {
-                    "package_id": "RA008",
+                    "package_id": "R017Z",
                     "pricing": {
                       "type": "cash"
                     },
@@ -1982,7 +1984,7 @@
                 "within_zip_codes": {
                   "summary": "Within a set of ZIP codes",
                   "value": {
-                    "package_id": "OB002",
+                    "package_id": "R017Z",
                     "pricing": {
                       "type": "negotiated",
                       "network_id": "-3776001016975145508"
@@ -2071,26 +2073,26 @@
         ]
       }
     },
-    "/v3/prices/compare": {
+    "/v3/prices/statistics": {
       "post": {
         "tags": [
           "Consumer Pricing"
         ],
         "summary": "Get Price Statistics",
         "description": "Return summary statistics (min, max, average, median, quartiles) over prices matching the same filters as /query, excluding sorting and pagination. Use this endpoint to compare prices across relevant criteria.",
-        "operationId": "v3_compare_prices",
+        "operationId": "v3_price_statistics",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PricesCompareRequest"
+                "$ref": "#/components/schemas/PricesStatisticsRequest"
               },
               "examples": {
                 "by_provider_negotiated": {
                   "summary": "Stats for a provider's negotiated prices",
                   "value": {
-                    "package_id": "OB002",
-                    "provider_id": "5756",
+                    "package_id": "R017Z",
+                    "provider_id": "5754",
                     "pricing": {
                       "type": "negotiated",
                       "network_id": "-3776001016975145508"
@@ -2100,7 +2102,7 @@
                 "cash_within_zip_codes": {
                   "summary": "Cash-price stats within a set of ZIP codes",
                   "value": {
-                    "package_id": "RA008",
+                    "package_id": "R017Z",
                     "pricing": {
                       "type": "cash"
                     },
@@ -2117,14 +2119,14 @@
                 "cash_near_point": {
                   "summary": "Cash-price stats near a lat/lng",
                   "value": {
-                    "package_id": "RA008",
+                    "package_id": "R017Z",
                     "pricing": {
                       "type": "cash"
                     },
                     "location": {
                       "near": {
-                        "lat": 39.745961,
-                        "lng": -104.971559,
+                        "lat": 39.746549,
+                        "lng": -104.966925,
                         "radius_m": 25000
                       }
                     }
@@ -2141,7 +2143,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PriceComparison"
+                  "$ref": "#/components/schemas/PriceStatistics"
                 }
               }
             }
@@ -2221,7 +2223,7 @@
               "type": "string",
               "description": "Price identifier.",
               "examples": [
-                "prc_5756.OB002.-3776001016975145508"
+                "prc_5754.RA007.-3776001016975145508"
               ],
               "title": "Price Id"
             },
@@ -2358,8 +2360,8 @@
                 "$ref": "#/components/schemas/ConsumerSitePersonalizedEstimatesQueryRequest"
               },
               "example": {
-                "package_id": "GA003",
-                "provider_id": "5756",
+                "package_id": "GP03Z",
+                "provider_id": "5754",
                 "pricing": {
                   "type": "negotiated",
                   "network_id": "-3776001016975145508"
@@ -2371,8 +2373,10 @@
                   "member_id": "test123",
                   "consent_attested": true
                 },
-                "location": null,
-                "sort": null,
+                "location": {
+                  "zip": "80218"
+                },
+                "sort": "total",
                 "sort_direction": "asc",
                 "page_size": 25,
                 "cursor": null
@@ -2409,89 +2413,187 @@
                     {
                       "object": "personalized_estimate",
                       "provider": {
-                        "id": "prov_01hxyz",
-                        "name": "Example Medical Center"
+                        "object": "provider",
+                        "id": "5754",
+                        "name": "HCA HealthONE Presbyterian St Lukes",
+                        "type": "Short Term Acute Care Hospital",
+                        "npi": "1720038946",
+                        "address": {
+                          "city": "Denver",
+                          "state": "CO",
+                          "zip_code": "80218",
+                          "latitude": 39.746549,
+                          "longitude": -104.966925
+                        },
+                        "context": {
+                          "distance_m": 1738.3,
+                          "score": null
+                        }
                       },
                       "package": {
-                        "id": "pkg_01hxyz",
-                        "name": "Knee replacement - partial"
+                        "id": "GP03Z",
+                        "name": "Colonoscopy"
                       },
                       "pricing": {
                         "type": "negotiated",
                         "network": {
-                          "id": "482910",
-                          "name": "Example PPO Network"
+                          "id": "-3776001016975145508",
+                          "name": "National OAP"
                         },
                         "payer": {
-                          "id": "payer_01hxyz",
-                          "name": "Example Payer"
+                          "id": "76",
+                          "name": "Cigna"
                         }
                       },
                       "total_allowed_amount": {
-                        "amount": "620.00",
-                        "minor_units": 62000,
+                        "amount": "3400.94",
+                        "minor_units": 340094,
                         "currency": "USD"
                       },
                       "member_cost_share": {
                         "total": {
-                          "amount": "185.00",
-                          "minor_units": 18500,
+                          "amount": "1035.66",
+                          "minor_units": 103566,
                           "currency": "USD"
                         },
                         "amount_towards_deductible": {
-                          "amount": "50.00",
-                          "minor_units": 5000,
+                          "amount": "500.00",
+                          "minor_units": 50000,
                           "currency": "USD"
                         },
                         "amount_towards_copayment": {
-                          "amount": "25.00",
-                          "minor_units": 2500,
+                          "amount": "0.00",
+                          "minor_units": 0,
                           "currency": "USD"
                         },
                         "amount_towards_coinsurance": {
-                          "amount": "110.00",
-                          "minor_units": 11000,
+                          "amount": "535.66",
+                          "minor_units": 53566,
                           "currency": "USD"
                         },
-                        "is_deductible_met": false,
+                        "is_deductible_met": true,
                         "is_out_of_pocket_max_met": false
                       },
-                      "sub_package_id": "pkg_01hxyz-A",
+                      "sub_package_id": "133GA",
                       "line_items": [
                         {
-                          "code": "27442",
+                          "code": "45385",
                           "code_type": "HCPCS",
                           "fee_type": "base_code",
-                          "description": "Knee Joint Resurfacing or Reconstruction",
-                          "association_rate": 0.91
+                          "description": "Colonoscopy with Snare Resection of Tumor/Polyps/lesions",
+                          "association_rate": 0.964
                         },
                         {
-                          "code": "27442",
+                          "code": "45385",
                           "code_type": "HCPCS",
                           "fee_type": "professional_fee",
-                          "description": "Knee Joint Resurfacing or Reconstruction",
-                          "association_rate": 0.91
+                          "description": "Colonoscopy with Snare Resection of Tumor/Polyps/lesions",
+                          "association_rate": 0.964
                         },
                         {
-                          "code": "C1776",
+                          "code": "45384",
+                          "code_type": "HCPCS",
+                          "fee_type": "base_code",
+                          "description": "Flexible Endoscopic Colonoscopy with Hot Biopsy Forceps Excision of Lesion",
+                          "association_rate": 0.0255
+                        },
+                        {
+                          "code": "45384",
+                          "code_type": "HCPCS",
+                          "fee_type": "professional_fee",
+                          "description": "Flexible Endoscopic Colonoscopy with Hot Biopsy Forceps Excision of Lesion",
+                          "association_rate": 0.0255
+                        },
+                        {
+                          "code": "45388",
+                          "code_type": "HCPCS",
+                          "fee_type": "base_code",
+                          "description": "Flexible Colonoscopy with Ablation of Lesions (including Dilation/Guidewire)",
+                          "association_rate": 0.0097
+                        },
+                        {
+                          "code": "45388",
+                          "code_type": "HCPCS",
+                          "fee_type": "professional_fee",
+                          "description": "Flexible Colonoscopy with Ablation of Lesions (including Dilation/Guidewire)",
+                          "association_rate": 0.0097
+                        },
+                        {
+                          "code": "45379",
+                          "code_type": "HCPCS",
+                          "fee_type": "base_code",
+                          "description": "Flexible Colonoscopy with Foreign Body Removal",
+                          "association_rate": 0.0008
+                        },
+                        {
+                          "code": "45379",
+                          "code_type": "HCPCS",
+                          "fee_type": "professional_fee",
+                          "description": "Flexible Colonoscopy with Foreign Body Removal",
+                          "association_rate": 0.0008
+                        },
+                        {
+                          "code": "88305",
                           "code_type": "HCPCS",
                           "fee_type": "facility_fee",
-                          "description": "Implantable Joint Device for Motion Restoration",
-                          "association_rate": 0.85
+                          "description": "Microscopic/gross-exam of surgical pathology biopsies/exam/resections",
+                          "association_rate": 0.7991
+                        },
+                        {
+                          "code": "0636",
+                          "code_type": "RC",
+                          "fee_type": "facility_fee",
+                          "description": "Pharmacy - Extension of 025X - Drugs requiring detailed coding",
+                          "association_rate": 0.6621
                         },
                         {
                           "code": "0370",
                           "code_type": "RC",
                           "fee_type": "facility_fee",
                           "description": "Anesthesia - General",
-                          "association_rate": 0.94
+                          "association_rate": 0.6471
                         },
                         {
-                          "code": "97116",
+                          "code": "J2704",
                           "code_type": "HCPCS",
+                          "fee_type": "facility_fee",
+                          "description": "Intramuscular injection of 10mg propofol",
+                          "association_rate": 0.6354
+                        },
+                        {
+                          "code": "0750",
+                          "code_type": "RC",
+                          "fee_type": "facility_fee",
+                          "description": "Gastrointestinal Services - General",
+                          "association_rate": 0.6023
+                        },
+                        {
+                          "code": "0710",
+                          "code_type": "RC",
+                          "fee_type": "facility_fee",
+                          "description": "Recovery Room - General",
+                          "association_rate": 0.5556
+                        },
+                        {
+                          "code": "0250",
+                          "code_type": "RC",
+                          "fee_type": "facility_fee",
+                          "description": "Pharmacy (Also see 063X, an extension of 250X) - General",
+                          "association_rate": 0.4192
+                        },
+                        {
+                          "code": "0272",
+                          "code_type": "RC",
                           "fee_type": "optional_fee",
-                          "description": "Therapeutic gait training of 1+ areas for 15 min each",
-                          "association_rate": 0.35
+                          "description": "Medical/Surgical Supplies and Devices (Also see 062X, an extension of 027X) - Sterile",
+                          "association_rate": 0.3769
+                        },
+                        {
+                          "code": "0310",
+                          "code_type": "RC",
+                          "fee_type": "optional_fee",
+                          "description": "Laboratory Pathology - General",
+                          "association_rate": 0.3528
                         }
                       ]
                     }
@@ -2501,23 +2603,63 @@
                     "total": 1,
                     "next_cursor": null
                   },
+                  "disclosures": [
+                    "Results reflect services Turquoise has priced. Absence of a provider, network, or package does not imply the service is unavailable or out of network.",
+                    "Distance-based results exclude providers without location data (about 6% of providers)."
+                  ],
                   "no_data_reason": null,
                   "benefits_summary": {
                     "remaining_deductible": 500.0,
-                    "total_deductible": 1500.0,
-                    "remaining_out_of_pocket_max": 2000.0,
-                    "total_out_of_pocket_max": 6000.0,
+                    "total_deductible": 500.0,
+                    "remaining_out_of_pocket_max": 7585.0,
+                    "total_out_of_pocket_max": 7800.0,
                     "benefit_categories": [
                       {
-                        "category": "office_visit",
+                        "category": "advanced-imaging",
                         "coinsurance": 0.2,
                         "copayment": 0.0,
                         "deductible": null
+                      },
+                      {
+                        "category": "ambulatory-surgery-center",
+                        "coinsurance": 0.2,
+                        "copayment": 0.0,
+                        "deductible": null
+                      },
+                      {
+                        "category": "inpatient",
+                        "coinsurance": 0.2,
+                        "copayment": 0.0,
+                        "deductible": null
+                      },
+                      {
+                        "category": "lab",
+                        "coinsurance": 0.0,
+                        "copayment": 0.0,
+                        "deductible": 0.0
+                      },
+                      {
+                        "category": "office-visit-clinic",
+                        "coinsurance": 0.0,
+                        "copayment": 50.0,
+                        "deductible": 0.0
+                      },
+                      {
+                        "category": "outpatient",
+                        "coinsurance": 0.2,
+                        "copayment": 0.0,
+                        "deductible": null
+                      },
+                      {
+                        "category": "radiology",
+                        "coinsurance": 0.0,
+                        "copayment": 0.0,
+                        "deductible": 0.0
                       }
                     ],
                     "limitations": [],
-                    "deductible_accumulator_type": "individual",
-                    "out_of_pocket_accumulator_type": "individual"
+                    "deductible_accumulator_type": "embedded",
+                    "out_of_pocket_accumulator_type": "embedded"
                   }
                 }
               }
@@ -2734,23 +2876,23 @@
         }
       ]
     },
-    "/v3/personalized-estimates/compare": {
+    "/v3/personalized-estimates/statistics": {
       "post": {
         "tags": [
           "Consumer Pricing"
         ],
-        "operationId": "v3_compare_personalized_estimates",
-        "summary": "Compare personalized prices across providers for a package",
-        "description": "Compare what this member would pay out-of-pocket across providers for the givenpackage. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).",
+        "operationId": "v3_personalized_estimate_statistics",
+        "summary": "Get personalized price statistics across providers for a package",
+        "description": "Compare what this member would pay out-of-pocket across providers for the given package. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ConsumerSitePriceComparisonInput"
+                "$ref": "#/components/schemas/ConsumerSiteEstimateStatisticsInput"
               },
               "example": {
-                "package_id": "GA003",
+                "package_id": "GP03Z",
                 "provider_id": null,
                 "pricing": {
                   "type": "negotiated",
@@ -2772,46 +2914,121 @@
         },
         "responses": {
           "200": {
-            "description": "Price comparison statistics for the requested package.",
+            "description": "Estimate statistics for the requested package.",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ConsumerSitePriceComparison"
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/ConsumerSiteEstimateStatistics"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "benefits_summary": {
+                          "$ref": "#/components/schemas/ConsumerSiteBenefitsSummary"
+                        }
+                      },
+                      "required": [
+                        "benefits_summary"
+                      ]
+                    }
+                  ]
                 },
                 "example": {
-                  "object": "price_comparison",
-                  "count": 8,
+                  "object": "estimate_statistics",
+                  "count": 41,
                   "stats": {
                     "min": {
-                      "amount": "120.00",
-                      "minor_units": 12000,
+                      "amount": "635.98",
+                      "minor_units": 63598,
                       "currency": "USD"
                     },
                     "max": {
-                      "amount": "540.00",
-                      "minor_units": 54000,
+                      "amount": "1465.21",
+                      "minor_units": 146521,
                       "currency": "USD"
                     },
                     "avg": {
-                      "amount": "310.25",
-                      "minor_units": 31025,
+                      "amount": "985.30",
+                      "minor_units": 98530,
                       "currency": "USD"
                     },
                     "median": {
-                      "amount": "295.00",
-                      "minor_units": 29500,
+                      "amount": "955.53",
+                      "minor_units": 95553,
                       "currency": "USD"
                     },
                     "q1": {
-                      "amount": "200.00",
-                      "minor_units": 20000,
+                      "amount": "785.16",
+                      "minor_units": 78516,
                       "currency": "USD"
                     },
                     "q3": {
-                      "amount": "410.00",
-                      "minor_units": 41000,
+                      "amount": "1142.26",
+                      "minor_units": 114226,
                       "currency": "USD"
                     }
+                  },
+                  "disclosures": [
+                    "Results reflect services Turquoise has priced. Absence of a provider, network, or package does not imply the service is unavailable or out of network.",
+                    "Distance-based results exclude providers without location data (about 6% of providers)."
+                  ],
+                  "meta": {
+                    "dataset_version": null
+                  },
+                  "benefits_summary": {
+                    "remaining_deductible": 500.0,
+                    "total_deductible": 500.0,
+                    "remaining_out_of_pocket_max": 7585.0,
+                    "total_out_of_pocket_max": 7800.0,
+                    "benefit_categories": [
+                      {
+                        "category": "advanced-imaging",
+                        "coinsurance": 0.2,
+                        "copayment": 0.0,
+                        "deductible": null
+                      },
+                      {
+                        "category": "ambulatory-surgery-center",
+                        "coinsurance": 0.2,
+                        "copayment": 0.0,
+                        "deductible": null
+                      },
+                      {
+                        "category": "inpatient",
+                        "coinsurance": 0.2,
+                        "copayment": 0.0,
+                        "deductible": null
+                      },
+                      {
+                        "category": "lab",
+                        "coinsurance": 0.0,
+                        "copayment": 0.0,
+                        "deductible": 0.0
+                      },
+                      {
+                        "category": "office-visit-clinic",
+                        "coinsurance": 0.0,
+                        "copayment": 50.0,
+                        "deductible": 0.0
+                      },
+                      {
+                        "category": "outpatient",
+                        "coinsurance": 0.2,
+                        "copayment": 0.0,
+                        "deductible": null
+                      },
+                      {
+                        "category": "radiology",
+                        "coinsurance": 0.0,
+                        "copayment": 0.0,
+                        "deductible": 0.0
+                      }
+                    ],
+                    "limitations": [],
+                    "deductible_accumulator_type": "embedded",
+                    "out_of_pocket_accumulator_type": "embedded"
                   }
                 }
               }
@@ -3038,7 +3255,7 @@
             "title": "Code",
             "description": "Billing code.",
             "examples": [
-              "59510"
+              "76641"
             ]
           },
           "code_type": {
@@ -3088,14 +3305,99 @@
           "q1",
           "q3"
         ],
-        "title": "ComparisonStats"
+        "title": "ComparisonStats",
+        "description": "Summary statistics over a population of prices. Shared by every `/statistics` surface."
+      },
+      "ConsumerPricingProvider": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "provider",
+            "title": "Object",
+            "default": "provider"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Provider identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term."
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Provider facility or organization name."
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type",
+            "description": "Provider type as reported in the dataset."
+          },
+          "npi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Npi",
+            "description": "National Provider Identifier."
+          },
+          "address": {
+            "$ref": "#/components/schemas/ProviderAddress"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MatchContext"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Query-relative metadata (near/zip mode only)."
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "address"
+        ],
+        "title": "ConsumerPricingProvider",
+        "examples": [
+          {
+            "address": {
+              "city": "Denver",
+              "latitude": 39.746549,
+              "longitude": -104.966925,
+              "state": "CO",
+              "zip_code": "80218"
+            },
+            "context": {
+              "distance_m": 1738.3
+            },
+            "id": "5754",
+            "name": "HCA HealthONE Presbyterian St Lukes",
+            "npi": "1720038946",
+            "object": "provider",
+            "type": "Short Term Acute Care Hospital"
+          }
+        ]
       },
       "EntityRef": {
         "properties": {
           "id": {
             "type": "string",
             "title": "Id",
-            "description": "Entity identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term."
+            "description": "Identifier of the referenced entity. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term."
           },
           "name": {
             "anyOf": [
@@ -3107,7 +3409,7 @@
               }
             ],
             "title": "Name",
-            "description": "Display name; null when reference data is missing."
+            "description": "Display name of the referenced entity. Null when no name is available."
           }
         },
         "type": "object",
@@ -3115,7 +3417,7 @@
           "id"
         ],
         "title": "EntityRef",
-        "description": "Two-field reference stub. `expand=` swaps it for the full entity.\n\n`name` is nullable by design: 0.8% of priced providers have no reference\nrow (measured 07/2026), and the v3 rule is to emit the stub with a null\nname rather than silently dropping the priced row."
+        "description": "A compact reference to a related entity, carrying only its identifier and display name."
       },
       "ErrorCode": {
         "type": "string",
@@ -3251,16 +3553,61 @@
           "association_rate"
         ],
         "title": "LineItem",
-        "description": "A component of a package's composition (from `api_ssp_contents`).",
+        "description": "A component of a package's composition.",
         "examples": [
           {
-            "association_rate": 0.4491,
-            "code": "786",
-            "code_type": "MS-DRG",
-            "description": "CESAREAN SECTION WITHOUT STERILIZATION WITH MCC",
+            "association_rate": 0.7245,
+            "code": "76642",
+            "code_type": "HCPCS",
+            "description": "Ultrasound imaging of one breast including axilla with image documentation",
             "fee_type": "base_code"
           }
         ]
+      },
+      "ListEnvelope_ConsumerPricingProvider_": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "const": "list",
+            "title": "Object",
+            "default": "list"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ConsumerPricingProvider"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "page": {
+            "$ref": "#/components/schemas/PageMeta"
+          },
+          "no_data_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/NoDataReason"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
+          },
+          "disclosures": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Disclosures",
+            "description": "Human-readable caveats about what this result does and does not imply."
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "page"
+        ],
+        "title": "ListEnvelope[ConsumerPricingProvider]"
       },
       "ListEnvelope_LineItem_": {
         "properties": {
@@ -3487,51 +3834,6 @@
         ],
         "title": "ListEnvelope[ProviderPackagePrice]"
       },
-      "ListEnvelope_Provider_": {
-        "properties": {
-          "object": {
-            "type": "string",
-            "const": "list",
-            "title": "Object",
-            "default": "list"
-          },
-          "items": {
-            "items": {
-              "$ref": "#/components/schemas/Provider"
-            },
-            "type": "array",
-            "title": "Items"
-          },
-          "page": {
-            "$ref": "#/components/schemas/PageMeta"
-          },
-          "no_data_reason": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/NoDataReason"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Set when `items` is empty. `no_data` means no matching records exist; `permission_denied` means matching records exist but are excluded by your data permissions."
-          },
-          "disclosures": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Disclosures",
-            "description": "Human-readable caveats about what this result does and does not imply."
-          }
-        },
-        "type": "object",
-        "required": [
-          "items",
-          "page"
-        ],
-        "title": "ListEnvelope[Provider]"
-      },
       "Location": {
         "properties": {
           "near": {
@@ -3581,7 +3883,7 @@
             "title": "Lat",
             "description": "Latitude of the search anchor.",
             "examples": [
-              39.745961
+              39.746549
             ]
           },
           "lng": {
@@ -3589,7 +3891,7 @@
             "title": "Lng",
             "description": "Longitude of the search anchor.",
             "examples": [
-              -104.971559
+              -104.966925
             ]
           },
           "radius_m": {
@@ -3741,7 +4043,7 @@
           "id": {
             "type": "string",
             "title": "Id",
-            "description": "Network identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term."
+            "description": "Network identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term."
           },
           "name": {
             "type": "string",
@@ -3802,14 +4104,17 @@
           "id": {
             "type": "string",
             "title": "Id",
-            "description": "Package identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term."
+            "description": "Package identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term."
           },
           "type": {
             "type": "string",
-            "const": "ssp",
+            "enum": [
+              "ssp",
+              "ssp_grouper"
+            ],
             "title": "Type",
-            "description": "Package taxonomy. Only Standard Service Packages ('ssp') are served today; other package types (e.g. consumer bundles) may be added as they become servable.",
-            "default": "ssp"
+            "description": "Package taxonomy. The SSP Grouper is the main package type.  If searching via anchor code, a specific SSP will be returned.  Either package id works as the package_id in subsequent API requests.",
+            "default": "ssp_grouper"
           },
           "name": {
             "type": "string",
@@ -3834,14 +4139,7 @@
             },
             "type": "array",
             "title": "Anchor Codes",
-            "description": "The package's comprehensive anchor (base) billing codes \u2014 the rows billed as the anchor itself, not its professional-fee counterparts. Every package is expected to carry at least one. In the current catalog every anchor code maps to exactly one package (measured 07/2026), so ?anchor_code= behaves as a unique lookup \u2014 but that is an observed property, not a guarantee: the lookup returns every package anchored by the code."
-          },
-          "disclosures": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array",
-            "title": "Disclosures"
+            "description": "The package's comprehensive anchor (base) billing codes \u2014 the rows billed as the anchor itself, not its professional-fee counterparts."
           },
           "context": {
             "anyOf": [
@@ -3853,6 +4151,13 @@
               }
             ],
             "description": "Query-relative metadata (search only)."
+          },
+          "disclosures": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Disclosures"
           }
         },
         "type": "object",
@@ -3865,28 +4170,40 @@
           {
             "anchor_codes": [
               {
-                "code": "59510",
+                "code": "76641",
                 "code_type": "HCPCS"
               },
               {
-                "code": "784",
-                "code_type": "MS-DRG"
-              },
-              {
-                "code": "785",
-                "code_type": "MS-DRG"
-              },
-              {
-                "code": "786",
-                "code_type": "MS-DRG"
+                "code": "76642",
+                "code_type": "HCPCS"
               }
             ],
-            "description": "Cesarean delivery (C-section) is a surgical procedure in which the baby is delivered through incisions made in the abdomen and uterus. It may be planned in advance due to specific medical conditions or performed as an emergency if complications arise during labor. The procedure is done under regional or general anesthesia, and most patients stay in the hospital for two to four days. Recovery from a C-section typically takes longer than from a vaginal delivery, and your care team will provide instructions for wound care and activity during healing.",
+            "description": "An ultrasound uses high-frequency sound waves to create real-time images of internal organs, tissues, and blood flow. This painless outpatient test requires no radiation and no needles. A technician applies gel to your skin and moves a small probe, instantly showing images on a screen. The procedure takes 15-45 minutes depending on what's being evaluated. Ultrasound safely evaluates pregnancy, organs, blood vessels, joints, and soft tissues. Results guide diagnosis and treatment planning. You go home immediately and can resume all activities. This estimate is based on the most common variation of this service, a breast ultrasound. Your price may differ depending on the type of ultrasound you have.",
             "disclosures": [
               "The full package depends on your provider and insurance plan. A final price includes additional institutional and professional fee codes."
             ],
-            "id": "OB002",
-            "name": "Delivery - caesarean",
+            "id": "R017Z",
+            "name": "Ultrasound",
+            "object": "package",
+            "type": "ssp_grouper"
+          },
+          {
+            "anchor_codes": [
+              {
+                "code": "76641",
+                "code_type": "HCPCS"
+              },
+              {
+                "code": "76642",
+                "code_type": "HCPCS"
+              }
+            ],
+            "description": "Breast ultrasound is a safe, noninvasive imaging test that uses sound waves to create pictures of the inside of the breast, with no radiation involved. It is commonly used to further evaluate an area of concern found on a mammogram or physical exam, such as a lump or cyst, and can help distinguish between solid masses and fluid-filled cysts. A small handheld device is gently placed on the breast with a gel to help transmit the sound waves, and the test is usually painless and quick. Most patients can resume normal activities immediately after.",
+            "disclosures": [
+              "The full package depends on your provider and insurance plan. A final price includes additional institutional and professional fee codes."
+            ],
+            "id": "RA007",
+            "name": "Breast ultrasound",
             "object": "package",
             "type": "ssp"
           }
@@ -3935,7 +4252,7 @@
           "id": {
             "type": "string",
             "title": "Id",
-            "description": "Payer identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term."
+            "description": "Payer identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term."
           },
           "name": {
             "anyOf": [
@@ -3974,13 +4291,30 @@
           }
         ]
       },
-      "PriceComparison": {
+      "PriceExpand": {
+        "type": "string",
+        "enum": [
+          "line_items"
+        ],
+        "title": "PriceExpand",
+        "description": "Optional relations the price detail endpoint can inline via `expand`."
+      },
+      "PriceSort": {
+        "type": "string",
+        "enum": [
+          "total",
+          "distance"
+        ],
+        "title": "PriceSort",
+        "description": "Sort options for price listings. `distance` requires a near/zip location."
+      },
+      "PriceStatistics": {
         "properties": {
           "object": {
             "type": "string",
-            "const": "price_comparison",
+            "const": "price_statistics",
             "title": "Object",
-            "default": "price_comparison"
+            "default": "price_statistics"
           },
           "count": {
             "type": "integer",
@@ -4013,85 +4347,7 @@
         "required": [
           "count"
         ],
-        "title": "PriceComparison"
-      },
-      "PriceExpand": {
-        "type": "string",
-        "enum": [
-          "line_items"
-        ],
-        "title": "PriceExpand",
-        "description": "Optional relations the price detail endpoint can inline via `expand`."
-      },
-      "PriceSort": {
-        "type": "string",
-        "enum": [
-          "total",
-          "distance"
-        ],
-        "title": "PriceSort",
-        "description": "Sort options for price listings. `distance` requires a near/zip location."
-      },
-      "PricesCompareRequest": {
-        "properties": {
-          "package_id": {
-            "type": "string",
-            "minLength": 1,
-            "title": "Package Id",
-            "examples": [
-              "OB002"
-            ]
-          },
-          "provider_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Provider Id",
-            "examples": [
-              "5756"
-            ]
-          },
-          "pricing": {
-            "oneOf": [
-              {
-                "$ref": "#/components/schemas/PricingCash"
-              },
-              {
-                "$ref": "#/components/schemas/PricingNegotiated"
-              }
-            ],
-            "title": "Pricing",
-            "discriminator": {
-              "propertyName": "type",
-              "mapping": {
-                "cash": "#/components/schemas/PricingCash",
-                "negotiated": "#/components/schemas/PricingNegotiated"
-              }
-            }
-          },
-          "location": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/Location"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          }
-        },
-        "type": "object",
-        "required": [
-          "package_id",
-          "pricing"
-        ],
-        "title": "PricesCompareRequest",
-        "description": "POST /v3/prices/compare body \u2014 the query shape minus sort/expand/pagination."
+        "title": "PriceStatistics"
       },
       "PricesQueryRequest": {
         "properties": {
@@ -4100,7 +4356,7 @@
             "minLength": 1,
             "title": "Package Id",
             "examples": [
-              "OB002"
+              "R017Z"
             ]
           },
           "provider_id": {
@@ -4114,7 +4370,7 @@
             ],
             "title": "Provider Id",
             "examples": [
-              "5756"
+              "5754"
             ]
           },
           "pricing": {
@@ -4186,6 +4442,67 @@
         ],
         "title": "PricesQueryRequest"
       },
+      "PricesStatisticsRequest": {
+        "properties": {
+          "package_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Package Id",
+            "examples": [
+              "R017Z"
+            ]
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provider Id",
+            "examples": [
+              "5754"
+            ]
+          },
+          "pricing": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/PricingCash"
+              },
+              {
+                "$ref": "#/components/schemas/PricingNegotiated"
+              }
+            ],
+            "title": "Pricing",
+            "discriminator": {
+              "propertyName": "type",
+              "mapping": {
+                "cash": "#/components/schemas/PricingCash",
+                "negotiated": "#/components/schemas/PricingNegotiated"
+              }
+            }
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Location"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "package_id",
+          "pricing"
+        ],
+        "title": "PricesStatisticsRequest",
+        "description": "POST /v3/prices/statistics body \u2014 the query shape minus sort/expand/pagination."
+      },
       "PricingCash": {
         "properties": {
           "type": {
@@ -4236,22 +4553,26 @@
           "network": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/EntityRef"
+                "$ref": "#/components/schemas/EntityRef",
+                "description": "The insurance network the negotiated rate applies to. Null for cash prices."
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "description": "The insurance network the negotiated rate applies to. Null for cash prices."
           },
           "payer": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/EntityRef"
+                "$ref": "#/components/schemas/EntityRef",
+                "description": "The insurance payer that operates the network. Null for cash prices."
               },
               {
                 "type": "null"
               }
-            ]
+            ],
+            "description": "The insurance payer that operates the network. Null for cash prices."
           }
         },
         "type": "object",
@@ -4260,90 +4581,6 @@
         ],
         "title": "PricingResolved",
         "description": "The resolved payment arrangement on a price. Cash prices omit\nnetwork/payer; negotiated prices carry both as reference stubs."
-      },
-      "Provider": {
-        "properties": {
-          "object": {
-            "type": "string",
-            "const": "provider",
-            "title": "Object",
-            "default": "provider"
-          },
-          "id": {
-            "type": "string",
-            "title": "Id",
-            "description": "Provider identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term."
-          },
-          "name": {
-            "type": "string",
-            "title": "Name",
-            "description": "Provider facility or organization name."
-          },
-          "type": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Type",
-            "description": "Provider type as reported in the dataset."
-          },
-          "npi": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Npi",
-            "description": "National Provider Identifier."
-          },
-          "address": {
-            "$ref": "#/components/schemas/ProviderAddress"
-          },
-          "context": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/MatchContext"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Query-relative metadata (near/zip mode only)."
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "name",
-          "address"
-        ],
-        "title": "Provider",
-        "examples": [
-          {
-            "address": {
-              "city": "Denver",
-              "latitude": 39.745961,
-              "longitude": -104.971559,
-              "state": "CO",
-              "zip_code": "80218"
-            },
-            "context": {
-              "distance_m": 1644.0
-            },
-            "id": "5756",
-            "name": "Intermountain Health Saint Joseph Hospital",
-            "npi": "1417946021",
-            "object": "provider",
-            "type": "Short Term Acute Care Hospital"
-          }
-        ]
       },
       "ProviderAddress": {
         "properties": {
@@ -4406,15 +4643,15 @@
           "id": {
             "type": "string",
             "title": "Id",
-            "description": "Price identifier (encodes the provider \u00d7 package \u00d7 pricing grain). Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term."
+            "description": "Price identifier (encodes the provider \u00d7 package \u00d7 pricing grain). Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term."
           },
           "provider": {
-            "$ref": "#/components/schemas/Provider",
+            "$ref": "#/components/schemas/ConsumerPricingProvider",
             "description": "Full provider entity (always inlined)."
           },
           "package": {
             "$ref": "#/components/schemas/EntityRef",
-            "description": "Reference stub."
+            "description": "The package this price is for."
           },
           "pricing": {
             "$ref": "#/components/schemas/PricingResolved"
@@ -4460,11 +4697,11 @@
         "title": "ProviderPackagePrice",
         "examples": [
           {
-            "id": "prc_5756.OB002.-3776001016975145508",
+            "id": "prc_5754.RA007.-3776001016975145508",
             "object": "price",
             "package": {
-              "id": "OB002",
-              "name": "Delivery - caesarean"
+              "id": "R017Z",
+              "name": "Ultrasound"
             },
             "pricing": {
               "network": {
@@ -4480,21 +4717,21 @@
             "provider": {
               "address": {
                 "city": "Denver",
-                "latitude": 39.745961,
-                "longitude": -104.971559,
+                "latitude": 39.746549,
+                "longitude": -104.966925,
                 "state": "CO",
                 "zip_code": "80218"
               },
-              "id": "5756",
-              "name": "Intermountain Health Saint Joseph Hospital",
-              "npi": "1417946021",
+              "id": "5754",
+              "name": "HCA HealthONE Presbyterian St Lukes",
+              "npi": "1720038946",
               "object": "provider",
               "type": "Short Term Acute Care Hospital"
             },
             "total": {
-              "amount": "34705.48",
+              "amount": "526.10",
               "currency": "USD",
-              "minor_units": 3470548
+              "minor_units": 52610
             }
           }
         ]
@@ -4537,26 +4774,6 @@
         "type": "object",
         "title": "SearchContext",
         "description": "Query-relative semantic-search metadata."
-      },
-      "ConsumerPricingV2ErrorCode": {
-        "enum": [
-          "INVALID_REQUEST",
-          "INVALID_STATE_FORMAT",
-          "INVALID_ID_FORMAT",
-          "INVALID_EXPAND",
-          "INSUFFICIENT_SCOPE",
-          "LOCATION_REQUIRED",
-          "LOCATION_AMBIGUOUS",
-          "UNRESOLVABLE_LOCATION",
-          "NOT_FOUND",
-          "INSUFFICIENT_DATA",
-          "RATE_LIMITED",
-          "PERMISSION_DENIED",
-          "SEARCH_UNAVAILABLE"
-        ],
-        "type": "string",
-        "title": "ConsumerPricingV2ErrorCode",
-        "description": "Stable error code registry for Consumer Pricing v2. Switch on this in code."
       },
       "ConsumerSiteBenefitCategory": {
         "properties": {
@@ -4674,7 +4891,7 @@
         "type": "object"
       },
       "ConsumerSiteComparisonStats": {
-        "description": "ComparisonStats",
+        "description": "Summary statistics over a population of prices. Shared by every `/statistics` surface.",
         "properties": {
           "min": {
             "$ref": "#/components/schemas/ConsumerSiteMoney"
@@ -4706,11 +4923,83 @@
         "title": "ComparisonStats",
         "type": "object"
       },
+      "ConsumerSiteConsumerPricingProvider": {
+        "description": "ConsumerPricingProvider",
+        "properties": {
+          "object": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "provider",
+            "title": "Object"
+          },
+          "id": {
+            "description": "Provider identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term.",
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "description": "Provider facility or organization name.",
+            "title": "Name",
+            "type": "string"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Type"
+          },
+          "npi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Npi"
+          },
+          "address": {
+            "$ref": "#/components/schemas/ConsumerSiteProviderAddress"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConsumerSiteMatchContext"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "address"
+        ],
+        "title": "ConsumerPricingProvider",
+        "type": "object"
+      },
       "ConsumerSiteEntityRef": {
-        "description": "Two-field reference stub. `expand=` swaps it for the full entity.  `name` is nullable by design: 0.8% of priced providers have no reference row (measured 07/2026), and the v3 rule is to emit the stub with a null name rather than silently dropping the priced row.",
+        "description": "A compact reference to a related entity, carrying only its identifier and display name.",
         "properties": {
           "id": {
-            "description": "Entity identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.",
+            "description": "Identifier of the referenced entity. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term.",
             "title": "Id",
             "type": "string"
           },
@@ -4733,8 +5022,118 @@
         "title": "EntityRef",
         "type": "object"
       },
+      "ConsumerSiteEstimateStatistics": {
+        "description": "Publishes tq-api's PriceStatistics response under the name partners see.",
+        "properties": {
+          "object": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "estimate_statistics",
+            "title": "Object"
+          },
+          "count": {
+            "description": "Number of prices the statistics were computed over.",
+            "title": "Count",
+            "type": "integer"
+          },
+          "stats": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConsumerSiteComparisonStats"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          },
+          "disclosures": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Disclosures"
+          },
+          "meta": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConsumerSiteResponseMeta"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "count"
+        ],
+        "title": "EstimateStatistics",
+        "type": "object"
+      },
+      "ConsumerSiteEstimateStatisticsInput": {
+        "description": "Inbound payload for the v3 estimate statistics endpoint.",
+        "properties": {
+          "package_id": {
+            "minLength": 1,
+            "title": "Package Id",
+            "type": "string"
+          },
+          "provider_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Provider Id"
+          },
+          "pricing": {
+            "$ref": "#/components/schemas/ConsumerSitePricingNegotiated"
+          },
+          "member_eligibility": {
+            "$ref": "#/components/schemas/ConsumerSiteMemberEligibilityInput"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConsumerSiteLocation"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null
+          }
+        },
+        "required": [
+          "package_id",
+          "pricing",
+          "member_eligibility"
+        ],
+        "title": "EstimateStatisticsInput",
+        "type": "object"
+      },
       "ConsumerSiteLineItem": {
-        "description": "A component of a package's composition (from `api_ssp_contents`).",
+        "description": "A component of a package's composition.",
         "properties": {
           "code": {
             "description": "Billing code.",
@@ -4796,13 +5195,13 @@
           },
           "items": {
             "items": {
-              "$ref": "#/components/schemas/ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate"
+              "$ref": "#/components/schemas/ConsumerSitePersonalizedEstimate"
             },
             "title": "Items",
             "type": "array"
           },
           "page": {
-            "$ref": "#/components/schemas/ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta"
+            "$ref": "#/components/schemas/ConsumerSitePageMeta"
           },
           "no_data_reason": {
             "anyOf": [
@@ -4977,15 +5376,52 @@
         "title": "LocationWithin",
         "type": "object"
       },
+      "ConsumerSiteMatchContext": {
+        "description": "Query-relative metadata for resources with a concrete location.",
+        "properties": {
+          "score": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "maximum": 1,
+                "minimum": 0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Score"
+          },
+          "distance_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Distance M"
+          }
+        },
+        "title": "MatchContext",
+        "type": "object"
+      },
       "ConsumerSiteMemberCostShare": {
         "description": "MemberCostShare",
         "properties": {
           "total": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ConsumerSiteMoney"
-              }
-            ],
+            "$ref": "#/components/schemas/ConsumerSiteMoney",
             "description": "Total out-of-pocket price."
           },
           "amount_towards_deductible": {
@@ -5055,7 +5491,8 @@
           },
           "consent_attested": {
             "const": true,
-            "title": "Consent Attested"
+            "title": "Consent Attested",
+            "type": "boolean"
           }
         },
         "required": [
@@ -5065,112 +5502,6 @@
           "consent_attested"
         ],
         "title": "MemberEligibilityInput",
-        "type": "object"
-      },
-      "ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta": {
-        "description": "ModulesConsumerPricingV3DtosCommonPageMeta",
-        "properties": {
-          "size": {
-            "description": "Number of items in this page.",
-            "title": "Size",
-            "type": "integer"
-          },
-          "total": {
-            "description": "Count of the full filtered set, not just this page.",
-            "title": "Total",
-            "type": "integer"
-          },
-          "next_cursor": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Next Cursor"
-          }
-        },
-        "required": [
-          "size",
-          "total"
-        ],
-        "title": "ModulesConsumerPricingV3DtosCommonPageMeta",
-        "type": "object"
-      },
-      "ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate": {
-        "description": "ModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate",
-        "properties": {
-          "object": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": "personalized_estimate",
-            "title": "Object"
-          },
-          "provider": {
-            "$ref": "#/components/schemas/ConsumerSiteEntityRef"
-          },
-          "package": {
-            "$ref": "#/components/schemas/ConsumerSiteEntityRef"
-          },
-          "pricing": {
-            "$ref": "#/components/schemas/ConsumerSitePricingResolved"
-          },
-          "total_allowed_amount": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ConsumerSiteMoney"
-              }
-            ],
-            "description": "Amount that insurance company + patient pay for the service."
-          },
-          "member_cost_share": {
-            "$ref": "#/components/schemas/ConsumerSiteMemberCostShare"
-          },
-          "sub_package_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Sub Package Id"
-          },
-          "line_items": {
-            "anyOf": [
-              {
-                "items": {
-                  "$ref": "#/components/schemas/ConsumerSiteLineItem"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Line Items"
-          }
-        },
-        "required": [
-          "provider",
-          "package",
-          "pricing",
-          "total_allowed_amount",
-          "member_cost_share"
-        ],
-        "title": "ModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate",
         "type": "object"
       },
       "ConsumerSiteMoney": {
@@ -5216,6 +5547,110 @@
         "title": "NoDataReason",
         "type": "string"
       },
+      "ConsumerSitePageMeta": {
+        "description": "PageMeta",
+        "properties": {
+          "size": {
+            "description": "Number of items in this page.",
+            "title": "Size",
+            "type": "integer"
+          },
+          "total": {
+            "description": "Count of the full filtered set, not just this page.",
+            "title": "Total",
+            "type": "integer"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "size",
+          "total"
+        ],
+        "title": "PageMeta",
+        "type": "object"
+      },
+      "ConsumerSitePersonalizedEstimate": {
+        "description": "PersonalizedEstimate",
+        "properties": {
+          "object": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "personalized_estimate",
+            "title": "Object"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/ConsumerSiteConsumerPricingProvider",
+            "description": "Full provider entity (always inlined)."
+          },
+          "package": {
+            "$ref": "#/components/schemas/ConsumerSiteEntityRef",
+            "description": "The package this estimate is for."
+          },
+          "pricing": {
+            "$ref": "#/components/schemas/ConsumerSitePricingResolved"
+          },
+          "total_allowed_amount": {
+            "$ref": "#/components/schemas/ConsumerSiteMoney",
+            "description": "Amount that insurance company + patient pay for the service."
+          },
+          "member_cost_share": {
+            "$ref": "#/components/schemas/ConsumerSiteMemberCostShare"
+          },
+          "sub_package_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Sub Package Id"
+          },
+          "line_items": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ConsumerSiteLineItem"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Line Items"
+          }
+        },
+        "required": [
+          "provider",
+          "package",
+          "pricing",
+          "total_allowed_amount",
+          "member_cost_share"
+        ],
+        "title": "PersonalizedEstimate",
+        "type": "object"
+      },
       "ConsumerSitePersonalizedEstimateErrorCode": {
         "description": "Stable error codes returned by the v3 personalized-estimate endpoints.\n\nUppercase codes come from Consumer Pricing v3. Lowercase codes are specific to\npersonalized-estimate eligibility and authorization.",
         "enum": [
@@ -5254,11 +5689,7 @@
         "description": "Details about an error returned by a v3 personalized-estimate endpoint.",
         "properties": {
           "code": {
-            "allOf": [
-              {
-                "$ref": "#/components/schemas/ConsumerSitePersonalizedEstimateErrorCode"
-              }
-            ],
+            "$ref": "#/components/schemas/ConsumerSitePersonalizedEstimateErrorCode",
             "description": "Stable, documented error code. Switch on this in code."
           },
           "message": {
@@ -5424,116 +5855,6 @@
         "title": "PersonalizedEstimatesQueryRequest",
         "type": "object"
       },
-      "ConsumerSitePriceComparison": {
-        "description": "PriceComparison",
-        "properties": {
-          "object": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": "price_comparison",
-            "title": "Object"
-          },
-          "count": {
-            "description": "Number of prices the statistics were computed over.",
-            "title": "Count",
-            "type": "integer"
-          },
-          "stats": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ConsumerSiteComparisonStats"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
-          },
-          "disclosures": {
-            "anyOf": [
-              {
-                "items": {
-                  "type": "string"
-                },
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Disclosures"
-          },
-          "meta": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ConsumerSiteResponseMeta"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
-          }
-        },
-        "required": [
-          "count"
-        ],
-        "title": "PriceComparison",
-        "type": "object"
-      },
-      "ConsumerSitePriceComparisonInput": {
-        "description": "Inbound payload for the v3 compare endpoint.",
-        "properties": {
-          "package_id": {
-            "minLength": 1,
-            "title": "Package Id",
-            "type": "string"
-          },
-          "provider_id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null,
-            "title": "Provider Id"
-          },
-          "pricing": {
-            "$ref": "#/components/schemas/ConsumerSitePricingNegotiated"
-          },
-          "member_eligibility": {
-            "$ref": "#/components/schemas/ConsumerSiteMemberEligibilityInput"
-          },
-          "location": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ConsumerSiteLocation"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "default": null
-          }
-        },
-        "required": [
-          "package_id",
-          "pricing",
-          "member_eligibility"
-        ],
-        "title": "PriceComparisonInput",
-        "type": "object"
-      },
       "ConsumerSitePriceSort": {
         "description": "Sort options for price listings. `distance` requires a near/zip location.",
         "enum": [
@@ -5579,7 +5900,8 @@
                 "type": "null"
               }
             ],
-            "default": null
+            "default": null,
+            "description": "The insurance network the negotiated rate applies to. Null for cash prices."
           },
           "payer": {
             "anyOf": [
@@ -5590,13 +5912,71 @@
                 "type": "null"
               }
             ],
-            "default": null
+            "default": null,
+            "description": "The insurance payer that operates the network. Null for cash prices."
           }
         },
         "required": [
           "type"
         ],
         "title": "PricingResolved",
+        "type": "object"
+      },
+      "ConsumerSiteProviderAddress": {
+        "description": "ProviderAddress",
+        "properties": {
+          "city": {
+            "description": "City the provider is located in.",
+            "title": "City",
+            "type": "string"
+          },
+          "state": {
+            "description": "Two-letter USPS state code.",
+            "title": "State",
+            "type": "string"
+          },
+          "zip_code": {
+            "description": "Provider ZIP code.",
+            "title": "Zip Code",
+            "type": "string"
+          },
+          "latitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Latitude"
+          },
+          "longitude": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": null,
+            "title": "Longitude"
+          }
+        },
+        "required": [
+          "city",
+          "state",
+          "zip_code"
+        ],
+        "title": "ProviderAddress",
         "type": "object"
       },
       "ConsumerSiteResponseMeta": {
@@ -5630,12 +6010,7 @@
         "scheme": "bearer",
         "description": "OAuth2 access token issued by Turquoise; validated against turquoise-api's /oauth/authorize on every request."
       }
-    },
-    "responses": {},
-    "parameters": {},
-    "examples": {},
-    "requestBodies": {},
-    "headers": {}
+    }
   },
   "tags": [
     {

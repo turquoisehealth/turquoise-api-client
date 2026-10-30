@@ -5,11 +5,7 @@ using TurquoiseHealth.Api.Core;
 namespace TurquoiseHealth.Api;
 
 /// <summary>
-/// Two-field reference stub. `expand=` swaps it for the full entity.
-///
-/// `name` is nullable by design: 0.8% of priced providers have no reference
-/// row (measured 07/2026), and the v3 rule is to emit the stub with a null
-/// name rather than silently dropping the priced row.
+/// A compact reference to a related entity, carrying only its identifier and display name.
 /// </summary>
 [Serializable]
 public record EntityRef : IJsonOnDeserialized
@@ -19,13 +15,13 @@ public record EntityRef : IJsonOnDeserialized
         new Dictionary<string, JsonElement>();
 
     /// <summary>
-    /// Entity identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term.
+    /// Identifier of the referenced entity. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term.
     /// </summary>
     [JsonPropertyName("id")]
     public required string Id { get; set; }
 
     /// <summary>
-    /// Display name; null when reference data is missing.
+    /// Display name of the referenced entity. Null when no name is available.
     /// </summary>
     [JsonPropertyName("name")]
     public string? Name { get; set; }

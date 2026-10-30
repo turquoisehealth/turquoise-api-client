@@ -4,13 +4,9 @@ import typing
 
 import pydantic
 from ..core.pydantic_utilities import IS_PYDANTIC_V2, UniversalBaseModel
-from .consumer_site_modules_consumer_pricing_v3dtos_common_page_meta import (
-    ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta,
-)
-from .consumer_site_modules_consumer_pricing_v3dtos_personalized_estimate_personalized_estimate import (
-    ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate,
-)
 from .consumer_site_no_data_reason import ConsumerSiteNoDataReason
+from .consumer_site_page_meta import ConsumerSitePageMeta
+from .consumer_site_personalized_estimate import ConsumerSitePersonalizedEstimate
 
 
 class ConsumerSiteListEnvelopePersonalizedEstimate(UniversalBaseModel):
@@ -19,8 +15,8 @@ class ConsumerSiteListEnvelopePersonalizedEstimate(UniversalBaseModel):
     """
 
     object: typing.Optional[str] = None
-    items: typing.List[ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate]
-    page: ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta
+    items: typing.List[ConsumerSitePersonalizedEstimate]
+    page: ConsumerSitePageMeta
     no_data_reason: typing.Optional[ConsumerSiteNoDataReason] = None
     disclosures: typing.Optional[typing.List[str]] = pydantic.Field(default=None)
     """

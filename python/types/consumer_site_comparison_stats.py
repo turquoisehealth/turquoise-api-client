@@ -9,7 +9,7 @@ from .consumer_site_money import ConsumerSiteMoney
 
 class ConsumerSiteComparisonStats(UniversalBaseModel):
     """
-    ComparisonStats
+    Summary statistics over a population of prices. Shared by every `/statistics` surface.
     """
 
     min: ConsumerSiteMoney

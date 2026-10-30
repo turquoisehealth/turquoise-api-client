@@ -3,6 +3,7 @@ name: OpenAPI diff
 on:
   pull_request:
     branches: ["main"]
+    types: [opened, synchronize, reopened, labeled, unlabeled]
     paths:
       - "openapi.json"
 
@@ -83,6 +84,8 @@ jobs:
           install -m 0755 /tmp/oasdiff /usr/local/bin/oasdiff
 
       - name: Compare version bump against breaking changes
+        env:
+          OVERRIDE_MAJOR_VERSION_BUMP: ${{ contains(github.event.pull_request.labels.*.name, 'override-major-version-bump') }}
         run: |
           set -euo pipefail
 
@@ -117,6 +120,10 @@ jobs:
 
           if [[ "$breaking_count" -gt 0 && "$bump" != "major" ]]; then
             echo "$breaking_output"
-            echo "::error::Breaking API changes were detected but the version was not bumped to a new major ($base_version -> $revision_version). Bump the major version in openapi.json, or confirm with the API team that these changes are not actually breaking."
-            exit 1
+            if [[ "$OVERRIDE_MAJOR_VERSION_BUMP" == "true" ]]; then
+              echo "::warning::Breaking API changes were detected without a major version bump ($base_version -> $revision_version). The override-major-version-bump label overrides this requirement."
+            else
+              echo "::error::Breaking API changes were detected but the version was not bumped to a new major ($base_version -> $revision_version). Bump the major version in openapi.json, or confirm with the API team that these changes are not actually breaking and apply the override-major-version-bump label."
+              exit 1
+            fi
           fi

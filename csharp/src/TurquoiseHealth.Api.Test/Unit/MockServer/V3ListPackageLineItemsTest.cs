@@ -15,11 +15,11 @@ public class V3ListPackageLineItemsTest : BaseMockServerTest
               "object": "list",
               "items": [
                 {
-                  "code": "786",
-                  "code_type": "MS-DRG",
+                  "code": "76642",
+                  "code_type": "HCPCS",
                   "fee_type": "base_code",
-                  "description": "CESAREAN SECTION WITHOUT STERILIZATION WITH MCC",
-                  "association_rate": 0.4491
+                  "description": "Ultrasound imaging of one breast including axilla with image documentation",
+                  "association_rate": 0.7245
                 }
               ],
               "page": {
@@ -38,7 +38,7 @@ public class V3ListPackageLineItemsTest : BaseMockServerTest
             .Given(
                 WireMock
                     .RequestBuilders.Request.Create()
-                    .WithPath("/v3/packages/OB002/line_items")
+                    .WithPath("/v3/packages/R017Z/line_items")
                     .UsingGet()
             )
             .RespondWith(
@@ -49,7 +49,7 @@ public class V3ListPackageLineItemsTest : BaseMockServerTest
             );
 
         var response = await Client.ConsumerPricing.V3ListPackageLineItemsAsync(
-            new V3ListPackageLineItemsRequest { PackageId = "OB002" }
+            new V3ListPackageLineItemsRequest { PackageId = "R017Z" }
         );
         Assert.That(
             response,

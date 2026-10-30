@@ -4,19 +4,19 @@ import type * as TurquoiseHealthApi from "../index.js";
 
 export interface Package {
     object?: Package.Object_;
-    /** Package identifier. Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term. */
+    /** Package identifier. Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term. */
     id: string;
-    /** Package taxonomy. Only Standard Service Packages ('ssp') are served today; other package types (e.g. consumer bundles) may be added as they become servable. */
+    /** Package taxonomy. The SSP Grouper is the main package type.  If searching via anchor code, a specific SSP will be returned.  Either package id works as the package_id in subsequent API requests. */
     type?: Package.Type;
     /** Display name of the service package. */
     name: string;
     /** Patient-facing description of the package. */
     description?: string | null;
-    /** The package's comprehensive anchor (base) billing codes — the rows billed as the anchor itself, not its professional-fee counterparts. Every package is expected to carry at least one. In the current catalog every anchor code maps to exactly one package (measured 07/2026), so ?anchor_code= behaves as a unique lookup — but that is an observed property, not a guarantee: the lookup returns every package anchored by the code. */
+    /** The package's comprehensive anchor (base) billing codes — the rows billed as the anchor itself, not its professional-fee counterparts. */
     anchor_codes?: TurquoiseHealthApi.BillingCode[];
-    disclosures?: string[];
     /** Query-relative metadata (search only). */
     context?: TurquoiseHealthApi.SearchContext | null;
+    disclosures?: string[];
 }
 
 export namespace Package {
@@ -24,9 +24,10 @@ export namespace Package {
         Package: "package",
     } as const;
     export type Object_ = (typeof Object_)[keyof typeof Object_];
-    /** Package taxonomy. Only Standard Service Packages ('ssp') are served today; other package types (e.g. consumer bundles) may be added as they become servable. */
+    /** Package taxonomy. The SSP Grouper is the main package type.  If searching via anchor code, a specific SSP will be returned.  Either package id works as the package_id in subsequent API requests. */
     export const Type = {
         Ssp: "ssp",
+        SspGrouper: "ssp_grouper",
     } as const;
     export type Type = (typeof Type)[keyof typeof Type];
 }

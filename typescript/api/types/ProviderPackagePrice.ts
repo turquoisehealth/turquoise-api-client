@@ -4,11 +4,11 @@ import type * as TurquoiseHealthApi from "../index.js";
 
 export interface ProviderPackagePrice {
     object?: ProviderPackagePrice.Object_;
-    /** Price identifier (encodes the provider × package × pricing grain). Upstream-derived from the dataset and may change as the dataset is rebuilt. Re-resolve via search rather than persisting long-term. */
+    /** Price identifier (encodes the provider × package × pricing grain). Identifiers may change when the underlying data is refreshed. Look up the entity again through the API rather than storing its identifier long-term. */
     id: string;
     /** Full provider entity (always inlined). */
-    provider: TurquoiseHealthApi.Provider;
-    /** Reference stub. */
+    provider: TurquoiseHealthApi.ConsumerPricingProvider;
+    /** The package this price is for. */
     package: TurquoiseHealthApi.EntityRef;
     pricing: TurquoiseHealthApi.PricingResolved;
     /** The package-total price at this grain. */

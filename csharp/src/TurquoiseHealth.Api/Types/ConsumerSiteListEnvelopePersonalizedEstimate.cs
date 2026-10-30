@@ -18,11 +18,11 @@ public record ConsumerSiteListEnvelopePersonalizedEstimate : IJsonOnDeserialized
     public string? Object { get; set; }
 
     [JsonPropertyName("items")]
-    public IEnumerable<ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate> Items { get; set; } =
-        new List<ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate>();
+    public IEnumerable<ConsumerSitePersonalizedEstimate> Items { get; set; } =
+        new List<ConsumerSitePersonalizedEstimate>();
 
     [JsonPropertyName("page")]
-    public required ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta Page { get; set; }
+    public required ConsumerSitePageMeta Page { get; set; }
 
     [JsonPropertyName("no_data_reason")]
     public ConsumerSiteNoDataReason? NoDataReason { get; set; }

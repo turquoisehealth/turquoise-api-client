@@ -86,7 +86,7 @@ public partial class ConsumerPricingClient
     /// <example><code>
     /// await client.ConsumerPricing.V3ListProvidersAsync(new V3ListProvidersRequest());
     /// </code></example>
-    public async Task<ListEnvelopeProvider> V3ListProvidersAsync(
+    public async Task<ListEnvelopeConsumerPricingProvider> V3ListProvidersAsync(
         V3ListProvidersRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -179,7 +179,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<ListEnvelopeProvider>(responseBody)!;
+                return JsonUtils.Deserialize<ListEnvelopeConsumerPricingProvider>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -223,9 +223,9 @@ public partial class ConsumerPricingClient
     /// Fetch details for a single provider by provider ID.
     /// </summary>
     /// <example><code>
-    /// await client.ConsumerPricing.V3GetProviderAsync(new V3GetProviderRequest { ProviderId = "5756" });
+    /// await client.ConsumerPricing.V3GetProviderAsync(new V3GetProviderRequest { ProviderId = "5754" });
     /// </code></example>
-    public async Task<Provider> V3GetProviderAsync(
+    public async Task<ConsumerPricingProvider> V3GetProviderAsync(
         V3GetProviderRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
@@ -251,7 +251,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<Provider>(responseBody)!;
+                return JsonUtils.Deserialize<ConsumerPricingProvider>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -798,7 +798,7 @@ public partial class ConsumerPricingClient
     /// Fetch package details by package ID.
     /// </summary>
     /// <example><code>
-    /// await client.ConsumerPricing.V3GetPackageAsync(new V3GetPackageRequest { PackageId = "OB002" });
+    /// await client.ConsumerPricing.V3GetPackageAsync(new V3GetPackageRequest { PackageId = "R017Z" });
     /// </code></example>
     public async Task<Package> V3GetPackageAsync(
         V3GetPackageRequest request,
@@ -871,7 +871,7 @@ public partial class ConsumerPricingClient
     /// </summary>
     /// <example><code>
     /// await client.ConsumerPricing.V3ListPackageLineItemsAsync(
-    ///     new V3ListPackageLineItemsRequest { PackageId = "OB002" }
+    ///     new V3ListPackageLineItemsRequest { PackageId = "R017Z" }
     /// );
     /// </code></example>
     public async Task<ListEnvelopeLineItem> V3ListPackageLineItemsAsync(
@@ -947,8 +947,8 @@ public partial class ConsumerPricingClient
     /// await client.ConsumerPricing.V3QueryPricesAsync(
     ///     new PricesQueryRequest
     ///     {
-    ///         PackageId = "OB002",
-    ///         ProviderId = "5756",
+    ///         PackageId = "R017Z",
+    ///         ProviderId = "5754",
     ///         Pricing = new PricesQueryRequestPricing(
     ///             new PricesQueryRequestPricing.Negotiated(
     ///                 new PricingNegotiated { NetworkId = "-3776001016975145508" }
@@ -1026,21 +1026,21 @@ public partial class ConsumerPricingClient
     /// Return summary statistics (min, max, average, median, quartiles) over prices matching the same filters as /query, excluding sorting and pagination. Use this endpoint to compare prices across relevant criteria.
     /// </summary>
     /// <example><code>
-    /// await client.ConsumerPricing.V3ComparePricesAsync(
-    ///     new PricesCompareRequest
+    /// await client.ConsumerPricing.V3PriceStatisticsAsync(
+    ///     new PricesStatisticsRequest
     ///     {
-    ///         PackageId = "OB002",
-    ///         ProviderId = "5756",
-    ///         Pricing = new PricesCompareRequestPricing(
-    ///             new PricesCompareRequestPricing.Negotiated(
+    ///         PackageId = "R017Z",
+    ///         ProviderId = "5754",
+    ///         Pricing = new PricesStatisticsRequestPricing(
+    ///             new PricesStatisticsRequestPricing.Negotiated(
     ///                 new PricingNegotiated { NetworkId = "-3776001016975145508" }
     ///             )
     ///         ),
     ///     }
     /// );
     /// </code></example>
-    public async Task<PriceComparison> V3ComparePricesAsync(
-        PricesCompareRequest request,
+    public async Task<PriceStatistics> V3PriceStatisticsAsync(
+        PricesStatisticsRequest request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
     )
@@ -1051,7 +1051,7 @@ public partial class ConsumerPricingClient
                 {
                     BaseUrl = _client.Options.BaseUrl,
                     Method = HttpMethod.Post,
-                    Path = "v3/prices/compare",
+                    Path = "v3/prices/statistics",
                     Body = request,
                     ContentType = "application/json",
                     Options = options,
@@ -1064,7 +1064,7 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<PriceComparison>(responseBody)!;
+                return JsonUtils.Deserialize<PriceStatistics>(responseBody)!;
             }
             catch (JsonException e)
             {
@@ -1109,7 +1109,7 @@ public partial class ConsumerPricingClient
     /// </summary>
     /// <example><code>
     /// await client.ConsumerPricing.V3GetPriceAsync(
-    ///     new V3GetPriceRequest { PriceId = "prc_5756.OB002.-3776001016975145508" }
+    ///     new V3GetPriceRequest { PriceId = "prc_5754.RA007.-3776001016975145508" }
     /// );
     /// </code></example>
     public async Task<ProviderPackagePrice> V3GetPriceAsync(
@@ -1191,8 +1191,8 @@ public partial class ConsumerPricingClient
     /// await client.ConsumerPricing.V3ListPersonalizedEstimatesAsync(
     ///     new ConsumerSitePersonalizedEstimatesQueryRequest
     ///     {
-    ///         PackageId = "GA003",
-    ///         ProviderId = "5756",
+    ///         PackageId = "GP03Z",
+    ///         ProviderId = "5754",
     ///         Pricing = new ConsumerSitePricingNegotiated
     ///         {
     ///             Type = "negotiated",
@@ -1204,8 +1204,10 @@ public partial class ConsumerPricingClient
     ///             LastName = "test123",
     ///             DateOfBirth = new DateOnly(2001, 1, 1),
     ///             MemberId = "test123",
-    ///             ConsentAttested = "consent_attested",
+    ///             ConsentAttested = true,
     ///         },
+    ///         Location = new ConsumerSiteLocation { Zip = "80218" },
+    ///         Sort = ConsumerSitePriceSort.Total,
     ///         SortDirection = ConsumerSitePersonalizedEstimatesQueryRequestSortDirection.Asc,
     ///         PageSize = 25,
     ///     }
@@ -1304,13 +1306,13 @@ public partial class ConsumerPricingClient
     }
 
     /// <summary>
-    /// Compare what this member would pay out-of-pocket across providers for the givenpackage. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
+    /// Compare what this member would pay out-of-pocket across providers for the given package. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
     /// </summary>
     /// <example><code>
-    /// await client.ConsumerPricing.V3ComparePersonalizedEstimatesAsync(
-    ///     new ConsumerSitePriceComparisonInput
+    /// await client.ConsumerPricing.V3PersonalizedEstimateStatisticsAsync(
+    ///     new ConsumerSiteEstimateStatisticsInput
     ///     {
-    ///         PackageId = "GA003",
+    ///         PackageId = "GP03Z",
     ///         Pricing = new ConsumerSitePricingNegotiated
     ///         {
     ///             Type = "negotiated",
@@ -1322,14 +1324,14 @@ public partial class ConsumerPricingClient
     ///             LastName = "test123",
     ///             DateOfBirth = new DateOnly(2001, 1, 1),
     ///             MemberId = "test123",
-    ///             ConsentAttested = "consent_attested",
+    ///             ConsentAttested = true,
     ///         },
     ///         Location = new ConsumerSiteLocation { Zip = "80218" },
     ///     }
     /// );
     /// </code></example>
-    public async Task<ConsumerSitePriceComparison> V3ComparePersonalizedEstimatesAsync(
-        ConsumerSitePriceComparisonInput request,
+    public async Task<V3PersonalizedEstimateStatisticsResponse> V3PersonalizedEstimateStatisticsAsync(
+        ConsumerSiteEstimateStatisticsInput request,
         RequestOptions? options = null,
         CancellationToken cancellationToken = default
     )
@@ -1340,7 +1342,7 @@ public partial class ConsumerPricingClient
                 {
                     BaseUrl = _client.Options.BaseUrl,
                     Method = HttpMethod.Post,
-                    Path = "v3/personalized-estimates/compare",
+                    Path = "v3/personalized-estimates/statistics",
                     Body = request,
                     ContentType = "application/json",
                     Options = options,
@@ -1353,7 +1355,9 @@ public partial class ConsumerPricingClient
             var responseBody = await response.Raw.Content.ReadAsStringAsync();
             try
             {
-                return JsonUtils.Deserialize<ConsumerSitePriceComparison>(responseBody)!;
+                return JsonUtils.Deserialize<V3PersonalizedEstimateStatisticsResponse>(
+                    responseBody
+                )!;
             }
             catch (JsonException e)
             {

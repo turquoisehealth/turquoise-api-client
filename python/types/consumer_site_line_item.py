@@ -9,7 +9,7 @@ from .consumer_site_line_item_association_rate import ConsumerSiteLineItemAssoci
 
 class ConsumerSiteLineItem(UniversalBaseModel):
     """
-    A component of a package's composition (from `api_ssp_contents`).
+    A component of a package's composition.
     """
 
     code: str = pydantic.Field()

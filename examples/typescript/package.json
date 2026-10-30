@@ -5,6 +5,7 @@
   "type": "module",
   "main": "src/index.ts",
   "scripts": {
+    "sdk:local": "npm --prefix ../../typescript run build && npm install --no-save --package-lock=false ../../typescript",
     "start": "node --env-file=.env --import tsx src/index.ts"
   },
   "keywords": [],

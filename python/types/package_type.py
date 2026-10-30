@@ -2,4 +2,4 @@
 
 import typing
 
-PackageType = typing.Union[typing.Literal["ssp"], typing.Any]
+PackageType = typing.Union[typing.Literal["ssp", "ssp_grouper"], typing.Any]

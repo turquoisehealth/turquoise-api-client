@@ -3,7 +3,7 @@
 import type * as TurquoiseHealthApi from "../index.js";
 
 /**
- * ComparisonStats
+ * Summary statistics over a population of prices. Shared by every `/statistics` surface.
  */
 export interface ConsumerSiteComparisonStats {
     min: TurquoiseHealthApi.ConsumerSiteMoney;

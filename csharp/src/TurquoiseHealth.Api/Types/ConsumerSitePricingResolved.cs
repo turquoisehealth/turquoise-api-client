@@ -17,9 +17,15 @@ public record ConsumerSitePricingResolved : IJsonOnDeserialized
     [JsonPropertyName("type")]
     public required string Type { get; set; }
 
+    /// <summary>
+    /// The insurance network the negotiated rate applies to. Null for cash prices.
+    /// </summary>
     [JsonPropertyName("network")]
     public ConsumerSiteEntityRef? Network { get; set; }
 
+    /// <summary>
+    /// The insurance payer that operates the network. Null for cash prices.
+    /// </summary>
     [JsonPropertyName("payer")]
     public ConsumerSiteEntityRef? Payer { get; set; }
 

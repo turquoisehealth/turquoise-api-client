@@ -15,8 +15,15 @@ class PricingResolved(UniversalBaseModel):
     """
 
     type: PricingResolvedType
-    network: typing.Optional[EntityRef] = None
-    payer: typing.Optional[EntityRef] = None
+    network: typing.Optional[EntityRef] = pydantic.Field(default=None)
+    """
+    The insurance network the negotiated rate applies to. Null for cash prices.
+    """
+
+    payer: typing.Optional[EntityRef] = pydantic.Field(default=None)
+    """
+    The insurance payer that operates the network. Null for cash prices.
+    """
 
     if IS_PYDANTIC_V2:
         model_config: typing.ClassVar[pydantic.ConfigDict] = pydantic.ConfigDict(extra="allow", frozen=True)  # type: ignore # Pydantic v2

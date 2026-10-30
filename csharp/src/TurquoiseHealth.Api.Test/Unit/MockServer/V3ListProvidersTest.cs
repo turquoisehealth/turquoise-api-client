@@ -16,19 +16,19 @@ public class V3ListProvidersTest : BaseMockServerTest
               "items": [
                 {
                   "object": "provider",
-                  "id": "5756",
-                  "name": "Intermountain Health Saint Joseph Hospital",
+                  "id": "5754",
+                  "name": "HCA HealthONE Presbyterian St Lukes",
                   "type": "Short Term Acute Care Hospital",
-                  "npi": "1417946021",
+                  "npi": "1720038946",
                   "address": {
                     "city": "Denver",
                     "state": "CO",
                     "zip_code": "80218",
-                    "latitude": 39.745961,
-                    "longitude": -104.971559
+                    "latitude": 39.746549,
+                    "longitude": -104.966925
                   },
                   "context": {
-                    "distance_m": 1644
+                    "distance_m": 1738.3
                   }
                 }
               ],
@@ -58,7 +58,8 @@ public class V3ListProvidersTest : BaseMockServerTest
         );
         Assert.That(
             response,
-            Is.EqualTo(JsonUtils.Deserialize<ListEnvelopeProvider>(mockResponse)).UsingDefaults()
+            Is.EqualTo(JsonUtils.Deserialize<ListEnvelopeConsumerPricingProvider>(mockResponse))
+                .UsingDefaults()
         );
     }
 }

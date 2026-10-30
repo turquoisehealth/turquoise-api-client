@@ -7,8 +7,8 @@ import type * as TurquoiseHealthApi from "../index.js";
  */
 export interface ConsumerSiteListEnvelopePersonalizedEstimate {
     object?: string | null;
-    items: TurquoiseHealthApi.ConsumerSiteModulesConsumerPricingV3DtosPersonalizedEstimatePersonalizedEstimate[];
-    page: TurquoiseHealthApi.ConsumerSiteModulesConsumerPricingV3DtosCommonPageMeta;
+    items: TurquoiseHealthApi.ConsumerSitePersonalizedEstimate[];
+    page: TurquoiseHealthApi.ConsumerSitePageMeta;
     no_data_reason?: TurquoiseHealthApi.ConsumerSiteNoDataReason | null;
     /** Human-readable caveats about what this result does and does not imply. */
     disclosures?: string[] | null;

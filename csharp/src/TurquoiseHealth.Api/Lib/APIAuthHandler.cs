@@ -32,7 +32,12 @@ namespace TurquoiseHealth.Api.Lib;
 ///
 /// // OAuth with client credentials (auto-refreshes when expired)
 /// var auth = APIAuthHandler.FromClientCredentials();
-/// var client = new TurquoiseHealthApiClient(token: auth.GetToken());
+/// var client = new TurquoiseHealthApiClient(
+///     token: auth.GetToken(),
+///     clientOptions: new ClientOptions
+///     {
+///         HttpClient = new HttpClient(auth.CreateRefreshTokenHandler())
+///     });
 ///
 /// // Custom token provider
 /// var auth = new APIAuthHandler(tokenProvider: () => GetTokenFromVault());
@@ -187,6 +192,16 @@ public class APIAuthHandler
     }
 
     /// <summary>
+    /// Creates an HTTP message handler that supplies the current token on every request.
+    /// </summary>
+    /// <param name="innerHandler">Optional inner handler for sending HTTP requests.</param>
+    /// <returns>A handler that adds the current bearer token to each request.</returns>
+    public HttpMessageHandler CreateRefreshTokenHandler(HttpMessageHandler? innerHandler = null)
+    {
+        return new RefreshTokenHandler(this, innerHandler ?? new HttpClientHandler());
+    }
+
+    /// <summary>
     /// Get OAuth token using client credentials, with caching.
     /// </summary>
     /// <returns>Access token</returns>
@@ -236,7 +251,7 @@ public class APIAuthHandler
                 var responseJson = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 var data = JsonSerializer.Deserialize<OAuthTokenResponse>(responseJson);
 
-                if (data?.AccessToken == null)
+                if (string.IsNullOrEmpty(data?.AccessToken))
                 {
                     throw new InvalidOperationException("No access_token in OAuth response");
                 }

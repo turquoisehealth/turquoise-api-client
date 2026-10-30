@@ -18,9 +18,15 @@ public record PricingResolved : IJsonOnDeserialized
     [JsonPropertyName("type")]
     public required PricingResolvedType Type { get; set; }
 
+    /// <summary>
+    /// The insurance network the negotiated rate applies to. Null for cash prices.
+    /// </summary>
     [JsonPropertyName("network")]
     public EntityRef? Network { get; set; }
 
+    /// <summary>
+    /// The insurance payer that operates the network. Null for cash prices.
+    /// </summary>
     [JsonPropertyName("payer")]
     public EntityRef? Payer { get; set; }
 

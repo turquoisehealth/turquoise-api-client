@@ -4,35 +4,35 @@ import typing
 
 from ..core.client_wrapper import AsyncClientWrapper, SyncClientWrapper
 from ..core.request_options import RequestOptions
+from ..types.consumer_pricing_provider import ConsumerPricingProvider
 from ..types.consumer_site_location import ConsumerSiteLocation
 from ..types.consumer_site_member_eligibility_input import ConsumerSiteMemberEligibilityInput
-from ..types.consumer_site_price_comparison import ConsumerSitePriceComparison
 from ..types.consumer_site_price_sort import ConsumerSitePriceSort
 from ..types.consumer_site_pricing_negotiated import ConsumerSitePricingNegotiated
+from ..types.list_envelope_consumer_pricing_provider import ListEnvelopeConsumerPricingProvider
 from ..types.list_envelope_line_item import ListEnvelopeLineItem
 from ..types.list_envelope_network import ListEnvelopeNetwork
 from ..types.list_envelope_package import ListEnvelopePackage
 from ..types.list_envelope_payer import ListEnvelopePayer
-from ..types.list_envelope_provider import ListEnvelopeProvider
 from ..types.list_envelope_provider_package_price import ListEnvelopeProviderPackagePrice
 from ..types.location import Location
 from ..types.network import Network
 from ..types.package import Package
 from ..types.payer import Payer
-from ..types.price_comparison import PriceComparison
 from ..types.price_expand import PriceExpand
 from ..types.price_sort import PriceSort
-from ..types.provider import Provider
+from ..types.price_statistics import PriceStatistics
 from ..types.provider_package_price import ProviderPackagePrice
 from .raw_client import AsyncRawConsumerPricingClient, RawConsumerPricingClient
 from .types.consumer_site_personalized_estimates_query_request_sort_direction import (
     ConsumerSitePersonalizedEstimatesQueryRequestSortDirection,
 )
-from .types.prices_compare_request_pricing import PricesCompareRequestPricing
 from .types.prices_query_request_pricing import PricesQueryRequestPricing
 from .types.prices_query_request_sort_direction import PricesQueryRequestSortDirection
+from .types.prices_statistics_request_pricing import PricesStatisticsRequestPricing
 from .types.v3list_personalized_estimates_request_expand_item import V3ListPersonalizedEstimatesRequestExpandItem
 from .types.v3list_personalized_estimates_response import V3ListPersonalizedEstimatesResponse
+from .types.v3personalized_estimate_statistics_response import V3PersonalizedEstimateStatisticsResponse
 
 # this is used as the default value for optional parameters
 OMIT = typing.cast(typing.Any, ...)
@@ -98,7 +98,7 @@ class ConsumerPricingClient:
         location_within_zip_codes: typing.Optional[str] = None,
         location_zip: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ListEnvelopeProvider:
+    ) -> ListEnvelopeConsumerPricingProvider:
         """
         Retrieve a list of providers, filtered over a search by name, NPI, provider type, or location. Additionally, filter to a list of providers with Turquoise price estimates available by a selected payer, network, or package. Results reflect provider, payer, and package combinations that Turquoise has priced services for; the list may not be comprehensive of all contacted payer networks or services that are available.
 
@@ -154,7 +154,7 @@ class ConsumerPricingClient:
 
         Returns
         -------
-        ListEnvelopeProvider
+        ListEnvelopeConsumerPricingProvider
             Successful Response
 
         Examples
@@ -186,7 +186,9 @@ class ConsumerPricingClient:
         )
         return _response.data
 
-    def v3get_provider(self, provider_id: str, *, request_options: typing.Optional[RequestOptions] = None) -> Provider:
+    def v3get_provider(
+        self, provider_id: str, *, request_options: typing.Optional[RequestOptions] = None
+    ) -> ConsumerPricingProvider:
         """
         Fetch details for a single provider by provider ID.
 
@@ -200,7 +202,7 @@ class ConsumerPricingClient:
 
         Returns
         -------
-        Provider
+        ConsumerPricingProvider
             Successful Response
 
         Examples
@@ -208,7 +210,7 @@ class ConsumerPricingClient:
         from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", )
-        client.consumer_pricing.v3get_provider(provider_id='5756', )
+        client.consumer_pricing.v3get_provider(provider_id='5754', )
         """
         _response = self._raw_client.v3get_provider(provider_id, request_options=request_options)
         return _response.data
@@ -546,7 +548,7 @@ class ConsumerPricingClient:
         from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", )
-        client.consumer_pricing.v3get_package(package_id='OB002', )
+        client.consumer_pricing.v3get_package(package_id='R017Z', )
         """
         _response = self._raw_client.v3get_package(package_id, request_options=request_options)
         return _response.data
@@ -575,7 +577,7 @@ class ConsumerPricingClient:
         from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", )
-        client.consumer_pricing.v3list_package_line_items(package_id='OB002', )
+        client.consumer_pricing.v3list_package_line_items(package_id='R017Z', )
         """
         _response = self._raw_client.v3list_package_line_items(package_id, request_options=request_options)
         return _response.data
@@ -631,7 +633,7 @@ class ConsumerPricingClient:
             PricesQueryRequestPricing_Negotiated
         
         client = TurquoiseHealth(token="YOUR_TOKEN", )
-        client.consumer_pricing.v3query_prices(package_id='OB002', provider_id='5756', pricing=PricesQueryRequestPricing_Negotiated(network_id='-3776001016975145508', ), )
+        client.consumer_pricing.v3query_prices(package_id='R017Z', provider_id='5754', pricing=PricesQueryRequestPricing_Negotiated(network_id='-3776001016975145508', ), )
         """
         _response = self._raw_client.v3query_prices(
             package_id=package_id,
@@ -646,15 +648,15 @@ class ConsumerPricingClient:
         )
         return _response.data
 
-    def v3compare_prices(
+    def v3price_statistics(
         self,
         *,
         package_id: str,
-        pricing: PricesCompareRequestPricing,
+        pricing: PricesStatisticsRequestPricing,
         provider_id: typing.Optional[str] = OMIT,
         location: typing.Optional[Location] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> PriceComparison:
+    ) -> PriceStatistics:
         """
         Return summary statistics (min, max, average, median, quartiles) over prices matching the same filters as /query, excluding sorting and pagination. Use this endpoint to compare prices across relevant criteria.
         
@@ -662,7 +664,7 @@ class ConsumerPricingClient:
         ----------
         package_id : str
         
-        pricing : PricesCompareRequestPricing
+        pricing : PricesStatisticsRequestPricing
         
         provider_id : typing.Optional[str]
         
@@ -673,19 +675,19 @@ class ConsumerPricingClient:
         
         Returns
         -------
-        PriceComparison
+        PriceStatistics
             Successful Response
         
         Examples
         --------
         from turquoisehealth-api import TurquoiseHealth
         from turquoisehealth-api.consumer_pricing import \
-            PricesCompareRequestPricing_Negotiated
+            PricesStatisticsRequestPricing_Negotiated
         
         client = TurquoiseHealth(token="YOUR_TOKEN", )
-        client.consumer_pricing.v3compare_prices(package_id='OB002', provider_id='5756', pricing=PricesCompareRequestPricing_Negotiated(network_id='-3776001016975145508', ), )
+        client.consumer_pricing.v3price_statistics(package_id='R017Z', provider_id='5754', pricing=PricesStatisticsRequestPricing_Negotiated(network_id='-3776001016975145508', ), )
         """
-        _response = self._raw_client.v3compare_prices(
+        _response = self._raw_client.v3price_statistics(
             package_id=package_id,
             pricing=pricing,
             provider_id=provider_id,
@@ -725,7 +727,7 @@ class ConsumerPricingClient:
         from turquoisehealth-api import TurquoiseHealth
 
         client = TurquoiseHealth(token="YOUR_TOKEN", )
-        client.consumer_pricing.v3get_price(price_id='prc_5756.OB002.-3776001016975145508', )
+        client.consumer_pricing.v3get_price(price_id='prc_5754.RA007.-3776001016975145508', )
         """
         _response = self._raw_client.v3get_price(price_id, expand=expand, request_options=request_options)
         return _response.data
@@ -788,12 +790,13 @@ class ConsumerPricingClient:
         --------
         import datetime
 
-        from turquoisehealth-api import (ConsumerSiteMemberEligibilityInput,
+        from turquoisehealth-api import (ConsumerSiteLocation,
+                                         ConsumerSiteMemberEligibilityInput,
                                          ConsumerSitePricingNegotiated,
                                          TurquoiseHealth)
 
         client = TurquoiseHealth(token="YOUR_TOKEN", )
-        client.consumer_pricing.v3list_personalized_estimates(package_id='GA003', provider_id='5756', pricing=ConsumerSitePricingNegotiated(type='negotiated', network_id='-3776001016975145508', ), member_eligibility=ConsumerSiteMemberEligibilityInput(first_name='test123', last_name='test123', date_of_birth=datetime.date.fromisoformat("2001-01-01", ), member_id='test123', consent_attested='consent_attested', ), sort_direction="asc", page_size=25, )
+        client.consumer_pricing.v3list_personalized_estimates(package_id='GP03Z', provider_id='5754', pricing=ConsumerSitePricingNegotiated(type='negotiated', network_id='-3776001016975145508', ), member_eligibility=ConsumerSiteMemberEligibilityInput(first_name='test123', last_name='test123', date_of_birth=datetime.date.fromisoformat("2001-01-01", ), member_id='test123', consent_attested=True, ), location=ConsumerSiteLocation(zip='80218', ), sort="total", sort_direction="asc", page_size=25, )
         """
         _response = self._raw_client.v3list_personalized_estimates(
             package_id=package_id,
@@ -810,7 +813,7 @@ class ConsumerPricingClient:
         )
         return _response.data
 
-    def v3compare_personalized_estimates(
+    def v3personalized_estimate_statistics(
         self,
         *,
         package_id: str,
@@ -819,9 +822,9 @@ class ConsumerPricingClient:
         provider_id: typing.Optional[str] = OMIT,
         location: typing.Optional[ConsumerSiteLocation] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ConsumerSitePriceComparison:
+    ) -> V3PersonalizedEstimateStatisticsResponse:
         """
-        Compare what this member would pay out-of-pocket across providers for the givenpackage. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
+        Compare what this member would pay out-of-pocket across providers for the given package. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
 
         Parameters
         ----------
@@ -840,8 +843,8 @@ class ConsumerPricingClient:
 
         Returns
         -------
-        ConsumerSitePriceComparison
-            Price comparison statistics for the requested package.
+        V3PersonalizedEstimateStatisticsResponse
+            Estimate statistics for the requested package.
 
         Examples
         --------
@@ -853,9 +856,9 @@ class ConsumerPricingClient:
                                          TurquoiseHealth)
 
         client = TurquoiseHealth(token="YOUR_TOKEN", )
-        client.consumer_pricing.v3compare_personalized_estimates(package_id='GA003', pricing=ConsumerSitePricingNegotiated(type='negotiated', network_id='-3776001016975145508', ), member_eligibility=ConsumerSiteMemberEligibilityInput(first_name='test123', last_name='test123', date_of_birth=datetime.date.fromisoformat("2001-01-01", ), member_id='test123', consent_attested='consent_attested', ), location=ConsumerSiteLocation(zip='80218', ), )
+        client.consumer_pricing.v3personalized_estimate_statistics(package_id='GP03Z', pricing=ConsumerSitePricingNegotiated(type='negotiated', network_id='-3776001016975145508', ), member_eligibility=ConsumerSiteMemberEligibilityInput(first_name='test123', last_name='test123', date_of_birth=datetime.date.fromisoformat("2001-01-01", ), member_id='test123', consent_attested=True, ), location=ConsumerSiteLocation(zip='80218', ), )
         """
-        _response = self._raw_client.v3compare_personalized_estimates(
+        _response = self._raw_client.v3personalized_estimate_statistics(
             package_id=package_id,
             pricing=pricing,
             member_eligibility=member_eligibility,
@@ -932,7 +935,7 @@ class AsyncConsumerPricingClient:
         location_within_zip_codes: typing.Optional[str] = None,
         location_zip: typing.Optional[str] = None,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ListEnvelopeProvider:
+    ) -> ListEnvelopeConsumerPricingProvider:
         """
         Retrieve a list of providers, filtered over a search by name, NPI, provider type, or location. Additionally, filter to a list of providers with Turquoise price estimates available by a selected payer, network, or package. Results reflect provider, payer, and package combinations that Turquoise has priced services for; the list may not be comprehensive of all contacted payer networks or services that are available.
 
@@ -988,7 +991,7 @@ class AsyncConsumerPricingClient:
 
         Returns
         -------
-        ListEnvelopeProvider
+        ListEnvelopeConsumerPricingProvider
             Successful Response
 
         Examples
@@ -1026,7 +1029,7 @@ class AsyncConsumerPricingClient:
 
     async def v3get_provider(
         self, provider_id: str, *, request_options: typing.Optional[RequestOptions] = None
-    ) -> Provider:
+    ) -> ConsumerPricingProvider:
         """
         Fetch details for a single provider by provider ID.
 
@@ -1040,7 +1043,7 @@ class AsyncConsumerPricingClient:
 
         Returns
         -------
-        Provider
+        ConsumerPricingProvider
             Successful Response
 
         Examples
@@ -1051,7 +1054,7 @@ class AsyncConsumerPricingClient:
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", )
         async def main() -> None:
-            await client.consumer_pricing.v3get_provider(provider_id='5756', )
+            await client.consumer_pricing.v3get_provider(provider_id='5754', )
         asyncio.run(main())
         """
         _response = await self._raw_client.v3get_provider(provider_id, request_options=request_options)
@@ -1417,7 +1420,7 @@ class AsyncConsumerPricingClient:
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", )
         async def main() -> None:
-            await client.consumer_pricing.v3get_package(package_id='OB002', )
+            await client.consumer_pricing.v3get_package(package_id='R017Z', )
         asyncio.run(main())
         """
         _response = await self._raw_client.v3get_package(package_id, request_options=request_options)
@@ -1450,7 +1453,7 @@ class AsyncConsumerPricingClient:
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", )
         async def main() -> None:
-            await client.consumer_pricing.v3list_package_line_items(package_id='OB002', )
+            await client.consumer_pricing.v3list_package_line_items(package_id='R017Z', )
         asyncio.run(main())
         """
         _response = await self._raw_client.v3list_package_line_items(package_id, request_options=request_options)
@@ -1510,7 +1513,7 @@ class AsyncConsumerPricingClient:
         
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", )
         async def main() -> None:
-            await client.consumer_pricing.v3query_prices(package_id='OB002', provider_id='5756', pricing=PricesQueryRequestPricing_Negotiated(network_id='-3776001016975145508', ), )
+            await client.consumer_pricing.v3query_prices(package_id='R017Z', provider_id='5754', pricing=PricesQueryRequestPricing_Negotiated(network_id='-3776001016975145508', ), )
         asyncio.run(main())
         """
         _response = await self._raw_client.v3query_prices(
@@ -1526,15 +1529,15 @@ class AsyncConsumerPricingClient:
         )
         return _response.data
 
-    async def v3compare_prices(
+    async def v3price_statistics(
         self,
         *,
         package_id: str,
-        pricing: PricesCompareRequestPricing,
+        pricing: PricesStatisticsRequestPricing,
         provider_id: typing.Optional[str] = OMIT,
         location: typing.Optional[Location] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> PriceComparison:
+    ) -> PriceStatistics:
         """
         Return summary statistics (min, max, average, median, quartiles) over prices matching the same filters as /query, excluding sorting and pagination. Use this endpoint to compare prices across relevant criteria.
         
@@ -1542,7 +1545,7 @@ class AsyncConsumerPricingClient:
         ----------
         package_id : str
         
-        pricing : PricesCompareRequestPricing
+        pricing : PricesStatisticsRequestPricing
         
         provider_id : typing.Optional[str]
         
@@ -1553,7 +1556,7 @@ class AsyncConsumerPricingClient:
         
         Returns
         -------
-        PriceComparison
+        PriceStatistics
             Successful Response
         
         Examples
@@ -1562,14 +1565,14 @@ class AsyncConsumerPricingClient:
         
         from turquoisehealth-api import AsyncTurquoiseHealth
         from turquoisehealth-api.consumer_pricing import \
-            PricesCompareRequestPricing_Negotiated
+            PricesStatisticsRequestPricing_Negotiated
         
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", )
         async def main() -> None:
-            await client.consumer_pricing.v3compare_prices(package_id='OB002', provider_id='5756', pricing=PricesCompareRequestPricing_Negotiated(network_id='-3776001016975145508', ), )
+            await client.consumer_pricing.v3price_statistics(package_id='R017Z', provider_id='5754', pricing=PricesStatisticsRequestPricing_Negotiated(network_id='-3776001016975145508', ), )
         asyncio.run(main())
         """
-        _response = await self._raw_client.v3compare_prices(
+        _response = await self._raw_client.v3price_statistics(
             package_id=package_id,
             pricing=pricing,
             provider_id=provider_id,
@@ -1612,7 +1615,7 @@ class AsyncConsumerPricingClient:
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", )
         async def main() -> None:
-            await client.consumer_pricing.v3get_price(price_id='prc_5756.OB002.-3776001016975145508', )
+            await client.consumer_pricing.v3get_price(price_id='prc_5754.RA007.-3776001016975145508', )
         asyncio.run(main())
         """
         _response = await self._raw_client.v3get_price(price_id, expand=expand, request_options=request_options)
@@ -1677,13 +1680,13 @@ class AsyncConsumerPricingClient:
         import asyncio
         import datetime
 
-        from turquoisehealth-api import (AsyncTurquoiseHealth,
+        from turquoisehealth-api import (AsyncTurquoiseHealth, ConsumerSiteLocation,
                                          ConsumerSiteMemberEligibilityInput,
                                          ConsumerSitePricingNegotiated)
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", )
         async def main() -> None:
-            await client.consumer_pricing.v3list_personalized_estimates(package_id='GA003', provider_id='5756', pricing=ConsumerSitePricingNegotiated(type='negotiated', network_id='-3776001016975145508', ), member_eligibility=ConsumerSiteMemberEligibilityInput(first_name='test123', last_name='test123', date_of_birth=datetime.date.fromisoformat("2001-01-01", ), member_id='test123', consent_attested='consent_attested', ), sort_direction="asc", page_size=25, )
+            await client.consumer_pricing.v3list_personalized_estimates(package_id='GP03Z', provider_id='5754', pricing=ConsumerSitePricingNegotiated(type='negotiated', network_id='-3776001016975145508', ), member_eligibility=ConsumerSiteMemberEligibilityInput(first_name='test123', last_name='test123', date_of_birth=datetime.date.fromisoformat("2001-01-01", ), member_id='test123', consent_attested=True, ), location=ConsumerSiteLocation(zip='80218', ), sort="total", sort_direction="asc", page_size=25, )
         asyncio.run(main())
         """
         _response = await self._raw_client.v3list_personalized_estimates(
@@ -1701,7 +1704,7 @@ class AsyncConsumerPricingClient:
         )
         return _response.data
 
-    async def v3compare_personalized_estimates(
+    async def v3personalized_estimate_statistics(
         self,
         *,
         package_id: str,
@@ -1710,9 +1713,9 @@ class AsyncConsumerPricingClient:
         provider_id: typing.Optional[str] = OMIT,
         location: typing.Optional[ConsumerSiteLocation] = OMIT,
         request_options: typing.Optional[RequestOptions] = None,
-    ) -> ConsumerSitePriceComparison:
+    ) -> V3PersonalizedEstimateStatisticsResponse:
         """
-        Compare what this member would pay out-of-pocket across providers for the givenpackage. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
+        Compare what this member would pay out-of-pocket across providers for the given package. You'll get back the min, max, average, median, and quartiles. If we haven't checked their eligibility yet, you'll get a 202 back, just retry in a bit. The member must have given consent (`consent_attested` must be true).
 
         Parameters
         ----------
@@ -1731,8 +1734,8 @@ class AsyncConsumerPricingClient:
 
         Returns
         -------
-        ConsumerSitePriceComparison
-            Price comparison statistics for the requested package.
+        V3PersonalizedEstimateStatisticsResponse
+            Estimate statistics for the requested package.
 
         Examples
         --------
@@ -1745,10 +1748,10 @@ class AsyncConsumerPricingClient:
 
         client = AsyncTurquoiseHealth(token="YOUR_TOKEN", )
         async def main() -> None:
-            await client.consumer_pricing.v3compare_personalized_estimates(package_id='GA003', pricing=ConsumerSitePricingNegotiated(type='negotiated', network_id='-3776001016975145508', ), member_eligibility=ConsumerSiteMemberEligibilityInput(first_name='test123', last_name='test123', date_of_birth=datetime.date.fromisoformat("2001-01-01", ), member_id='test123', consent_attested='consent_attested', ), location=ConsumerSiteLocation(zip='80218', ), )
+            await client.consumer_pricing.v3personalized_estimate_statistics(package_id='GP03Z', pricing=ConsumerSitePricingNegotiated(type='negotiated', network_id='-3776001016975145508', ), member_eligibility=ConsumerSiteMemberEligibilityInput(first_name='test123', last_name='test123', date_of_birth=datetime.date.fromisoformat("2001-01-01", ), member_id='test123', consent_attested=True, ), location=ConsumerSiteLocation(zip='80218', ), )
         asyncio.run(main())
         """
-        _response = await self._raw_client.v3compare_personalized_estimates(
+        _response = await self._raw_client.v3personalized_estimate_statistics(
             package_id=package_id,
             pricing=pricing,
             member_eligibility=member_eligibility,

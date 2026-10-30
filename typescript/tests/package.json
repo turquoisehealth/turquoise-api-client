@@ -1,9 +1,11 @@
 {
   "name": "turquoise-api-client-tests",
   "version": "1.0.0",
-  "description": "Integration tests for Turquoise Health API TypeScript client",
+  "description": "Unit and integration tests for Turquoise Health API TypeScript client",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:unit": "jest --runInBand --testPathIgnorePatterns=integration.test.ts --coverage",
+    "test:integration": "jest --runInBand integration.test.ts"
   },
   "devDependencies": {
     "@types/jest": "^29.5.0",
@@ -13,17 +15,30 @@
     "typescript": "^5.0.0"
   },
   "jest": {
-    "preset": "ts-jest",
+    "rootDir": "..",
+    "preset": "./tests/node_modules/ts-jest",
     "testEnvironment": "node",
     "testMatch": [
-      "**/*.test.ts"
+      "<rootDir>/tests/**/*.test.ts"
     ],
+    "collectCoverageFrom": [
+      "lib/**/*.ts"
+    ],
+    "coverageDirectory": "<rootDir>/tests/coverage",
+    "coverageThreshold": {
+      "global": {
+        "branches": 90,
+        "functions": 90,
+        "lines": 90,
+        "statements": 90
+      }
+    },
     "moduleNameMapper": {
       "^(\\.{1,2}/.*)\\.js$": "$1"
     },
     "transform": {
       "^.+\\.tsx?$": [
-        "ts-jest",
+        "<rootDir>/tests/node_modules/ts-jest",
         {
           "isolatedModules": true,
           "tsconfig": {
