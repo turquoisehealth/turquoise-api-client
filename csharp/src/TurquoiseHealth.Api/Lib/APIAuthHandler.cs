@@ -51,7 +51,7 @@ public class APIAuthHandler
     private readonly string? _clientId;
     private readonly string? _clientSecret;
     private readonly string? _organizationId;
-    private readonly string _authUrl;
+    private readonly string _authUrl = "https://api.turquoise.health";
     private readonly int _ttlBuffer;
     private readonly HttpClient _httpClient;
 
@@ -84,7 +84,7 @@ public class APIAuthHandler
         _clientId = clientId;
         _clientSecret = clientSecret;
         _organizationId = organizationId;
-        _authUrl = string.IsNullOrWhiteSpace(authUrl) ? "https://api.turquoise.health" : authUrl;
+        _authUrl = authUrl ?? "https://api.turquoise.health";
         _ttlBuffer = ttlBuffer;
         _httpClient = new HttpClient();
     }
@@ -251,7 +251,7 @@ public class APIAuthHandler
                 var responseJson = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                 var data = JsonSerializer.Deserialize<OAuthTokenResponse>(responseJson);
 
-                if (string.IsNullOrEmpty(data?.AccessToken))
+                if (data?.AccessToken is null)
                 {
                     throw new InvalidOperationException("No access_token in OAuth response");
                 }
@@ -261,7 +261,7 @@ public class APIAuthHandler
                 _cachedToken = data.AccessToken;
                 _tokenExpiration = requestTime.AddSeconds(expiresIn);
 
-                return data.AccessToken;
+                return _cachedToken;
             }
             catch (Exception ex) when (ex is not InvalidOperationException)
             {
