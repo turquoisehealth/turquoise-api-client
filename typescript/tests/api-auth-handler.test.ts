@@ -144,7 +144,7 @@ describe("APIAuthHandler (offline)", () => {
     expect(await supplier()).toBe("oauth-token");
     expect(fetchMock).toHaveBeenCalledTimes(1);
     clock.mockReturnValue(1_040_000);
-    fetchMock.mockResolvedValueOnce(new Response('{"access_token":"refreshed"}'));
+    fetchMock.mockResolvedValueOnce(new Response('{"access_token":"refreshed","expires_in":100}'));
     expect(await supplier()).toBe("refreshed");
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
@@ -160,23 +160,17 @@ describe("APIAuthHandler (offline)", () => {
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
-  test("defaults missing expiry to one hour", async () => {
+  test("rejects a response with missing expiry", async () => {
     fetchMock.mockImplementation(async () => new Response('{"access_token":"token"}'));
     const auth = APIAuthHandler.fromClientCredentials(credentials);
-    await auth.getToken();
-    clock.mockReturnValue(4_539_000);
-    expect(await auth.getToken()).toBe("token");
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    clock.mockReturnValue(4_540_000);
-    await auth.getToken();
-    expect(fetchMock).toHaveBeenCalledTimes(2);
+    await expect(auth.getToken()).rejects.toThrow("No expires_in in OAuth response");
   });
 
-  test("does not cache a token with zero lifetime", async () => {
+  test("rejects a response with zero lifetime", async () => {
     fetchMock.mockImplementation(async () => new Response('{"access_token":"token","expires_in":0}'));
     const auth = APIAuthHandler.fromClientCredentials(credentials);
-    await auth.getToken();
-    await auth.getToken();
+    await expect(auth.getToken()).rejects.toThrow("No expires_in in OAuth response");
+    await expect(auth.getToken()).rejects.toThrow("No expires_in in OAuth response");
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
