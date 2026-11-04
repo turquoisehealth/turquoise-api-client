@@ -36,6 +36,8 @@ Review the changes in:
 
 Generated SDK source files are committed intentionally because the publish workflow in GitHub builds the files checked into the release tag.
 
+The Python wheel's Hatch configuration explicitly lists the top-level modules and package directories to avoid `./` segments in archive paths. If SDK generation adds or renames any of these paths, update the `only-include` list in `python/pyproject.toml` as well.
+
 ## 4. Update the changelog
 
 Generate the `oasdiffs/X.X.XX.md` file and placeholder `CHANGELOG.md` entry for this release from the OpenAPI diff against the previous release tag:

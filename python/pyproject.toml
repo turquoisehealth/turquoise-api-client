@@ -18,11 +18,21 @@ dependencies = [
 Repository = "https://github.com/turquoisehealth/turquoise-api-client"
 
 [tool.hatch.build.targets.wheel]
-packages = ["."]
+only-include = [
+  "__init__.py",
+  "client.py",
+  "environment.py",
+  "consumer_pricing",
+  "core",
+  "errors",
+  "lib",
+  "types",
+]
 exclude = [
   "tests",
   ".fern",
   ".fernignore",
+  ".gitignore",
   "pyproject.toml",
 ]
 
